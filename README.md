@@ -40,12 +40,12 @@ A template repository for making a new AlgebraicJulia package.
    ```
 7. Generate a new random version 4 UUID (you can get one here: https://www.uuidgenerator.net/version4)
    - We will assume for this example that your new UUID is `<UUID>`
-8. Replace all instances of the template's UUID, "b66562e1-fa90-4e8b-9505-c909188fab76", with your new UUID (e.x. "<UUID>")
+8. Replace all instances of the template's UUID, "22bb929c-8bcf-4852-b455-eb3e1675e09c", with your new UUID (e.x. "<UUID>")
    ```sh
    # On linux
-   git grep -l 'b66562e1-fa90-4e8b-9505-c909188fab76' | xargs sed -i 's/b66562e1-fa90-4e8b-9505-c909188fab76/<UUID>/g'
+   git grep -l '22bb929c-8bcf-4852-b455-eb3e1675e09c' | xargs sed -i 's/22bb929c-8bcf-4852-b455-eb3e1675e09c/<UUID>/g'
    # On Mac OS X
-   git grep -l 'b66562e1-fa90-4e8b-9505-c909188fab76' | xargs sed -i '' -e 's/b66562e1-fa90-4e8b-9505-c909188fab76/<UUID>/g'
+   git grep -l '22bb929c-8bcf-4852-b455-eb3e1675e09c' | xargs sed -i '' -e 's/22bb929c-8bcf-4852-b455-eb3e1675e09c/<UUID>/g'
    ```
 9. Commit these new changes to your repository
    ```sh

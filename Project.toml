@@ -1,5 +1,5 @@
 name = "SyntacticModels"
-uuid = "b66562e1-fa90-4e8b-9505-c909188fab76"
+uuid = "22bb929c-8bcf-4852-b455-eb3e1675e09c"
 license = "MIT"
 authors = ["AlgebraicJulia Developer <email@algebraicjulia.org>"]
 version = "0.0.1"
