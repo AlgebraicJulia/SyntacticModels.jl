@@ -1,7 +1,7 @@
-# AlgebraicTemplate.jl
+# SyntacticModels.jl
 
 ```@meta
-CurrentModule = AlgebraicTemplate
+CurrentModule = SyntacticModels
 ```
 
-`AlgebraicTemplate.jl` is a Julia library for...
+`SyntacticModels.jl` is a Julia library for...

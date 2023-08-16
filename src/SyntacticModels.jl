@@ -1,6 +1,6 @@
 """ Some description of ths package
 """
-module SyntacticModels
+module AlgebraicTemplate
 
 export hello
 
