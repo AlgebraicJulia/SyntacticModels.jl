@@ -21,6 +21,13 @@ end
 @doc """    Var
 
 Variables of a UWD. Types are the domain types, ScalarField, VectorField, Dual1Form, Primal2Form NOT Float64,Complex128
+
+Subtypes include:
+
+1. Untyped(var::Symbol)
+1. Typed(var::Symbol, type::Symbol)
+
+which are used for representing typed or untyped variables.
 """
 Var
 
@@ -38,9 +45,38 @@ end
 
 Term specifying UWD.
 
-- UWDModel: A header and UWD Expr
-- UWDExpr: A Context of variables and a list of statements defining a UWD
-- Statement: R(x,y,z) a relation that acts on its arguments (which are Vars)
+Subtypes
+========
+
+1. UWDModel: A header and UWD Expr
+1. UWDExpr: A Context of variables and a list of statements defining a UWD
+1. Statement: R(x,y,z) a relation that acts on its arguments (which are Vars)
+
+Example
+=======
+
+To specify the following relation macro:
+```julia
+@relation (x:X, z:Z) where y:Y begin
+  R(x,y)
+  S(y,z)
+  T(z,y,u)
+end
+```
+
+Use the following SyntacticModels UWDTerm:
+
+```julia
+v1 = Typed(:x, :X)
+v2 = Typed(:y, :Y)
+v3 = Typed(:z, :Z)
+v4 = Untyped(:u)
+c = [v1, v3]
+s = [Statement(:R, [v1,v2]),
+  Statement(:S, [v2,v3]),
+  Statement(:T, [v3,v2, v4])]
+u = UWDExpr(c, s)
+```
 """
 UWDTerm
 
