@@ -12,7 +12,7 @@ using SyntacticModels.ASKEMUWDs
 using SyntacticModels.Composites
 
 using MLStyle
-using Decapodes
+import SyntacticModels.ASKEMDecapodes.Decapodes as Decapodes
 using Catlab
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
