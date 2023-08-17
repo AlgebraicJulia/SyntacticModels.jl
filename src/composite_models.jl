@@ -18,10 +18,27 @@ using ..ASKEMUWDs
   CompositeModelExpr(header::Header, composition_pattern::UWDExpr, components::Vector{CompositeModel})
 end
 
+@doc """    CompositeModel
+
+```julia
+@data CompositeModel <: AbstractTerm begin
+  OpenModel(model::ASKEMDecapodes.ASKEMDecaExpr, interface::Vector{Symbol})
+  OpenDecapode(model::ASKEMDecapodes.ASKEMDecapode, interface::Vector{Symbol})
+  CompositeModelExpr(header::Header, composition_pattern::UWDExpr, components::Vector{CompositeModel})
+end
+```
+"""
+CompositeModel
+
 StructTypes.StructType(::Type{CompositeModel}) = StructTypes.AbstractType()
 StructTypes.subtypekey(::Type{CompositeModel}) = :_type
 StructTypes.subtypes(::Type{CompositeModel}) = (OpenModel=OpenModel, OpenDecapode=OpenDecapode, CompositeModelExpr)
 
+
+"""    interface(m::CompositeModel)
+
+Extract the interface of a composite model. If the model is open, then it is the feet of the cospan. If it is a Composite, then it is the context of the uwd.
+"""
 interface(m::CompositeModel) = @match m begin
   OpenModel(M, I) => I
   CompositeModelExpr(h, uwd, components) => map(ASKEMUWDs.varname, context(uwd))
@@ -32,6 +49,10 @@ open_decapode(d, interface) = Open(SummationDecapode(d.model), interface)
 open_decapode(d::ASKEMDecaExpr, interface) = Open(SummationDecapode(d.model), interface)
 open_decapode(d::ASKEMDecapode, interface) = Open(d.model, interface)
 
+"""    Catlab.oapply(m::CompositeModel)
+
+CompositeModels can be flattened into a single level of model with the oapply function
+"""
 function Catlab.oapply(m::CompositeModel)
   let ! = oapply
     @match m begin
