@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Composing Models · SyntacticModels.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">SyntacticModels.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">SyntacticModels.jl</a></li><li><span class="tocitem">Examples</span><ul><li class="is-active"><a class="tocitem" href>Composing Models</a></li></ul></li><li><a class="tocitem" href="../../api/">Library Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Composing Models</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Composing Models</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/AlgebraicJulia/SyntacticModels.jl/blob/main/docs/literate/literate_example.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Composing-Models"><a class="docs-heading-anchor" href="#Composing-Models">Composing Models</a><a id="Composing-Models-1"></a><a class="docs-heading-anchor-permalink" href="#Composing-Models" title="Permalink"></a></h1><p>This is an example of adding a code example compiled with Literate.jl in the docs.</p><p>First we want to load our package with <code>using</code></p><pre><code class="language-julia hljs">using SyntacticModels
+
+using SyntacticModels.AMR
+using SyntacticModels.ASKEMDecapodes
+using SyntacticModels.ASKEMUWDs
+using SyntacticModels.Composites
+
+using MLStyle
+import SyntacticModels.ASKEMDecapodes.Decapodes as Decapodes
+using Catlab
+using Catlab.RelationalPrograms
+using Catlab.WiringDiagrams
+using Test
+using JSON3
+
+
+
+x = Typed(:X, :Form0)
+v = Typed(:V, :Form0)
+Q = Typed(:Q, :Form0)
+
+c = [x, Q]
+s = [Statement(:oscillator, [x,v]),
+  Statement(:heating, [v,Q])]
+u = ASKEMUWDs.UWDExpr(c, s)
+
+
+
+h = AMR.Header(&quot;harmonic_oscillator&quot;,
+  &quot;modelreps.io/DecaExpr&quot;,
+  &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
+  &quot;DecaExpr&quot;,
+  &quot;v1.0&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;)</code></pre><p>The easiest way to write down a DecaExpr is in our DSL and calling the parser.</p><pre><code class="language-julia hljs">dexpr = Decapodes.parse_decapode(quote
+  X::Form0{Point}
+  V::Form0{Point}
+
+  k::Constant{Point}
+
+  ∂ₜ(X) == V
+  ∂ₜ(V) == -1*k*(X)
+end
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:k), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:X)), Decapodes.Var(:V)), Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:V)), Decapodes.Mult(Decapodes.Term[Decapodes.Lit(Symbol(&quot;-1&quot;)), Decapodes.Var(:k), Decapodes.Var(:X)]))])</code></pre><p>That gave us the first model</p><pre><code class="language-julia hljs">d1 = ASKEMDecaExpr(h, dexpr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:k), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:X)), Decapodes.Var(:V)), Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:V)), Decapodes.Mult(Decapodes.Term[Decapodes.Lit(Symbol(&quot;-1&quot;)), Decapodes.Var(:k), Decapodes.Var(:X)]))]))</code></pre><p>The second model is:</p><pre><code class="language-julia hljs">d2 = ASKEMDecaExpr(
+  AMR.Header(&quot;fricative_heating&quot;,
+   &quot;modelreps.io/SummationDecapode&quot;,
+   &quot;Velocity makes it get hot, but you dissipate heat away from Q₀&quot;,
+   &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
+    Decapodes.parse_decapode(quote
+      V::Form0{Point}
+      Q::Form0{Point}
+      κ::Constant{Point}
+      λ::Constant{Point}
+      Q₀::Parameter{Point}
+
+      ∂ₜ(Q) == κ*V + λ(Q - Q₀)
+    end)
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;fricative_heating&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;Velocity makes it get hot, but you dissipate heat away from Q₀&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Q), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:κ), :Constant, :Point), Decapodes.Judgement(Decapodes.Var(:λ), :Constant, :Point), Decapodes.Judgement(Decapodes.Var(:Q₀), :Parameter, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:Q)), Decapodes.Plus(Decapodes.Term[Decapodes.App2(:*, Decapodes.Var(:κ), Decapodes.Var(:V)), Decapodes.App1(:λ, Decapodes.App2(:-, Decapodes.Var(:Q), Decapodes.Var(:Q₀)))]))]))</code></pre><p>Now we can assemble this bad boi:</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;composite_physics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A composite model&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.0&quot;)
+m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :V]), OpenModel(d2, [:V, :Q])])
+interface(m) == [:X, :Q]
+JSON3.write(m) # you can see from this little model (two coupled odes even) that the jsons will not be human editable.</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;{\&quot;components\&quot;:[{\&quot;interface\&quot;:[\&quot;X\&quot;,\&quot;V\&quot;],\&quot;_type\&quot;:\&quot;OpenModel\&quot;,\&quot;model\&quot;:{\&quot;header\&quot;:{\&quot;description\&quot;:\&quot;A Simple Harmonic Oscillator as a Diagrammatic Equation\&quot;,\&quot;name\&quot;:\&quot;harmonic_oscillator\&quot;,\&quot;_type\&quot;:\&quot;Header\&quot;,\&quot;model_version\&quot;:\&quot;v1.0\&quot;,\&quot;schema\&quot;:\&quot;modelreps.io/DecaExpr\&quot;,\&quot;schema_name\&quot;:\&quot;Deca&quot; ⋯ 2150 bytes ⋯ &quot;ar\&quot;:\&quot;Q\&quot;,\&quot;type\&quot;:\&quot;Form0\&quot;,\&quot;_type\&quot;:\&quot;Typed\&quot;}],\&quot;_type\&quot;:\&quot;UWDExpr\&quot;},\&quot;header\&quot;:{\&quot;description\&quot;:\&quot;A composite model\&quot;,\&quot;name\&quot;:\&quot;composite_physics\&quot;,\&quot;_type\&quot;:\&quot;Header\&quot;,\&quot;model_version\&quot;:\&quot;v0.0\&quot;,\&quot;schema\&quot;:\&quot;modelreps.io/Composite\&quot;,\&quot;schema_name\&quot;:\&quot;CompositeModelExpr\&quot;},\&quot;_type\&quot;:\&quot;CompositeModelExpr\&quot;}&quot;</code></pre><p>now we can interpret this big data structure to execute a composition!</p><pre><code class="language-julia hljs">composite = oapply(m)
+display(apex(composite))
+to_graphviz(apex(composite))</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="772pt" height="484pt"
+ viewBox="0.00 0.00 771.83 484.15" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 480.15)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-480.15 767.83,-480.15 767.83,4 -4,4"/>
+<!-- n1 -->
+<g id="node1" class="node">
+<title>n1</title>
+<ellipse fill="none" stroke="black" cx="296.24" cy="-424.54" rx="21.84" ry="10.71"/>
+<text text-anchor="middle" x="296.24" y="-420.84" font-family="Times,serif" font-size="14.00">X:Ω₀</text>
+</g>
+<!-- n2 -->
+<g id="node2" class="node">
+<title>n2</title>
+<ellipse fill="none" stroke="black" cx="307.24" cy="-346.12" rx="21.84" ry="10.71"/>
+<text text-anchor="middle" x="307.24" y="-342.42" font-family="Times,serif" font-size="14.00">V:Ω₀</text>
+</g>
+<!-- n1&%2345;&gt;n2 -->
+<g id="edge10" class="edge">
+<title>n1&%2345;&gt;n2</title>
+<path fill="none" stroke="black" d="M294.35,-413.68C292.8,-403.73 291.28,-387.97 294.24,-374.72 295.27,-370.12 297.16,-365.37 299.18,-361.14"/>
+<polygon fill="black" stroke="black" points="300.86,-361.7 301.58,-356.45 297.74,-360.11 300.86,-361.7"/>
+<text text-anchor="middle" x="300.24" y="-381.63" font-family="Times,serif" font-size="14.00">∂ₜ</text>
+</g>
+<!-- n18 -->
+<g id="node18" class="node">
+<title>n18</title>
+<polygon fill="none" stroke="black" points="243.74,-209.19 194.74,-209.19 194.74,-194.19 243.74,-194.19 243.74,-209.19"/>
+<text text-anchor="middle" x="219.24" y="-197.99" font-family="Times,serif" font-size="14.00">Ω•×Ω₀</text>
+</g>
+<!-- n1&%2345;&gt;n18 -->
+<g id="edge18" class="edge">
+<title>n1&%2345;&gt;n18</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M290.56,-414.25C279.78,-396.24 256.29,-355.02 243.24,-317.51 230.52,-280.96 223.46,-235.41 220.66,-214.36"/>
+<polygon fill="black" stroke="black" points="222.39,-214.06 220.02,-209.32 218.92,-214.51 222.39,-214.06"/>
+<text text-anchor="middle" x="250.74" y="-306.31" font-family="Times,serif" font-size="14.00">π₂</text>
+</g>
+<!-- n5 -->
+<g id="node5" class="node">
+<title>n5</title>
+<ellipse fill="none" stroke="black" cx="376.24" cy="-126.65" rx="75.82" ry="10.71"/>
+<text text-anchor="middle" x="376.24" y="-122.95" font-family="Times,serif" font-size="14.00">oscillator_V̇:Ω•</text>
+</g>
+<!-- n2&%2345;&gt;n5 -->
+<g id="edge11" class="edge">
+<title>n2&%2345;&gt;n5</title>
+<path fill="none" stroke="black" d="M307,-335.31C306.75,-310.27 308.2,-242.31 329.24,-191.08 337.1,-171.95 352.03,-153.32 362.96,-141.26"/>
+<polygon fill="black" stroke="black" points="364.39,-142.29 366.5,-137.43 361.82,-139.92 364.39,-142.29"/>
+<text text-anchor="middle" x="323.24" y="-234.1" font-family="Times,serif" font-size="14.00">∂ₜ</text>
+</g>
+<!-- n16 -->
+<g id="node16" class="node">
+<title>n16</title>
+</g>
+<!-- n2&%2345;&gt;n16 -->
+<g id="edge7" class="edge">
+<title>n2&%2345;&gt;n16</title>
+<path fill="none" stroke="black" d="M299.12,-335.85C288.78,-323.07 272.24,-298.87 272.24,-274.9 272.24,-274.9 272.24,-274.9 272.24,-50.61 272.24,-7.95 345.46,-3.36 369.03,-2.99"/>
+<polygon fill="black" stroke="black" points="369.07,-4.74 374.07,-2.96 369.06,-1.24 369.07,-4.74"/>
+</g>
+<!-- n19 -->
+<g id="node19" class="node">
+<title>n19</title>
+<polygon fill="none" stroke="black" points="407.74,-281.4 356.74,-281.4 356.74,-266.4 407.74,-266.4 407.74,-281.4"/>
+<text text-anchor="middle" x="382.24" y="-270.2" font-family="Times,serif" font-size="14.00">ΩC×Ω₀</text>
+</g>
+<!-- n2&%2345;&gt;n19 -->
+<g id="edge21" class="edge">
+<title>n2&%2345;&gt;n19</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M316.74,-336.22C330.72,-323.14 356.76,-298.76 371.44,-285.01"/>
+<polygon fill="black" stroke="black" points="372.81,-286.13 375.26,-281.43 370.42,-283.57 372.81,-286.13"/>
+<text text-anchor="middle" x="359.74" y="-306.31" font-family="Times,serif" font-size="14.00">π₂</text>
+</g>
+<!-- n3 -->
+<g id="node3" class="node">
+<title>n3</title>
+<ellipse fill="none" stroke="black" cx="88.24" cy="-424.54" rx="76.24" ry="10.71"/>
+<text text-anchor="middle" x="88.24" y="-420.84" font-family="Times,serif" font-size="14.00">oscillator_k:ΩC</text>
+</g>
+<!-- n17 -->
+<g id="node17" class="node">
+<title>n17</title>
+<polygon fill="none" stroke="black" points="130.74,-353.62 75.74,-353.62 75.74,-338.62 130.74,-338.62 130.74,-353.62"/>
+<text text-anchor="middle" x="103.24" y="-342.42" font-family="Times,serif" font-size="14.00">ΩL×ΩC</text>
+</g>
+<!-- n3&%2345;&gt;n17 -->
+<g id="edge15" class="edge">
+<title>n3&%2345;&gt;n17</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M90.14,-413.86C92.89,-399.84 97.98,-373.91 100.94,-358.83"/>
+<polygon fill="black" stroke="black" points="102.68,-359.05 101.93,-353.8 99.25,-358.37 102.68,-359.05"/>
+<text text-anchor="middle" x="105.74" y="-381.63" font-family="Times,serif" font-size="14.00">π₂</text>
+</g>
+<!-- n4 -->
+<g id="node4" class="node">
+<title>n4</title>
+<ellipse fill="none" stroke="black" cx="103.24" cy="-273.9" rx="103.48" ry="10.71"/>
+<text text-anchor="middle" x="103.24" y="-270.2" font-family="Times,serif" font-size="14.00">oscillator_mult_1:Ω•</text>
+</g>
+<!-- n4&%2345;&gt;n18 -->
+<g id="edge17" class="edge">
+<title>n4&%2345;&gt;n18</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M119.37,-263.14C141.8,-249.56 182.13,-225.15 204.05,-211.88"/>
+<polygon fill="black" stroke="black" points="205.06,-213.31 208.44,-209.23 203.25,-210.32 205.06,-213.31"/>
+<text text-anchor="middle" x="179.74" y="-234.1" font-family="Times,serif" font-size="14.00">π₁</text>
+</g>
+<!-- n5&%2345;&gt;n16 -->
+<g id="edge8" class="edge">
+<title>n5&%2345;&gt;n16</title>
+<path fill="none" stroke="black" d="M376.24,-116.02C376.24,-91.87 376.24,-29.21 376.24,-9.22"/>
+<polygon fill="black" stroke="black" points="377.99,-9.2 376.24,-4.2 374.49,-9.2 377.99,-9.2"/>
+</g>
+<!-- n6 -->
+<g id="node6" class="node">
+<title>n6</title>
+<ellipse fill="none" stroke="black" cx="210.24" cy="-424.54" rx="27.65" ry="10.71"/>
+<text text-anchor="middle" x="210.24" y="-420.84" font-family="Times,serif" font-size="14.00">&%2345;1:ΩL</text>
+</g>
+<!-- n6&%2345;&gt;n17 -->
+<g id="edge14" class="edge">
+<title>n6&%2345;&gt;n17</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M197.96,-414.78C177.77,-400.35 137.7,-371.73 116.74,-356.76"/>
+<polygon fill="black" stroke="black" points="117.65,-355.26 112.57,-353.78 115.62,-358.11 117.65,-355.26"/>
+<text text-anchor="middle" x="177.74" y="-381.63" font-family="Times,serif" font-size="14.00">π₁</text>
+</g>
+<!-- n7 -->
+<g id="node7" class="node">
+<title>n7</title>
+<ellipse fill="none" stroke="black" cx="585.24" cy="-424.54" rx="23.17" ry="10.71"/>
+<text text-anchor="middle" x="585.24" y="-420.84" font-family="Times,serif" font-size="14.00">Q:Ω₀</text>
+</g>
+<!-- n11 -->
+<g id="node11" class="node">
+<title>n11</title>
+<ellipse fill="none" stroke="black" cx="506.24" cy="-51.61" rx="68.68" ry="10.71"/>
+<text text-anchor="middle" x="506.24" y="-47.91" font-family="Times,serif" font-size="14.00">heating_Q̇:Ω•</text>
+</g>
+<!-- n7&%2345;&gt;n11 -->
+<g id="edge12" class="edge">
+<title>n7&%2345;&gt;n11</title>
+<path fill="none" stroke="black" d="M603.22,-417.65C629.74,-407.7 676.24,-384.87 676.24,-347.12 676.24,-347.12 676.24,-347.12 676.24,-125.65 676.24,-79.62 622.99,-62.24 576.09,-55.85"/>
+<polygon fill="black" stroke="black" points="576.17,-54.1 570.99,-55.19 575.73,-57.57 576.17,-54.1"/>
+<text text-anchor="middle" x="682.24" y="-234.1" font-family="Times,serif" font-size="14.00">∂ₜ</text>
+</g>
+<!-- n20 -->
+<g id="node20" class="node">
+<title>n20</title>
+<polygon fill="none" stroke="black" points="600.24,-353.62 550.24,-353.62 550.24,-338.62 600.24,-338.62 600.24,-353.62"/>
+<text text-anchor="middle" x="575.24" y="-342.42" font-family="Times,serif" font-size="14.00">Ω₀×ΩP</text>
+</g>
+<!-- n7&%2345;&gt;n20 -->
+<g id="edge23" class="edge">
+<title>n7&%2345;&gt;n20</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M583.97,-413.86C582.14,-399.84 578.74,-373.91 576.77,-358.83"/>
+<polygon fill="black" stroke="black" points="578.5,-358.53 576.11,-353.8 575.03,-358.99 578.5,-358.53"/>
+<text text-anchor="middle" x="588.74" y="-381.63" font-family="Times,serif" font-size="14.00">π₁</text>
+</g>
+<!-- n8 -->
+<g id="node8" class="node">
+<title>n8</title>
+<ellipse fill="none" stroke="black" cx="382.24" cy="-385.33" rx="68.68" ry="10.71"/>
+<text text-anchor="middle" x="382.24" y="-381.63" font-family="Times,serif" font-size="14.00">heating_κ:ΩC</text>
+</g>
+<!-- n8&%2345;&gt;n19 -->
+<g id="edge20" class="edge">
+<title>n8&%2345;&gt;n19</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M382.24,-374.62C382.24,-354.55 382.24,-308.56 382.24,-286.77"/>
+<polygon fill="black" stroke="black" points="383.99,-286.54 382.24,-281.54 380.49,-286.54 383.99,-286.54"/>
+<text text-anchor="middle" x="389.74" y="-342.42" font-family="Times,serif" font-size="14.00">π₁</text>
+</g>
+<!-- n9 -->
+<g id="node9" class="node">
+<title>n9</title>
+<ellipse fill="none" stroke="black" cx="695.24" cy="-424.54" rx="68.68" ry="10.71"/>
+<text text-anchor="middle" x="695.24" y="-420.84" font-family="Times,serif" font-size="14.00">heating_λ:ΩC</text>
+</g>
+<!-- n10 -->
+<g id="node10" class="node">
+<title>n10</title>
+<ellipse fill="none" stroke="black" cx="471.24" cy="-424.54" rx="72.66" ry="10.71"/>
+<text text-anchor="middle" x="471.24" y="-420.84" font-family="Times,serif" font-size="14.00">heating_Q₀:ΩP</text>
+</g>
+<!-- n10&%2345;&gt;n20 -->
+<g id="edge24" class="edge">
+<title>n10&%2345;&gt;n20</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M484.41,-413.86C504.33,-399.23 541.91,-371.61 561.92,-356.91"/>
+<polygon fill="black" stroke="black" points="563.15,-358.17 566.14,-353.8 561.07,-355.35 563.15,-358.17"/>
+<text text-anchor="middle" x="543.74" y="-381.63" font-family="Times,serif" font-size="14.00">π₂</text>
+</g>
+<!-- n11&%2345;&gt;n16 -->
+<g id="edge9" class="edge">
+<title>n11&%2345;&gt;n16</title>
+<path fill="none" stroke="black" d="M481.79,-41.65C451.65,-30.62 402.16,-12.49 383.59,-5.69"/>
+<polygon fill="black" stroke="black" points="383.84,-3.92 378.55,-3.85 382.64,-7.21 383.84,-3.92"/>
+</g>
+<!-- n12 -->
+<g id="node12" class="node">
+<title>n12</title>
+<ellipse fill="none" stroke="black" cx="411.24" cy="-201.69" rx="72.66" ry="10.71"/>
+<text text-anchor="middle" x="411.24" y="-197.99" font-family="Times,serif" font-size="14.00">heating_•2:Ω•</text>
+</g>
+<!-- n21 -->
+<g id="node21" class="node">
+<title>n21</title>
+<ellipse fill="none" stroke="black" cx="506.24" cy="-126.65" rx="13.37" ry="13.37"/>
+<text text-anchor="middle" x="506.24" y="-122.95" font-family="Times,serif" font-size="14.00">Σ1</text>
+</g>
+<!-- n12&%2345;&gt;n21 -->
+<g id="edge27" class="edge">
+<title>n12&%2345;&gt;n21</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M423.66,-191.14C441.24,-177.62 473.31,-152.97 491.88,-138.68"/>
+<polygon fill="black" stroke="black" points="492.96,-140.07 495.86,-135.63 490.83,-137.29 492.96,-140.07"/>
+</g>
+<!-- n13 -->
+<g id="node13" class="node">
+<title>n13</title>
+<ellipse fill="none" stroke="black" cx="575.24" cy="-201.69" rx="72.66" ry="10.71"/>
+<text text-anchor="middle" x="575.24" y="-197.99" font-family="Times,serif" font-size="14.00">heating_•3:Ω•</text>
+</g>
+<!-- n13&%2345;&gt;n21 -->
+<g id="edge28" class="edge">
+<title>n13&%2345;&gt;n21</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M566.22,-191.14C554.06,-178.27 532.38,-155.32 518.68,-140.82"/>
+<polygon fill="black" stroke="black" points="519.75,-139.4 515.04,-136.97 517.2,-141.8 519.75,-139.4"/>
+</g>
+<!-- n14 -->
+<g id="node14" class="node">
+<title>n14</title>
+<ellipse fill="none" stroke="black" cx="575.24" cy="-273.9" rx="72.66" ry="10.71"/>
+<text text-anchor="middle" x="575.24" y="-270.2" font-family="Times,serif" font-size="14.00">heating_•4:Ω•</text>
+</g>
+<!-- n14&%2345;&gt;n13 -->
+<g id="edge13" class="edge">
+<title>n14&%2345;&gt;n13</title>
+<path fill="none" stroke="black" d="M575.24,-263.14C575.24,-251.3 575.24,-231.22 575.24,-217.47"/>
+<polygon fill="black" stroke="black" points="576.99,-217.37 575.24,-212.37 573.49,-217.37 576.99,-217.37"/>
+<text text-anchor="middle" x="580.24" y="-234.1" font-family="Times,serif" font-size="14.00">λ</text>
+</g>
+<!-- n15 -->
+<g id="node15" class="node">
+<title>n15</title>
+</g>
+<!-- n15&%2345;&gt;n1 -->
+<g id="edge1" class="edge">
+<title>n15&%2345;&gt;n1</title>
+<path fill="none" stroke="black" d="M418.21,-472.67C410.2,-470.75 380.04,-463.29 356.24,-454.15 342.1,-448.72 326.69,-441.34 315.02,-435.43"/>
+<polygon fill="black" stroke="black" points="315.52,-433.72 310.27,-433 313.92,-436.84 315.52,-433.72"/>
+</g>
+<!-- n15&%2345;&gt;n3 -->
+<g id="edge2" class="edge">
+<title>n15&%2345;&gt;n3</title>
+<path fill="none" stroke="black" d="M418.12,-472.85C397.49,-469.89 231.36,-446.07 143.02,-433.4"/>
+<polygon fill="black" stroke="black" points="143.04,-431.63 137.84,-432.66 142.54,-435.1 143.04,-431.63"/>
+</g>
+<!-- n15&%2345;&gt;n7 -->
+<g id="edge3" class="edge">
+<title>n15&%2345;&gt;n7</title>
+<path fill="none" stroke="black" d="M422.43,-472.53C435.11,-468.98 500.23,-450.68 553.24,-435.15 555.95,-434.35 558.79,-433.51 561.61,-432.67"/>
+<polygon fill="black" stroke="black" points="562.35,-434.28 566.64,-431.17 561.35,-430.93 562.35,-434.28"/>
+</g>
+<!-- n15&%2345;&gt;n8 -->
+<g id="edge4" class="edge">
+<title>n15&%2345;&gt;n8</title>
+<path fill="none" stroke="black" d="M419.02,-472.12C414.25,-468.04 396.76,-452.3 389.24,-435.15 384.54,-424.43 382.86,-411.24 382.32,-401.27"/>
+<polygon fill="black" stroke="black" points="384.06,-401.03 382.12,-396.1 380.56,-401.17 384.06,-401.03"/>
+</g>
+<!-- n15&%2345;&gt;n9 -->
+<g id="edge5" class="edge">
+<title>n15&%2345;&gt;n9</title>
+<path fill="none" stroke="black" d="M422.29,-472.79C440.44,-469.65 574.3,-446.48 647.58,-433.79"/>
+<polygon fill="black" stroke="black" points="648.13,-435.47 652.75,-432.9 647.53,-432.03 648.13,-435.47"/>
+</g>
+<!-- n15&%2345;&gt;n10 -->
+<g id="edge6" class="edge">
+<title>n15&%2345;&gt;n10</title>
+<path fill="none" stroke="black" d="M421.5,-471.97C426.34,-467.46 444.09,-450.89 457.01,-438.83"/>
+<polygon fill="black" stroke="black" points="458.38,-439.94 460.84,-435.25 455.99,-437.38 458.38,-439.94"/>
+</g>
+<!-- n17&%2345;&gt;n4 -->
+<g id="edge16" class="edge">
+<title>n17&%2345;&gt;n4</title>
+<path fill="none" stroke="black" d="M103.24,-338.38C103.24,-327.26 103.24,-304.77 103.24,-289.77"/>
+<polygon fill="black" stroke="black" points="104.99,-289.62 103.24,-284.62 101.49,-289.62 104.99,-289.62"/>
+<text text-anchor="middle" x="106.74" y="-306.31" font-family="Times,serif" font-size="14.00">*</text>
+</g>
+<!-- n18&%2345;&gt;n5 -->
+<g id="edge19" class="edge">
+<title>n18&%2345;&gt;n5</title>
+<path fill="none" stroke="black" d="M228.84,-193.94C242,-184.91 266.6,-168.79 289.24,-158.08 305.89,-150.21 325.15,-143.27 341.31,-138"/>
+<polygon fill="black" stroke="black" points="342,-139.62 346.22,-136.43 340.93,-136.29 342,-139.62"/>
+<text text-anchor="middle" x="292.74" y="-161.88" font-family="Times,serif" font-size="14.00">*</text>
+</g>
+<!-- n19&%2345;&gt;n12 -->
+<g id="edge22" class="edge">
+<title>n19&%2345;&gt;n12</title>
+<path fill="none" stroke="black" d="M385.02,-266.17C389.65,-254.95 399.07,-232.16 405.26,-217.16"/>
+<polygon fill="black" stroke="black" points="406.93,-217.69 407.23,-212.4 403.7,-216.36 406.93,-217.69"/>
+<text text-anchor="middle" x="403.74" y="-234.1" font-family="Times,serif" font-size="14.00">*</text>
+</g>
+<!-- n20&%2345;&gt;n14 -->
+<g id="edge25" class="edge">
+<title>n20&%2345;&gt;n14</title>
+<path fill="none" stroke="black" d="M575.24,-338.38C575.24,-327.26 575.24,-304.77 575.24,-289.77"/>
+<polygon fill="black" stroke="black" points="576.99,-289.62 575.24,-284.62 573.49,-289.62 576.99,-289.62"/>
+<text text-anchor="middle" x="577.74" y="-306.31" font-family="Times,serif" font-size="14.00">&%2345;</text>
+</g>
+<!-- n21&%2345;&gt;n11 -->
+<g id="edge26" class="edge">
+<title>n21&%2345;&gt;n11</title>
+<path fill="none" stroke="black" d="M506.24,-112.93C506.24,-100.34 506.24,-81.07 506.24,-67.71"/>
+<polygon fill="black" stroke="black" points="507.99,-67.38 506.24,-62.38 504.49,-67.38 507.99,-67.38"/>
+<text text-anchor="middle" x="512.74" y="-84.01" font-family="Times,serif" font-size="14.00">+</text>
+</g>
+</g>
+</svg>
+'/><p>TESTING NESTED COMPOSITION</p><pre><code class="language-julia hljs">Q₊ = Untyped(:Q₊)
+Q₋ = Untyped(:Q₋)
+Q̇ = Untyped(:Q̇)
+
+uwdʰ = UWDExpr([v, Q], [Statement(:drag, [v, Q₊]), Statement(:cooling, [Q₋, Q]), Statement(:superposition, [Q₊, Q₋, Q̇])])
+
+drag = ASKEMDecaExpr(
+  AMR.Header(&quot;DragHeat&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;velocity makes it get hot&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
+  Decapodes.parse_decapode(quote
+    V::Form0{Point}
+    Q₊::Form0{Point}
+    κ::Constant{Point}
+
+    Q₊ == κ*V
+  end)
+)
+
+cooling = ASKEMDecaExpr(
+  AMR.Header(&quot;NetwonCooling&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;heat dissipates to the enviornment&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
+  Decapodes.parse_decapode(quote
+    Q₋::Form0{Point}
+    Q₀::Parameter{Point}
+    Q::Form0{Point}
+    λ::Constant{Point}
+
+    Q₋ == λ(Q-Q₀)
+  end)
+)
+
+superposition = ASKEMDecaExpr(
+  AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
+  Decapodes.parse_decapode(quote
+    X::Form0{Point}
+    Y::Form0{Point}
+    T::Form0{Point}
+
+    T == X + Y
+  end)
+)
+
+h = AMR.Header(&quot;hierarchical_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A hierarchical composite model of frictional heating&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;)
+m = CompositeModelExpr(h,u, [OpenModel(d1, [:X, :V]),
+      CompositeModelExpr(AMR.Header(&quot;heating_dynamics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A formula for heating - cooling&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;),
+        uwdʰ, [OpenModel(drag, [:V, :Q₊]), OpenModel(cooling, [:Q₋, :Q]), OpenModel(superposition, [:X, :Y, :T])])
+])
+
+dh = apex(oapply(m))
+
+composite = OpenDecapode(m)
+hf = composite.model.header
+ASKEMDecapode(Header(&quot;flattened_composite&quot;, hf.schema, &quot;A flattened version of the composite_physics model.&quot;, hf.schema_name, hf.model_version), composite.model.model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecapode(SyntacticModels.AMR.Header(&quot;flattened_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A flattened version of the composite_physics model.&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), Decapodes.SummationDecapode{Any, Any, Symbol}:
+  Var = 1:14
+  TVar = 1:2
+  Op1 = 1:3
+  Op2 = 1:4
+  Σ = 1:1
+  Summand = 1:2
+  Type = 1:0
+  Operator = 1:0
+  Name = 1:0
+  src : Op1 → Var = [1, 2, 13]
+  tgt : Op1 → Var = [2, 5, 9]
+  proj1 : Op2 → Var = [6, 4, 8, 11]
+  proj2 : Op2 → Var = [3, 1, 2, 10]
+  res : Op2 → Var = [4, 5, 7, 13]
+  incl : TVar → Var = [2, 5]
+  summand : Summand → Var = [7, 9]
+  summation : Summand → Σ = [1, 1]
+  sum : Σ → Var = [14]
+  op1 : Op1 → Operator = [:∂ₜ, :∂ₜ, :λ]
+  op2 : Op2 → Operator = [:*, :*, :*, :-]
+  type : Var → Type = [:Form0, :Form0, :Constant, :infer, :infer, :Literal, :Form0, :Constant, :Form0, :Parameter, :Form0, :Constant, :infer, :Form0]
+  name : Var → Name = [:X, :V, :oscillator_k, :oscillator_mult_1, :oscillator_V̇, Symbol(&quot;-1&quot;), :heating_Q₊, :heating_drag_κ, :heating_Q₋, :heating_cooling_Q₀, :Q, :heating_cooling_λ, Symbol(&quot;heating_cooling_•1&quot;), :heating_Q̇])</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« SyntacticModels.jl</a><a class="docs-footer-nextpage" href="../../api/">Library Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Friday 18 August 2023 20:59">Friday 18 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
