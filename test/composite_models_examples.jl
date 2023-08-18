@@ -64,7 +64,7 @@ d2 = ASKEMDecaExpr(
 
 # Now we can assemble this bad boi:
 h = AMR.Header("composite_physics", "modelreps.io/Composite", "A composite model", "CompositeModelExpr", "v0.0")
-m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :Ẋ]), OpenModel(d2, [:V, :Q])])
+m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :V]), OpenModel(d2, [:V, :Q])])
 interface(m) == [:X, :Q]
 write_json_model(m) # you can see from this little model (two coupled odes even) that the jsons will not be human editable. 
 
@@ -118,7 +118,7 @@ superposition = ASKEMDecaExpr(
 )
 
 h = AMR.Header("hierarchical_composite", "modelreps.io/Composite", "A hierarchical composite model of frictional heating", "CompositeModelExpr", "v0.1")
-m = CompositeModelExpr(h,u, [OpenModel(d1, [:X, :Ẋ]),
+m = CompositeModelExpr(h,u, [OpenModel(d1, [:X, :V]),
       CompositeModelExpr(AMR.Header("heating_dynamics", "modelreps.io/Composite", "A formula for heating - cooling", "CompositeModelExpr", "v0.1"),
         uwdʰ, [OpenModel(drag, [:V, :Q₊]), OpenModel(cooling, [:Q₋, :Q]), OpenModel(superposition, [:X, :Y, :T])])
 ])
