@@ -51,7 +51,12 @@ open_decapode(d::ASKEMDecapode, interface) = Open(d.model, interface)
 
 """    Catlab.oapply(m::CompositeModel)
 
-CompositeModels can be flattened into a single level of model with the oapply function
+CompositeModels can be flattened into a single level of model with the oapply function.
+
+!!! warning 
+    Because the oapply algorithm operates on the compute graph representation of the equations, it does not produce syntactic equations. 
+    Calls to oapply produce instances of OpenDecapode and not DecaExpr. 
+    Software that expects to consume decapodes should plan to interact with both forms.
 """
 function Catlab.oapply(m::CompositeModel)
   let ! = oapply
