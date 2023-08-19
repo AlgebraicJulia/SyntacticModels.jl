@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Composing Models · SyntacticModels.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">SyntacticModels.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">SyntacticModels.jl</a></li><li><span class="tocitem">Examples</span><ul><li class="is-active"><a class="tocitem" href>Composing Models</a></li></ul></li><li><a class="tocitem" href="../../api/">Library Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Composing Models</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Composing Models</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/AlgebraicJulia/SyntacticModels.jl/blob/main/docs/literate/literate_example.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Composing-Models"><a class="docs-heading-anchor" href="#Composing-Models">Composing Models</a><a id="Composing-Models-1"></a><a class="docs-heading-anchor-permalink" href="#Composing-Models" title="Permalink"></a></h1><p>This is an example of adding a code example compiled with Literate.jl in the docs.</p><p>First we want to load our package with <code>using</code></p><pre><code class="language-julia hljs">using SyntacticModels
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Composing Models · SyntacticModels.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">SyntacticModels.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">SyntacticModels.jl</a></li><li><span class="tocitem">Examples</span><ul><li class="is-active"><a class="tocitem" href>Composing Models</a><ul class="internal"><li><a class="tocitem" href="#Specifying-the-Composition-Pattern"><span>Specifying the Composition Pattern</span></a></li><li><a class="tocitem" href="#Specifying-the-Component-Systems"><span>Specifying the Component Systems</span></a></li><li><a class="tocitem" href="#Nested-Composition"><span>Nested Composition</span></a></li></ul></li></ul></li><li><a class="tocitem" href="../../api/">Library Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Composing Models</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Composing Models</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/AlgebraicJulia/SyntacticModels.jl/blob/main/docs/literate/literate_example.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Composing-Models"><a class="docs-heading-anchor" href="#Composing-Models">Composing Models</a><a id="Composing-Models-1"></a><a class="docs-heading-anchor-permalink" href="#Composing-Models" title="Permalink"></a></h1><p>This is an example of adding a code example compiled with Literate.jl in the docs.</p><p>First we want to load our package with <code>using</code></p><pre><code class="language-julia hljs">using SyntacticModels
 
 using SyntacticModels.AMR
 using SyntacticModels.ASKEMDecapodes
@@ -14,20 +14,198 @@ using Catlab.WiringDiagrams
 using Test
 using JSON3
 
-
-
-x = Typed(:X, :Form0)
+draw(uwd) = to_graphviz(uwd, box_labels=:name, junction_labels=:variable)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">draw (generic function with 1 method)</code></pre><h2 id="Specifying-the-Composition-Pattern"><a class="docs-heading-anchor" href="#Specifying-the-Composition-Pattern">Specifying the Composition Pattern</a><a id="Specifying-the-Composition-Pattern-1"></a><a class="docs-heading-anchor-permalink" href="#Specifying-the-Composition-Pattern" title="Permalink"></a></h2><p>We can build an Undirected Wiring Diagram to represent the pattern of composition. In this model we have 3 variables X,V,Q, which are all the same type.</p><pre><code class="language-julia hljs">x = Typed(:X, :Form0)
 v = Typed(:V, :Form0)
 Q = Typed(:Q, :Form0)
-
-c = [x, Q]
+variables = [x,v,Q]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">3-element Vector{SyntacticModels.ASKEMUWDs.Typed}:
+ SyntacticModels.ASKEMUWDs.Typed(:X, :Form0)
+ SyntacticModels.ASKEMUWDs.Typed(:V, :Form0)
+ SyntacticModels.ASKEMUWDs.Typed(:Q, :Form0)</code></pre><p>Our system will expose two variables namely x and Q to the outside world. These variables could be used as a basis for further composition, or measured by an observer. The system also hase two subsystems an oscillator that couples <code>X</code> and <code>V</code> and a heating element that couples <code>V</code> and <code>Q</code>.</p><pre><code class="language-julia hljs">c = [x, Q]
 s = [Statement(:oscillator, [x,v]),
   Statement(:heating, [v,Q])]
-u = ASKEMUWDs.UWDExpr(c, s)
-
-
-
-h = AMR.Header(&quot;harmonic_oscillator&quot;,
+u = ASKEMUWDs.UWDExpr(c, s)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMUWDs.UWDExpr(SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:X, :Form0), SyntacticModels.ASKEMUWDs.Typed(:Q, :Form0)], SyntacticModels.ASKEMUWDs.Statement[SyntacticModels.ASKEMUWDs.Statement(:oscillator, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:X, :Form0), SyntacticModels.ASKEMUWDs.Typed(:V, :Form0)]), SyntacticModels.ASKEMUWDs.Statement(:heating, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:V, :Form0), SyntacticModels.ASKEMUWDs.Typed(:Q, :Form0)])])</code></pre><p>This <code>UWDExpr</code> can be interpreted with Catlab as a set of tables.</p><pre><code class="language-julia hljs">u_tables = ASKEMUWDs.construct(RelationDiagram, u)</code></pre><div class="c-set">
+<span class="c-set-summary">Catlab.Programs.RelationalPrograms.TypedUnnamedRelationDiagram{Symbol, Symbol, Symbol} {Box:2, Port:4, OuterPort:2, Junction:3, Type:0, Name:0, VarName:0}</span>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Box</th>
+      <th style = "text-align: right;">name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">oscillator</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">heating</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Port</th>
+      <th style = "text-align: right;">box</th>
+      <th style = "text-align: right;">junction</th>
+      <th style = "text-align: right;">port_type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">Form0</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">Form0</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">Form0</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">4</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">Form0</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">OuterPort</th>
+      <th style = "text-align: right;">outer_junction</th>
+      <th style = "text-align: right;">outer_port_type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">X</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">Q</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Junction</th>
+      <th style = "text-align: right;">junction_type</th>
+      <th style = "text-align: right;">variable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">X</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">Q</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">V</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>And visualized with graphviz as a UWD drawing.</p><pre><code class="language-julia hljs">draw(u_tables)</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="99pt" height="224pt"
+ viewBox="0.00 0.00 99.11 223.70" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 219.7)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-219.7 95.11,-219.7 95.11,4 -4,4"/>
+<!-- n1 -->
+<g id="box1" class="node">
+<title>n1</title>
+<ellipse fill="none" stroke="black" cx="44.15" cy="-71.98" rx="44.3" ry="18"/>
+<text text-anchor="middle" x="44.15" y="-68.28" font-family="Serif" font-size="14.00">oscillator</text>
+</g>
+<!-- n5 -->
+<!-- junction -->
+<g id="junction1" class="node">
+<title>n5</title>
+<ellipse fill="black" stroke="black" cx="48.36" cy="-36.04" rx="2.5" ry="2.5"/>
+<text text-anchor="middle" x="40.86" y="-42.34" font-family="Serif" font-size="14.00">X</text>
+</g>
+<!-- n1&%2345;&%2345;n5 -->
+<g id="edge1" class="edge">
+<title>n1&%2345;&%2345;n5</title>
+<path fill="none" stroke="black" d="M46.3,-53.59C46.98,-47.79 47.66,-42.05 48.04,-38.78"/>
+</g>
+<!-- n7 -->
+<!-- junction -->
+<g id="junction3" class="node">
+<title>n7</title>
+<ellipse fill="black" stroke="black" cx="48.53" cy="-107.91" rx="2.5" ry="2.5"/>
+<text text-anchor="middle" x="41.03" y="-114.21" font-family="Serif" font-size="14.00">V</text>
+</g>
+<!-- n1&%2345;&%2345;n7 -->
+<g id="edge5" class="edge">
+<title>n1&%2345;&%2345;n7</title>
+<path fill="none" stroke="black" d="M46.39,-90.37C47.1,-96.17 47.8,-101.91 48.2,-105.17"/>
+</g>
+<!-- n2 -->
+<g id="box2" class="node">
+<title>n2</title>
+<ellipse fill="none" stroke="black" cx="54.02" cy="-143.68" rx="37.17" ry="18"/>
+<text text-anchor="middle" x="54.02" y="-139.98" font-family="Serif" font-size="14.00">heating</text>
+</g>
+<!-- n6 -->
+<!-- junction -->
+<g id="junction2" class="node">
+<title>n6</title>
+<ellipse fill="black" stroke="black" cx="51.96" cy="-179.79" rx="2.5" ry="2.5"/>
+<text text-anchor="middle" x="43.46" y="-186.09" font-family="Serif" font-size="14.00">Q</text>
+</g>
+<!-- n2&%2345;&%2345;n6 -->
+<g id="edge3" class="edge">
+<title>n2&%2345;&%2345;n6</title>
+<path fill="none" stroke="black" d="M52.99,-161.73C52.65,-167.66 52.31,-173.58 52.12,-176.95"/>
+</g>
+<!-- n2&%2345;&%2345;n7 -->
+<g id="edge6" class="edge">
+<title>n2&%2345;&%2345;n7</title>
+<path fill="none" stroke="black" d="M51.21,-125.37C50.32,-119.6 49.45,-113.88 48.95,-110.63"/>
+</g>
+<!-- n3 -->
+<!-- n3&%2345;&%2345;n5 -->
+<g id="edge2" class="edge">
+<title>n3&%2345;&%2345;n5</title>
+<path fill="none" stroke="black" d="M54.44,-1.38C53.66,-5.83 50.13,-25.93 48.84,-33.31"/>
+</g>
+<!-- n4 -->
+<!-- n4&%2345;&%2345;n6 -->
+<g id="edge4" class="edge">
+<title>n4&%2345;&%2345;n6</title>
+<path fill="none" stroke="black" d="M44.91,-214.33C45.81,-209.9 49.9,-189.86 51.4,-182.51"/>
+</g>
+</g>
+</svg>
+'/><h2 id="Specifying-the-Component-Systems"><a class="docs-heading-anchor" href="#Specifying-the-Component-Systems">Specifying the Component Systems</a><a id="Specifying-the-Component-Systems-1"></a><a class="docs-heading-anchor-permalink" href="#Specifying-the-Component-Systems" title="Permalink"></a></h2><p>A key component of using these serialized syntactic representations is that they need to be self-describing in files. This is where the Header blocks come in.</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;harmonic_oscillator&quot;,
   &quot;modelreps.io/DecaExpr&quot;,
   &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
   &quot;DecaExpr&quot;,
@@ -56,8 +234,274 @@ end
     end)
 )</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;fricative_heating&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;Velocity makes it get hot, but you dissipate heat away from Q₀&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Q), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:κ), :Constant, :Point), Decapodes.Judgement(Decapodes.Var(:λ), :Constant, :Point), Decapodes.Judgement(Decapodes.Var(:Q₀), :Parameter, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:Q)), Decapodes.Plus(Decapodes.Term[Decapodes.App2(:*, Decapodes.Var(:κ), Decapodes.Var(:V)), Decapodes.App1(:λ, Decapodes.App2(:-, Decapodes.Var(:Q), Decapodes.Var(:Q₀)))]))]))</code></pre><p>Now we can assemble this bad boi:</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;composite_physics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A composite model&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.0&quot;)
 m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :V]), OpenModel(d2, [:V, :Q])])
-interface(m) == [:X, :Q]
-JSON3.write(m) # you can see from this little model (two coupled odes even) that the jsons will not be human editable.</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;{\&quot;components\&quot;:[{\&quot;interface\&quot;:[\&quot;X\&quot;,\&quot;V\&quot;],\&quot;_type\&quot;:\&quot;OpenModel\&quot;,\&quot;model\&quot;:{\&quot;header\&quot;:{\&quot;description\&quot;:\&quot;A Simple Harmonic Oscillator as a Diagrammatic Equation\&quot;,\&quot;name\&quot;:\&quot;harmonic_oscillator\&quot;,\&quot;_type\&quot;:\&quot;Header\&quot;,\&quot;model_version\&quot;:\&quot;v1.0\&quot;,\&quot;schema\&quot;:\&quot;modelreps.io/DecaExpr\&quot;,\&quot;schema_name\&quot;:\&quot;Deca&quot; ⋯ 2150 bytes ⋯ &quot;ar\&quot;:\&quot;Q\&quot;,\&quot;type\&quot;:\&quot;Form0\&quot;,\&quot;_type\&quot;:\&quot;Typed\&quot;}],\&quot;_type\&quot;:\&quot;UWDExpr\&quot;},\&quot;header\&quot;:{\&quot;description\&quot;:\&quot;A composite model\&quot;,\&quot;name\&quot;:\&quot;composite_physics\&quot;,\&quot;_type\&quot;:\&quot;Header\&quot;,\&quot;model_version\&quot;:\&quot;v0.0\&quot;,\&quot;schema\&quot;:\&quot;modelreps.io/Composite\&quot;,\&quot;schema_name\&quot;:\&quot;CompositeModelExpr\&quot;},\&quot;_type\&quot;:\&quot;CompositeModelExpr\&quot;}&quot;</code></pre><p>now we can interpret this big data structure to execute a composition!</p><pre><code class="language-julia hljs">composite = oapply(m)
+@test interface(m) == [:X, :Q]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test Passed</code></pre><p>The <code>CompositeModelExpr</code> is a tree that stores the composition pattern and the models that are to be composed. You can see from this little model (just two coupled odes) that the json output will not be human writeable. This is why we need a library for Syntactic Model representations.</p><pre><code class="language-julia hljs">JSON3.pretty(m, JSON3.AlignmentContext(indent=2))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">{
+  &quot;components&quot;: [
+    {
+      &quot;interface&quot;: [
+        &quot;X&quot;,
+        &quot;V&quot;
+      ],
+      &quot;_type&quot;: &quot;OpenModel&quot;,
+      &quot;model&quot;: {
+        &quot;header&quot;: {
+          &quot;description&quot;: &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
+          &quot;name&quot;: &quot;harmonic_oscillator&quot;,
+          &quot;_type&quot;: &quot;Header&quot;,
+          &quot;model_version&quot;: &quot;v1.0&quot;,
+          &quot;schema&quot;: &quot;modelreps.io/DecaExpr&quot;,
+          &quot;schema_name&quot;: &quot;DecaExpr&quot;
+        },
+        &quot;_type&quot;: &quot;ASKEMDecaExpr&quot;,
+        &quot;model&quot;: {
+          &quot;context&quot;: [
+            {
+              &quot;dim&quot;: &quot;Form0&quot;,
+              &quot;var&quot;: {
+                &quot;name&quot;: &quot;X&quot;,
+                &quot;_type&quot;: &quot;Var&quot;
+              },
+              &quot;space&quot;: &quot;Point&quot;,
+              &quot;_type&quot;: &quot;Judgement&quot;
+            },
+            {
+              &quot;dim&quot;: &quot;Form0&quot;,
+              &quot;var&quot;: {
+                &quot;name&quot;: &quot;V&quot;,
+                &quot;_type&quot;: &quot;Var&quot;
+              },
+              &quot;space&quot;: &quot;Point&quot;,
+              &quot;_type&quot;: &quot;Judgement&quot;
+            },
+            {
+              &quot;dim&quot;: &quot;Constant&quot;,
+              &quot;var&quot;: {
+                &quot;name&quot;: &quot;k&quot;,
+                &quot;_type&quot;: &quot;Var&quot;
+              },
+              &quot;space&quot;: &quot;Point&quot;,
+              &quot;_type&quot;: &quot;Judgement&quot;
+            }
+          ],
+          &quot;_type&quot;: &quot;DecaExpr&quot;,
+          &quot;equations&quot;: [
+            {
+              &quot;rhs&quot;: {
+                &quot;name&quot;: &quot;V&quot;,
+                &quot;_type&quot;: &quot;Var&quot;
+              },
+              &quot;lhs&quot;: {
+                &quot;var&quot;: {
+                  &quot;name&quot;: &quot;X&quot;,
+                  &quot;_type&quot;: &quot;Var&quot;
+                },
+                &quot;_type&quot;: &quot;Tan&quot;
+              },
+              &quot;_type&quot;: &quot;Eq&quot;
+            },
+            {
+              &quot;rhs&quot;: {
+                &quot;args&quot;: [
+                  {
+                    &quot;name&quot;: &quot;-1&quot;,
+                    &quot;_type&quot;: &quot;Lit&quot;
+                  },
+                  {
+                    &quot;name&quot;: &quot;k&quot;,
+                    &quot;_type&quot;: &quot;Var&quot;
+                  },
+                  {
+                    &quot;name&quot;: &quot;X&quot;,
+                    &quot;_type&quot;: &quot;Var&quot;
+                  }
+                ],
+                &quot;_type&quot;: &quot;Mult&quot;
+              },
+              &quot;lhs&quot;: {
+                &quot;var&quot;: {
+                  &quot;name&quot;: &quot;V&quot;,
+                  &quot;_type&quot;: &quot;Var&quot;
+                },
+                &quot;_type&quot;: &quot;Tan&quot;
+              },
+              &quot;_type&quot;: &quot;Eq&quot;
+            }
+          ]
+        }
+      }
+    },
+    {
+      &quot;interface&quot;: [
+        &quot;V&quot;,
+        &quot;Q&quot;
+      ],
+      &quot;_type&quot;: &quot;OpenModel&quot;,
+      &quot;model&quot;: {
+        &quot;header&quot;: {
+          &quot;description&quot;: &quot;Velocity makes it get hot, but you dissipate heat away from Q₀&quot;,
+          &quot;name&quot;: &quot;fricative_heating&quot;,
+          &quot;_type&quot;: &quot;Header&quot;,
+          &quot;model_version&quot;: &quot;v1.0&quot;,
+          &quot;schema&quot;: &quot;modelreps.io/SummationDecapode&quot;,
+          &quot;schema_name&quot;: &quot;SummationDecapode&quot;
+        },
+        &quot;_type&quot;: &quot;ASKEMDecaExpr&quot;,
+        &quot;model&quot;: {
+          &quot;context&quot;: [
+            {
+              &quot;dim&quot;: &quot;Form0&quot;,
+              &quot;var&quot;: {
+                &quot;name&quot;: &quot;V&quot;,
+                &quot;_type&quot;: &quot;Var&quot;
+              },
+              &quot;space&quot;: &quot;Point&quot;,
+              &quot;_type&quot;: &quot;Judgement&quot;
+            },
+            {
+              &quot;dim&quot;: &quot;Form0&quot;,
+              &quot;var&quot;: {
+                &quot;name&quot;: &quot;Q&quot;,
+                &quot;_type&quot;: &quot;Var&quot;
+              },
+              &quot;space&quot;: &quot;Point&quot;,
+              &quot;_type&quot;: &quot;Judgement&quot;
+            },
+            {
+              &quot;dim&quot;: &quot;Constant&quot;,
+              &quot;var&quot;: {
+                &quot;name&quot;: &quot;κ&quot;,
+                &quot;_type&quot;: &quot;Var&quot;
+              },
+              &quot;space&quot;: &quot;Point&quot;,
+              &quot;_type&quot;: &quot;Judgement&quot;
+            },
+            {
+              &quot;dim&quot;: &quot;Constant&quot;,
+              &quot;var&quot;: {
+                &quot;name&quot;: &quot;λ&quot;,
+                &quot;_type&quot;: &quot;Var&quot;
+              },
+              &quot;space&quot;: &quot;Point&quot;,
+              &quot;_type&quot;: &quot;Judgement&quot;
+            },
+            {
+              &quot;dim&quot;: &quot;Parameter&quot;,
+              &quot;var&quot;: {
+                &quot;name&quot;: &quot;Q₀&quot;,
+                &quot;_type&quot;: &quot;Var&quot;
+              },
+              &quot;space&quot;: &quot;Point&quot;,
+              &quot;_type&quot;: &quot;Judgement&quot;
+            }
+          ],
+          &quot;_type&quot;: &quot;DecaExpr&quot;,
+          &quot;equations&quot;: [
+            {
+              &quot;rhs&quot;: {
+                &quot;args&quot;: [
+                  {
+                    &quot;f&quot;: &quot;*&quot;,
+                    &quot;arg1&quot;: {
+                      &quot;name&quot;: &quot;κ&quot;,
+                      &quot;_type&quot;: &quot;Var&quot;
+                    },
+                    &quot;_type&quot;: &quot;App2&quot;,
+                    &quot;arg2&quot;: {
+                      &quot;name&quot;: &quot;V&quot;,
+                      &quot;_type&quot;: &quot;Var&quot;
+                    }
+                  },
+                  {
+                    &quot;f&quot;: &quot;λ&quot;,
+                    &quot;arg&quot;: {
+                      &quot;f&quot;: &quot;-&quot;,
+                      &quot;arg1&quot;: {
+                        &quot;name&quot;: &quot;Q&quot;,
+                        &quot;_type&quot;: &quot;Var&quot;
+                      },
+                      &quot;_type&quot;: &quot;App2&quot;,
+                      &quot;arg2&quot;: {
+                        &quot;name&quot;: &quot;Q₀&quot;,
+                        &quot;_type&quot;: &quot;Var&quot;
+                      }
+                    },
+                    &quot;_type&quot;: &quot;App1&quot;
+                  }
+                ],
+                &quot;_type&quot;: &quot;Plus&quot;
+              },
+              &quot;lhs&quot;: {
+                &quot;var&quot;: {
+                  &quot;name&quot;: &quot;Q&quot;,
+                  &quot;_type&quot;: &quot;Var&quot;
+                },
+                &quot;_type&quot;: &quot;Tan&quot;
+              },
+              &quot;_type&quot;: &quot;Eq&quot;
+            }
+          ]
+        }
+      }
+    }
+  ],
+  &quot;composition_pattern&quot;: {
+    &quot;statements&quot;: [
+      {
+        &quot;variables&quot;: [
+          {
+            &quot;var&quot;: &quot;X&quot;,
+            &quot;type&quot;: &quot;Form0&quot;,
+            &quot;_type&quot;: &quot;Typed&quot;
+          },
+          {
+            &quot;var&quot;: &quot;V&quot;,
+            &quot;type&quot;: &quot;Form0&quot;,
+            &quot;_type&quot;: &quot;Typed&quot;
+          }
+        ],
+        &quot;_type&quot;: &quot;Statement&quot;,
+        &quot;relation&quot;: &quot;oscillator&quot;
+      },
+      {
+        &quot;variables&quot;: [
+          {
+            &quot;var&quot;: &quot;V&quot;,
+            &quot;type&quot;: &quot;Form0&quot;,
+            &quot;_type&quot;: &quot;Typed&quot;
+          },
+          {
+            &quot;var&quot;: &quot;Q&quot;,
+            &quot;type&quot;: &quot;Form0&quot;,
+            &quot;_type&quot;: &quot;Typed&quot;
+          }
+        ],
+        &quot;_type&quot;: &quot;Statement&quot;,
+        &quot;relation&quot;: &quot;heating&quot;
+      }
+    ],
+    &quot;context&quot;: [
+      {
+        &quot;var&quot;: &quot;X&quot;,
+        &quot;type&quot;: &quot;Form0&quot;,
+        &quot;_type&quot;: &quot;Typed&quot;
+      },
+      {
+        &quot;var&quot;: &quot;Q&quot;,
+        &quot;type&quot;: &quot;Form0&quot;,
+        &quot;_type&quot;: &quot;Typed&quot;
+      }
+    ],
+    &quot;_type&quot;: &quot;UWDExpr&quot;
+  },
+  &quot;header&quot;: {
+    &quot;description&quot;: &quot;A composite model&quot;,
+    &quot;name&quot;: &quot;composite_physics&quot;,
+    &quot;_type&quot;: &quot;Header&quot;,
+    &quot;model_version&quot;: &quot;v0.0&quot;,
+    &quot;schema&quot;: &quot;modelreps.io/Composite&quot;,
+    &quot;schema_name&quot;: &quot;CompositeModelExpr&quot;
+  },
+  &quot;_type&quot;: &quot;CompositeModelExpr&quot;
+}</code></pre><p>We can interpret this big data structure to execute a composition! Notice how the variables in the composite model are namespaced with the subsystem they came from. The coupled variables get their names from the UWD and thus live in the top level namespace.</p><pre><code class="language-julia hljs">composite = oapply(m)
 display(apex(composite))
 to_graphviz(apex(composite))</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
@@ -379,13 +823,10 @@ to_graphviz(apex(composite))</code></pre><img src='data:image/svg+xml;utf-8,<?xm
 </g>
 </g>
 </svg>
-'/><p>TESTING NESTED COMPOSITION</p><pre><code class="language-julia hljs">Q₊ = Untyped(:Q₊)
+'/><p><em>Important: because the oapply algorithm operates on the compute graph representation of the equations, it does not produce syntactic equations. Calls to <code>oapply</code> produce instances of <code>OpenDecapode</code> and not <code>DecaExpr</code>. Software that expects to consume decapodes should plan to interact with both forms.</em></p><h2 id="Nested-Composition"><a class="docs-heading-anchor" href="#Nested-Composition">Nested Composition</a><a id="Nested-Composition-1"></a><a class="docs-heading-anchor-permalink" href="#Nested-Composition" title="Permalink"></a></h2><p>In this section we will build a model that is a composite of composites of models. This demonstrates that the Decapodes system can recursively compose multiphysics models.</p><pre><code class="language-julia hljs">Q₊ = Untyped(:Q₊)
 Q₋ = Untyped(:Q₋)
 Q̇ = Untyped(:Q̇)
-
-uwdʰ = UWDExpr([v, Q], [Statement(:drag, [v, Q₊]), Statement(:cooling, [Q₋, Q]), Statement(:superposition, [Q₊, Q₋, Q̇])])
-
-drag = ASKEMDecaExpr(
+uwdʰ = UWDExpr([v, Q], [Statement(:drag, [v, Q₊]), Statement(:cooling, [Q₋, Q]), Statement(:superposition, [Q₊, Q₋, Q̇])])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMUWDs.UWDExpr(SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:V, :Form0), SyntacticModels.ASKEMUWDs.Typed(:Q, :Form0)], SyntacticModels.ASKEMUWDs.Statement[SyntacticModels.ASKEMUWDs.Statement(:drag, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:V, :Form0), SyntacticModels.ASKEMUWDs.Untyped(:Q₊)]), SyntacticModels.ASKEMUWDs.Statement(:cooling, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Untyped(:Q₋), SyntacticModels.ASKEMUWDs.Typed(:Q, :Form0)]), SyntacticModels.ASKEMUWDs.Statement(:superposition, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Untyped(:Q₊), SyntacticModels.ASKEMUWDs.Untyped(:Q₋), SyntacticModels.ASKEMUWDs.Untyped(:Q̇)])])</code></pre><p>Our new model has 3 subsystems, drag, cooling, and superposition. A key innovation of decapodes is to realize that even simple systems like drag are actually multiphysical, they have some term that represents a force, and some term that determines how that force changes the state of the system. In order to write models compositionally, you must first break them down into their atomic subsystems, which are smaller than you think.</p><p>Our three primitive subsystems are each composed of one equation. Of course at this scale of complexity, you don&#39;t need to do compositional specification, you can just compose them in your head and write down the composite. But this is a tutorial, so we are building a very simple model as a composite of atomic models (one equation each).</p><pre><code class="language-julia hljs">drag = ASKEMDecaExpr(
   AMR.Header(&quot;DragHeat&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;velocity makes it get hot&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
   Decapodes.parse_decapode(quote
     V::Form0{Point}
@@ -417,17 +858,526 @@ superposition = ASKEMDecaExpr(
 
     T == X + Y
   end)
-)
-
-h = AMR.Header(&quot;hierarchical_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A hierarchical composite model of frictional heating&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;)
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Y), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:T), :Form0, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Var(:T), Decapodes.Plus(Decapodes.Term[Decapodes.Var(:X), Decapodes.Var(:Y)]))]))</code></pre><p>The <code>CompositeModelExpr</code> type can store recursive model descriptions in terms of compositions of composite models.</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;hierarchical_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A hierarchical composite model of frictional heating&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;)
 m = CompositeModelExpr(h,u, [OpenModel(d1, [:X, :V]),
       CompositeModelExpr(AMR.Header(&quot;heating_dynamics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A formula for heating - cooling&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;),
         uwdʰ, [OpenModel(drag, [:V, :Q₊]), OpenModel(cooling, [:Q₋, :Q]), OpenModel(superposition, [:X, :Y, :T])])
-])
-
-dh = apex(oapply(m))
-
-composite = OpenDecapode(m)
+])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.Composites.CompositeModelExpr(SyntacticModels.AMR.Header(&quot;hierarchical_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A hierarchical composite model of frictional heating&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), SyntacticModels.ASKEMUWDs.UWDExpr(SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:X, :Form0), SyntacticModels.ASKEMUWDs.Typed(:Q, :Form0)], SyntacticModels.ASKEMUWDs.Statement[SyntacticModels.ASKEMUWDs.Statement(:oscillator, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:X, :Form0), SyntacticModels.ASKEMUWDs.Typed(:V, :Form0)]), SyntacticModels.ASKEMUWDs.Statement(:heating, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:V, :Form0), SyntacticModels.ASKEMUWDs.Typed(:Q, :Form0)])]), SyntacticModels.Composites.CompositeModel[SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:k), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:X)), Decapodes.Var(:V)), Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:V)), Decapodes.Mult(Decapodes.Term[Decapodes.Lit(Symbol(&quot;-1&quot;)), Decapodes.Var(:k), Decapodes.Var(:X)]))])), [:X, :V]), SyntacticModels.Composites.CompositeModelExpr(SyntacticModels.AMR.Header(&quot;heating_dynamics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A formula for heating - cooling&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), SyntacticModels.ASKEMUWDs.UWDExpr(SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:V, :Form0), SyntacticModels.ASKEMUWDs.Typed(:Q, :Form0)], SyntacticModels.ASKEMUWDs.Statement[SyntacticModels.ASKEMUWDs.Statement(:drag, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:V, :Form0), SyntacticModels.ASKEMUWDs.Untyped(:Q₊)]), SyntacticModels.ASKEMUWDs.Statement(:cooling, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Untyped(:Q₋), SyntacticModels.ASKEMUWDs.Typed(:Q, :Form0)]), SyntacticModels.ASKEMUWDs.Statement(:superposition, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Untyped(:Q₊), SyntacticModels.ASKEMUWDs.Untyped(:Q₋), SyntacticModels.ASKEMUWDs.Untyped(:Q̇)])]), SyntacticModels.Composites.CompositeModel[SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;DragHeat&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;velocity makes it get hot&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Q₊), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:κ), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Var(:Q₊), Decapodes.App2(:*, Decapodes.Var(:κ), Decapodes.Var(:V)))])), [:V, :Q₊]), SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;NetwonCooling&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;heat dissipates to the enviornment&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:Q₋), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Q₀), :Parameter, :Point), Decapodes.Judgement(Decapodes.Var(:Q), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:λ), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Var(:Q₋), Decapodes.App1(:λ, Decapodes.App2(:-, Decapodes.Var(:Q), Decapodes.Var(:Q₀))))])), [:Q₋, :Q]), SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Y), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:T), :Form0, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Var(:T), Decapodes.Plus(Decapodes.Term[Decapodes.Var(:X), Decapodes.Var(:Y)]))])), [:X, :Y, :T])])])</code></pre><p>The <code>oapply</code> function will recursively descend the tree to assemble a flat model with hierarchical namespacing.</p><pre><code class="language-julia hljs">dh = apex(oapply(m))</code></pre><div class="c-set">
+<span class="c-set-summary">Decapodes.SummationDecapode{Any, Any, Symbol} {Var:14, TVar:2, Op1:3, Op2:4, Σ:1, Summand:2, Type:0, Operator:0, Name:0}</span>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Var</th>
+      <th style = "text-align: right;">type</th>
+      <th style = "text-align: right;">name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">X</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">V</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">Constant</td>
+      <td style = "text-align: right;">oscillator_k</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">4</td>
+      <td style = "text-align: right;">infer</td>
+      <td style = "text-align: right;">oscillator_mult_1</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">5</td>
+      <td style = "text-align: right;">infer</td>
+      <td style = "text-align: right;">oscillator_V̇</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">6</td>
+      <td style = "text-align: right;">Literal</td>
+      <td style = "text-align: right;">-1</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">7</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">heating_Q₊</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">8</td>
+      <td style = "text-align: right;">Constant</td>
+      <td style = "text-align: right;">heating_drag_κ</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">9</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">heating_Q₋</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">10</td>
+      <td style = "text-align: right;">Parameter</td>
+      <td style = "text-align: right;">heating_cooling_Q₀</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">11</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">Q</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">12</td>
+      <td style = "text-align: right;">Constant</td>
+      <td style = "text-align: right;">heating_cooling_λ</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">13</td>
+      <td style = "text-align: right;">infer</td>
+      <td style = "text-align: right;">heating_cooling_•1</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">14</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">heating_Q̇</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">TVar</th>
+      <th style = "text-align: right;">incl</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">5</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Op1</th>
+      <th style = "text-align: right;">src</th>
+      <th style = "text-align: right;">tgt</th>
+      <th style = "text-align: right;">op1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">∂ₜ</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">5</td>
+      <td style = "text-align: right;">∂ₜ</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">13</td>
+      <td style = "text-align: right;">9</td>
+      <td style = "text-align: right;">λ</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Op2</th>
+      <th style = "text-align: right;">proj1</th>
+      <th style = "text-align: right;">proj2</th>
+      <th style = "text-align: right;">res</th>
+      <th style = "text-align: right;">op2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">6</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">*</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">5</td>
+      <td style = "text-align: right;">*</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">8</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">7</td>
+      <td style = "text-align: right;">*</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">4</td>
+      <td style = "text-align: right;">11</td>
+      <td style = "text-align: right;">10</td>
+      <td style = "text-align: right;">13</td>
+      <td style = "text-align: right;">-</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Σ</th>
+      <th style = "text-align: right;">sum</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">14</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Summand</th>
+      <th style = "text-align: right;">summand</th>
+      <th style = "text-align: right;">summation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">7</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">9</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>This model can also be drawn as a decapode.</p><pre><code class="language-julia hljs">to_graphviz(dh)</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="880pt" height="443pt"
+ viewBox="0.00 0.00 880.13 443.15" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 439.15)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-439.15 876.13,-439.15 876.13,4 -4,4"/>
+<!-- n1 -->
+<g id="node1" class="node">
+<title>n1</title>
+<ellipse fill="none" stroke="black" cx="266.24" cy="-383.54" rx="21.84" ry="10.71"/>
+<text text-anchor="middle" x="266.24" y="-379.84" font-family="Times,serif" font-size="14.00">X:Ω₀</text>
+</g>
+<!-- n2 -->
+<g id="node2" class="node">
+<title>n2</title>
+<ellipse fill="none" stroke="black" cx="305.24" cy="-305.12" rx="21.84" ry="10.71"/>
+<text text-anchor="middle" x="305.24" y="-301.42" font-family="Times,serif" font-size="14.00">V:Ω₀</text>
+</g>
+<!-- n1&%2345;&gt;n2 -->
+<g id="edge9" class="edge">
+<title>n1&%2345;&gt;n2</title>
+<path fill="none" stroke="black" d="M271.02,-373.17C277.8,-359.88 290.27,-335.45 298.13,-320.04"/>
+<polygon fill="black" stroke="black" points="299.7,-320.81 300.42,-315.56 296.58,-319.22 299.7,-320.81"/>
+<text text-anchor="middle" x="296.24" y="-340.63" font-family="Times,serif" font-size="14.00">∂ₜ</text>
+</g>
+<!-- n18 -->
+<g id="node18" class="node">
+<title>n18</title>
+<polygon fill="none" stroke="black" points="243.74,-168.19 194.74,-168.19 194.74,-153.19 243.74,-153.19 243.74,-168.19"/>
+<text text-anchor="middle" x="219.24" y="-156.99" font-family="Times,serif" font-size="14.00">Ω•×Ω₀</text>
+</g>
+<!-- n1&%2345;&gt;n18 -->
+<g id="edge16" class="edge">
+<title>n1&%2345;&gt;n18</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M264.12,-372.9C260.04,-354.28 250.81,-312.07 243.24,-276.51 235.22,-238.84 225.95,-194.17 221.65,-173.4"/>
+<polygon fill="black" stroke="black" points="223.35,-172.97 220.63,-168.42 219.92,-173.67 223.35,-172.97"/>
+<text text-anchor="middle" x="250.74" y="-265.31" font-family="Times,serif" font-size="14.00">π₂</text>
+</g>
+<!-- n5 -->
+<g id="node5" class="node">
+<title>n5</title>
+<ellipse fill="none" stroke="black" cx="376.24" cy="-85.65" rx="75.82" ry="10.71"/>
+<text text-anchor="middle" x="376.24" y="-81.95" font-family="Times,serif" font-size="14.00">oscillator_V̇:Ω•</text>
+</g>
+<!-- n2&%2345;&gt;n5 -->
+<g id="edge10" class="edge">
+<title>n2&%2345;&gt;n5</title>
+<path fill="none" stroke="black" d="M308.38,-294.49C319.6,-260.12 357.75,-143.28 371.36,-101.58"/>
+<polygon fill="black" stroke="black" points="373.08,-101.95 372.97,-96.66 369.75,-100.87 373.08,-101.95"/>
+<text text-anchor="middle" x="348.24" y="-193.1" font-family="Times,serif" font-size="14.00">∂ₜ</text>
+</g>
+<!-- n16 -->
+<g id="node16" class="node">
+<title>n16</title>
+</g>
+<!-- n2&%2345;&gt;n16 -->
+<g id="edge7" class="edge">
+<title>n2&%2345;&gt;n16</title>
+<path fill="none" stroke="black" d="M297.58,-294.78C287.84,-281.91 272.24,-257.61 272.24,-233.9 272.24,-233.9 272.24,-233.9 272.24,-84.65 272.24,-57.14 291.92,-28.55 300.89,-16.96"/>
+<polygon fill="black" stroke="black" points="302.38,-17.89 304.14,-12.9 299.65,-15.71 302.38,-17.89"/>
+</g>
+<!-- n19 -->
+<g id="node19" class="node">
+<title>n19</title>
+<polygon fill="none" stroke="black" points="651.74,-240.4 600.74,-240.4 600.74,-225.4 651.74,-225.4 651.74,-240.4"/>
+<text text-anchor="middle" x="626.24" y="-229.2" font-family="Times,serif" font-size="14.00">ΩC×Ω₀</text>
+</g>
+<!-- n2&%2345;&gt;n19 -->
+<g id="edge19" class="edge">
+<title>n2&%2345;&gt;n19</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M326.04,-301.59C358.53,-297.47 423.21,-288.52 477.24,-276.51 521.43,-266.68 571.9,-251.37 601.3,-242.02"/>
+<polygon fill="black" stroke="black" points="601.96,-243.65 606.19,-240.46 600.89,-240.32 601.96,-243.65"/>
+<text text-anchor="middle" x="541.74" y="-265.31" font-family="Times,serif" font-size="14.00">π₂</text>
+</g>
+<!-- n3 -->
+<g id="node3" class="node">
+<title>n3</title>
+<ellipse fill="none" stroke="black" cx="150.24" cy="-383.54" rx="76.24" ry="10.71"/>
+<text text-anchor="middle" x="150.24" y="-379.84" font-family="Times,serif" font-size="14.00">oscillator_k:ΩC</text>
+</g>
+<!-- n17 -->
+<g id="node17" class="node">
+<title>n17</title>
+<polygon fill="none" stroke="black" points="130.74,-312.62 75.74,-312.62 75.74,-297.62 130.74,-297.62 130.74,-312.62"/>
+<text text-anchor="middle" x="103.24" y="-301.42" font-family="Times,serif" font-size="14.00">ΩL×ΩC</text>
+</g>
+<!-- n3&%2345;&gt;n17 -->
+<g id="edge13" class="edge">
+<title>n3&%2345;&gt;n17</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M144.29,-372.86C135.59,-358.72 119.43,-332.45 110.2,-317.43"/>
+<polygon fill="black" stroke="black" points="111.46,-316.14 107.35,-312.8 108.48,-317.98 111.46,-316.14"/>
+<text text-anchor="middle" x="140.74" y="-340.63" font-family="Times,serif" font-size="14.00">π₂</text>
+</g>
+<!-- n4 -->
+<g id="node4" class="node">
+<title>n4</title>
+<ellipse fill="none" stroke="black" cx="103.24" cy="-232.9" rx="103.48" ry="10.71"/>
+<text text-anchor="middle" x="103.24" y="-229.2" font-family="Times,serif" font-size="14.00">oscillator_mult_1:Ω•</text>
+</g>
+<!-- n4&%2345;&gt;n18 -->
+<g id="edge15" class="edge">
+<title>n4&%2345;&gt;n18</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M119.37,-222.14C141.8,-208.56 182.13,-184.15 204.05,-170.88"/>
+<polygon fill="black" stroke="black" points="205.06,-172.31 208.44,-168.23 203.25,-169.32 205.06,-172.31"/>
+<text text-anchor="middle" x="179.74" y="-193.1" font-family="Times,serif" font-size="14.00">π₁</text>
+</g>
+<!-- n5&%2345;&gt;n16 -->
+<g id="edge8" class="edge">
+<title>n5&%2345;&gt;n16</title>
+<path fill="none" stroke="black" d="M366.96,-75.1C351.56,-59.26 321.29,-28.12 309.81,-16.31"/>
+<polygon fill="black" stroke="black" points="311.04,-15.07 306.3,-12.7 308.53,-17.51 311.04,-15.07"/>
+</g>
+<!-- n6 -->
+<g id="node6" class="node">
+<title>n6</title>
+<ellipse fill="none" stroke="black" cx="28.24" cy="-383.54" rx="27.65" ry="10.71"/>
+<text text-anchor="middle" x="28.24" y="-379.84" font-family="Times,serif" font-size="14.00">&%2345;1:ΩL</text>
+</g>
+<!-- n6&%2345;&gt;n17 -->
+<g id="edge12" class="edge">
+<title>n6&%2345;&gt;n17</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M37.14,-373.48C51.04,-359.31 77.86,-331.98 92.7,-316.85"/>
+<polygon fill="black" stroke="black" points="94.3,-317.72 96.55,-312.93 91.8,-315.27 94.3,-317.72"/>
+<text text-anchor="middle" x="82.74" y="-340.63" font-family="Times,serif" font-size="14.00">π₁</text>
+</g>
+<!-- n7 -->
+<g id="node7" class="node">
+<title>n7</title>
+<ellipse fill="none" stroke="black" cx="628.24" cy="-160.69" rx="71.34" ry="10.71"/>
+<text text-anchor="middle" x="628.24" y="-156.99" font-family="Times,serif" font-size="14.00">heating_Q₊:Ω₀</text>
+</g>
+<!-- n21 -->
+<g id="node21" class="node">
+<title>n21</title>
+<ellipse fill="none" stroke="black" cx="488.24" cy="-85.65" rx="13.37" ry="13.37"/>
+<text text-anchor="middle" x="488.24" y="-81.95" font-family="Times,serif" font-size="14.00">Σ1</text>
+</g>
+<!-- n7&%2345;&gt;n21 -->
+<g id="edge25" class="edge">
+<title>n7&%2345;&gt;n21</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M610.22,-150.29C582.83,-136 531.11,-109.01 504.68,-95.23"/>
+<polygon fill="black" stroke="black" points="505.29,-93.57 500.05,-92.81 503.68,-96.68 505.29,-93.57"/>
+</g>
+<!-- n8 -->
+<g id="node8" class="node">
+<title>n8</title>
+<ellipse fill="none" stroke="black" cx="626.24" cy="-344.33" rx="96.33" ry="10.71"/>
+<text text-anchor="middle" x="626.24" y="-340.63" font-family="Times,serif" font-size="14.00">heating_drag_κ:ΩC</text>
+</g>
+<!-- n8&%2345;&gt;n19 -->
+<g id="edge18" class="edge">
+<title>n8&%2345;&gt;n19</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M626.24,-333.62C626.24,-313.55 626.24,-267.56 626.24,-245.77"/>
+<polygon fill="black" stroke="black" points="627.99,-245.54 626.24,-240.54 624.49,-245.54 627.99,-245.54"/>
+<text text-anchor="middle" x="633.74" y="-301.42" font-family="Times,serif" font-size="14.00">π₁</text>
+</g>
+<!-- n9 -->
+<g id="node9" class="node">
+<title>n9</title>
+<ellipse fill="none" stroke="black" cx="467.24" cy="-160.69" rx="71.34" ry="10.71"/>
+<text text-anchor="middle" x="467.24" y="-156.99" font-family="Times,serif" font-size="14.00">heating_Q₋:Ω₀</text>
+</g>
+<!-- n9&%2345;&gt;n21 -->
+<g id="edge26" class="edge">
+<title>n9&%2345;&gt;n21</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M470.07,-149.84C473.46,-138.05 479.19,-118.1 483.32,-103.77"/>
+<polygon fill="black" stroke="black" points="485.05,-104.06 484.75,-98.77 481.69,-103.09 485.05,-104.06"/>
+</g>
+<!-- n10 -->
+<g id="node10" class="node">
+<title>n10</title>
+<ellipse fill="none" stroke="black" cx="420.24" cy="-383.54" rx="113.69" ry="10.71"/>
+<text text-anchor="middle" x="420.24" y="-379.84" font-family="Times,serif" font-size="14.00">heating_cooling_Q₀:ΩP</text>
+</g>
+<!-- n20 -->
+<g id="node20" class="node">
+<title>n20</title>
+<polygon fill="none" stroke="black" points="493.24,-312.62 443.24,-312.62 443.24,-297.62 493.24,-297.62 493.24,-312.62"/>
+<text text-anchor="middle" x="468.24" y="-301.42" font-family="Times,serif" font-size="14.00">Ω₀×ΩP</text>
+</g>
+<!-- n10&%2345;&gt;n20 -->
+<g id="edge22" class="edge">
+<title>n10&%2345;&gt;n20</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M426.32,-372.86C435.28,-358.59 451.99,-331.99 461.38,-317.04"/>
+<polygon fill="black" stroke="black" points="462.86,-317.97 464.04,-312.8 459.9,-316.11 462.86,-317.97"/>
+<text text-anchor="middle" x="456.74" y="-340.63" font-family="Times,serif" font-size="14.00">π₂</text>
+</g>
+<!-- n11 -->
+<g id="node11" class="node">
+<title>n11</title>
+<ellipse fill="none" stroke="black" cx="575.24" cy="-383.54" rx="23.17" ry="10.71"/>
+<text text-anchor="middle" x="575.24" y="-379.84" font-family="Times,serif" font-size="14.00">Q:Ω₀</text>
+</g>
+<!-- n11&%2345;&gt;n20 -->
+<g id="edge21" class="edge">
+<title>n11&%2345;&gt;n20</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M557.21,-376.54C539.69,-370.49 514.54,-361.18 506.24,-354.94 492.54,-344.63 481.16,-328.21 474.52,-317.29"/>
+<polygon fill="black" stroke="black" points="475.87,-316.13 471.82,-312.71 472.85,-317.91 475.87,-316.13"/>
+<text text-anchor="middle" x="513.74" y="-340.63" font-family="Times,serif" font-size="14.00">π₁</text>
+</g>
+<!-- n12 -->
+<g id="node12" class="node">
+<title>n12</title>
+<ellipse fill="none" stroke="black" cx="763.24" cy="-383.54" rx="108.79" ry="10.71"/>
+<text text-anchor="middle" x="763.24" y="-379.84" font-family="Times,serif" font-size="14.00">heating_cooling_λ:ΩC</text>
+</g>
+<!-- n13 -->
+<g id="node13" class="node">
+<title>n13</title>
+<ellipse fill="none" stroke="black" cx="468.24" cy="-232.9" rx="113.27" ry="10.71"/>
+<text text-anchor="middle" x="468.24" y="-229.2" font-family="Times,serif" font-size="14.00">heating_cooling_•1:Ω•</text>
+</g>
+<!-- n13&%2345;&gt;n9 -->
+<g id="edge11" class="edge">
+<title>n13&%2345;&gt;n9</title>
+<path fill="none" stroke="black" d="M468.1,-222.14C467.93,-210.3 467.64,-190.22 467.45,-176.47"/>
+<polygon fill="black" stroke="black" points="469.2,-176.34 467.38,-171.37 465.7,-176.39 469.2,-176.34"/>
+<text text-anchor="middle" x="472.24" y="-193.1" font-family="Times,serif" font-size="14.00">λ</text>
+</g>
+<!-- n14 -->
+<g id="node14" class="node">
+<title>n14</title>
+<ellipse fill="none" stroke="black" cx="488.24" cy="-10.61" rx="66.44" ry="10.71"/>
+<text text-anchor="middle" x="488.24" y="-6.91" font-family="Times,serif" font-size="14.00">heating_Q̇:Ω₀</text>
+</g>
+<!-- n15 -->
+<g id="node15" class="node">
+<title>n15</title>
+</g>
+<!-- n15&%2345;&gt;n1 -->
+<g id="edge1" class="edge">
+<title>n15&%2345;&gt;n1</title>
+<path fill="none" stroke="black" d="M484.96,-431.79C469.1,-429.23 373.53,-413.54 297.24,-394.15 294.44,-393.44 291.52,-392.63 288.64,-391.78"/>
+<polygon fill="black" stroke="black" points="288.82,-390.01 283.53,-390.25 287.81,-393.36 288.82,-390.01"/>
+</g>
+<!-- n15&%2345;&gt;n3 -->
+<g id="edge2" class="edge">
+<title>n15&%2345;&gt;n3</title>
+<path fill="none" stroke="black" d="M485.09,-431.85C464.1,-428.88 294.73,-404.95 205.23,-392.31"/>
+<polygon fill="black" stroke="black" points="205.44,-390.57 200.24,-391.61 204.95,-394.04 205.44,-390.57"/>
+</g>
+<!-- n15&%2345;&gt;n8 -->
+<g id="edge3" class="edge">
+<title>n15&%2345;&gt;n8</title>
+<path fill="none" stroke="black" d="M489.56,-432.12C502.93,-431.81 570.57,-428.53 607.24,-394.15 616.82,-385.17 621.63,-370.79 624.01,-359.96"/>
+<polygon fill="black" stroke="black" points="625.75,-360.21 625,-354.97 622.31,-359.53 625.75,-360.21"/>
+</g>
+<!-- n15&%2345;&gt;n10 -->
+<g id="edge4" class="edge">
+<title>n15&%2345;&gt;n10</title>
+<path fill="none" stroke="black" d="M485.58,-430.97C479.12,-426.38 455.1,-409.31 438.06,-397.21"/>
+<polygon fill="black" stroke="black" points="438.99,-395.72 433.9,-394.25 436.96,-398.57 438.99,-395.72"/>
+</g>
+<!-- n15&%2345;&gt;n11 -->
+<g id="edge5" class="edge">
+<title>n15&%2345;&gt;n11</title>
+<path fill="none" stroke="black" d="M489.41,-430.97C498.51,-426.05 534.04,-406.83 556.44,-394.71"/>
+<polygon fill="black" stroke="black" points="557.44,-396.16 561,-392.24 555.77,-393.08 557.44,-396.16"/>
+</g>
+<!-- n15&%2345;&gt;n12 -->
+<g id="edge6" class="edge">
+<title>n15&%2345;&gt;n12</title>
+<path fill="none" stroke="black" d="M489.41,-431.97C503.12,-430.79 579.1,-424.02 640.24,-413.15 668.25,-408.17 699.47,-400.89 723.44,-394.92"/>
+<polygon fill="black" stroke="black" points="724.02,-396.57 728.45,-393.66 723.17,-393.18 724.02,-396.57"/>
+</g>
+<!-- n17&%2345;&gt;n4 -->
+<g id="edge14" class="edge">
+<title>n17&%2345;&gt;n4</title>
+<path fill="none" stroke="black" d="M103.24,-297.38C103.24,-286.26 103.24,-263.77 103.24,-248.77"/>
+<polygon fill="black" stroke="black" points="104.99,-248.62 103.24,-243.62 101.49,-248.62 104.99,-248.62"/>
+<text text-anchor="middle" x="106.74" y="-265.31" font-family="Times,serif" font-size="14.00">*</text>
+</g>
+<!-- n18&%2345;&gt;n5 -->
+<g id="edge17" class="edge">
+<title>n18&%2345;&gt;n5</title>
+<path fill="none" stroke="black" d="M232.76,-153.08C250.15,-144.62 281.34,-129.54 308.24,-117.08 322.02,-110.7 337.46,-103.77 350.15,-98.14"/>
+<polygon fill="black" stroke="black" points="351.18,-99.6 355.04,-95.97 349.76,-96.4 351.18,-99.6"/>
+<text text-anchor="middle" x="311.74" y="-120.88" font-family="Times,serif" font-size="14.00">*</text>
+</g>
+<!-- n19&%2345;&gt;n7 -->
+<g id="edge20" class="edge">
+<title>n19&%2345;&gt;n7</title>
+<path fill="none" stroke="black" d="M626.43,-225.17C626.75,-214.04 627.39,-191.56 627.81,-176.56"/>
+<polygon fill="black" stroke="black" points="629.57,-176.45 627.96,-171.4 626.07,-176.35 629.57,-176.45"/>
+<text text-anchor="middle" x="630.74" y="-193.1" font-family="Times,serif" font-size="14.00">*</text>
+</g>
+<!-- n20&%2345;&gt;n13 -->
+<g id="edge23" class="edge">
+<title>n20&%2345;&gt;n13</title>
+<path fill="none" stroke="black" d="M468.24,-297.38C468.24,-286.26 468.24,-263.77 468.24,-248.77"/>
+<polygon fill="black" stroke="black" points="469.99,-248.62 468.24,-243.62 466.49,-248.62 469.99,-248.62"/>
+<text text-anchor="middle" x="470.74" y="-265.31" font-family="Times,serif" font-size="14.00">&%2345;</text>
+</g>
+<!-- n21&%2345;&gt;n14 -->
+<g id="edge24" class="edge">
+<title>n21&%2345;&gt;n14</title>
+<path fill="none" stroke="black" d="M488.24,-71.93C488.24,-59.34 488.24,-40.07 488.24,-26.71"/>
+<polygon fill="black" stroke="black" points="489.99,-26.38 488.24,-21.38 486.49,-26.38 489.99,-26.38"/>
+<text text-anchor="middle" x="494.74" y="-43.01" font-family="Times,serif" font-size="14.00">+</text>
+</g>
+</g>
+</svg>
+'/><p>The new model description needs to be written by hand for the new model header. Some annotation in the description can&#39;t be avoided, yet.</p><pre><code class="language-julia hljs">composite = OpenDecapode(m)
 hf = composite.model.header
 ASKEMDecapode(Header(&quot;flattened_composite&quot;, hf.schema, &quot;A flattened version of the composite_physics model.&quot;, hf.schema_name, hf.model_version), composite.model.model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecapode(SyntacticModels.AMR.Header(&quot;flattened_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A flattened version of the composite_physics model.&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), Decapodes.SummationDecapode{Any, Any, Symbol}:
   Var = 1:14
@@ -451,4 +1401,4 @@ ASKEMDecapode(Header(&quot;flattened_composite&quot;, hf.schema, &quot;A flatten
   op1 : Op1 → Operator = [:∂ₜ, :∂ₜ, :λ]
   op2 : Op2 → Operator = [:*, :*, :*, :-]
   type : Var → Type = [:Form0, :Form0, :Constant, :infer, :infer, :Literal, :Form0, :Constant, :Form0, :Parameter, :Form0, :Constant, :infer, :Form0]
-  name : Var → Name = [:X, :V, :oscillator_k, :oscillator_mult_1, :oscillator_V̇, Symbol(&quot;-1&quot;), :heating_Q₊, :heating_drag_κ, :heating_Q₋, :heating_cooling_Q₀, :Q, :heating_cooling_λ, Symbol(&quot;heating_cooling_•1&quot;), :heating_Q̇])</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« SyntacticModels.jl</a><a class="docs-footer-nextpage" href="../../api/">Library Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Friday 18 August 2023 20:59">Friday 18 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  name : Var → Name = [:X, :V, :oscillator_k, :oscillator_mult_1, :oscillator_V̇, Symbol(&quot;-1&quot;), :heating_Q₊, :heating_drag_κ, :heating_Q₋, :heating_cooling_Q₀, :Q, :heating_cooling_λ, Symbol(&quot;heating_cooling_•1&quot;), :heating_Q̇])</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« SyntacticModels.jl</a><a class="docs-footer-nextpage" href="../../api/">Library Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Saturday 19 August 2023 14:25">Saturday 19 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
