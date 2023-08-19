@@ -1,9 +1,7 @@
 # # Composing Models
 #
-# This is an example of adding a code example compiled with Literate.jl in the docs.
+# Now that we have learned how to specify composition patterns and primitive models, we can learn how to combine them into a composite model.
 #
-# First we want to load our package with `using`
-
 using SyntacticModels
 
 using SyntacticModels.AMR
@@ -108,7 +106,6 @@ display(apex(composite))
 to_graphviz(apex(composite))
 
 # *Important: because the oapply algorithm operates on the compute graph representation of the equations, it does not produce syntactic equations. Calls to `oapply` produce instances of `OpenDecapode` and not `DecaExpr`. Software that expects to consume decapodes should plan to interact with both forms.*
-
 
 # ## Nested Composition
 # In this section we will build a model that is a composite of composites of models.

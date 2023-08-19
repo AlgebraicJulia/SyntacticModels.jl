@@ -42,7 +42,9 @@ makedocs(
   pages=Any[
     "SyntacticModels.jl"=>"index.md",
     "Examples"=>Any[
-      "generated/literate_example.md",
+      "generated/uwd_examples.md",
+      "generated/decapodes_examples.md",
+      "generated/composite_models_examples.md",
     ],
     "Library Reference"=>"api.md",
   ]
