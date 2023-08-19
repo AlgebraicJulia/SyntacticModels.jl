@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Undirected Wiring Diagrams · SyntacticModels.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">SyntacticModels.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">SyntacticModels.jl</a></li><li><span class="tocitem">Examples</span><ul><li class="is-active"><a class="tocitem" href>Undirected Wiring Diagrams</a><ul class="internal"><li><a class="tocitem" href="#Model-Headers"><span>Model Headers</span></a></li></ul></li><li><a class="tocitem" href="../decapodes_examples/">Decapodes</a></li><li><a class="tocitem" href="../composite_models_examples/">Composing Models</a></li></ul></li><li><a class="tocitem" href="../../api/">Library Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Undirected Wiring Diagrams</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Undirected Wiring Diagrams</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/AlgebraicJulia/SyntacticModels.jl/blob/main/docs/literate/uwd_examples.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Undirected-Wiring-Diagrams"><a class="docs-heading-anchor" href="#Undirected-Wiring-Diagrams">Undirected Wiring Diagrams</a><a id="Undirected-Wiring-Diagrams-1"></a><a class="docs-heading-anchor-permalink" href="#Undirected-Wiring-Diagrams" title="Permalink"></a></h1><p>To specify complex systems, you need to specify primitive models and a pattern of composition. This example shows you how to use Undirected Wiring Diagrams (UWDs) as a language for expressing patterns of composition. These diagrams are undirected, because they do not have inputs and outputs. UWDs are for systems that compose by sharing variables. They are not for systems that compose like functions, where output of a system is passed as input to another system. For systems that compose like functions, use Directed Wiring Diagrams.</p><pre><code class="language-julia hljs">using ..SyntacticModels
+using ..SyntacticModels.SyntacticModelsBase
+using ..SyntacticModels.AMR
+using ..SyntacticModels.ASKEMUWDs
+
+using Test
+using JSON3
+using Catlab.RelationalPrograms
+using Catlab.WiringDiagrams
+using Catlab.Graphics
+
+draw(uwd) = to_graphviz(uwd, box_labels=:name, junction_labels=:variable)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">draw (generic function with 1 method)</code></pre><p>This example follows what in current catlab would be given as:</p><pre><code class="language-julia hljs">@relation (x:X, z:Z) where y:Y begin
+  R(x,y)
+  S(y,z)
+  T(z,y,u)
+end</code></pre><p>Eventually, we will update the <code>@relation</code> macro to use this ADT based representation. This will allow users to create syntactic UWDExprs from with an easy to write syntax embedded in Julia.</p><pre><code class="language-julia hljs">v1 = Typed(:x, :X)
+v2 = Typed(:y, :Y)
+v3 = Typed(:z, :Z)
+v4 = Untyped(:u)
+c = [v1, v3]
+s = [Statement(:R, [v1,v2]),
+  Statement(:S, [v2,v3]),
+  Statement(:T, [v3,v2, v4])]
+u = UWDExpr(c, s)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMUWDs.UWDExpr(SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:x, :X), SyntacticModels.ASKEMUWDs.Typed(:z, :Z)], SyntacticModels.ASKEMUWDs.Statement[SyntacticModels.ASKEMUWDs.Statement(:R, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:x, :X), SyntacticModels.ASKEMUWDs.Typed(:y, :Y)]), SyntacticModels.ASKEMUWDs.Statement(:S, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:y, :Y), SyntacticModels.ASKEMUWDs.Typed(:z, :Z)]), SyntacticModels.ASKEMUWDs.Statement(:T, SyntacticModels.ASKEMUWDs.Var[SyntacticModels.ASKEMUWDs.Typed(:z, :Z), SyntacticModels.ASKEMUWDs.Typed(:y, :Y), SyntacticModels.ASKEMUWDs.Untyped(:u)])])</code></pre><p>We can test that if we write the <code>UWDExpr</code> into a JSON string, then we get the same information when we read it. The <code>==</code> operator for MLStyle types is not correctly working for these types, I think because some type information is being lost.</p><pre><code class="language-julia hljs">s = JSON3.write(u)
+ujson = JSON3.read(s, UWDTerm)
+@test s == JSON3.write(ujson)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test Passed</code></pre><p>The element type of the array changes when you go through JSON, even though type of the elements are the same.</p><pre><code class="language-julia hljs">typeof(ujson.statements), typeof(u.statements)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(Vector{SyntacticModels.ASKEMUWDs.Statement}, Vector{SyntacticModels.ASKEMUWDs.Statement})</code></pre><p>One can construct a Catlab Relation diagram from this expression.</p><pre><code class="language-julia hljs">uwd = ASKEMUWDs.construct(RelationDiagram, u)</code></pre><div class="c-set">
+<span class="c-set-summary">Catlab.Programs.RelationalPrograms.TypedUnnamedRelationDiagram{Symbol, Symbol, Symbol} {Box:3, Port:7, OuterPort:2, Junction:4, Type:0, Name:0, VarName:0}</span>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Box</th>
+      <th style = "text-align: right;">name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">R</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">S</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">T</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Port</th>
+      <th style = "text-align: right;">box</th>
+      <th style = "text-align: right;">junction</th>
+      <th style = "text-align: right;">port_type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">X</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">Y</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">Y</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">4</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">Z</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">5</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">Z</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">6</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">Y</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">7</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">untyped</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">OuterPort</th>
+      <th style = "text-align: right;">outer_junction</th>
+      <th style = "text-align: right;">outer_port_type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">x</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">z</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Junction</th>
+      <th style = "text-align: right;">junction_type</th>
+      <th style = "text-align: right;">variable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">X</td>
+      <td style = "text-align: right;">x</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">Z</td>
+      <td style = "text-align: right;">z</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">Y</td>
+      <td style = "text-align: right;">y</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">4</td>
+      <td style = "text-align: right;">untyped</td>
+      <td style = "text-align: right;">u</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>And then use Graphviz to draw the uwd.</p><pre><code class="language-julia hljs">draw(uwd)
+
+display(uwd)</code></pre><h2 id="Model-Headers"><a class="docs-heading-anchor" href="#Model-Headers">Model Headers</a><a id="Model-Headers-1"></a><a class="docs-heading-anchor-permalink" href="#Model-Headers" title="Permalink"></a></h2><p>As usual, we can add an AMR header to a UWD Model:</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;rst_relation&quot;, &quot;modelreps.io/UWD&quot;, &quot;A demo UWD showing generic relation composition&quot;, &quot;UWDExpr&quot;, &quot;v0.1&quot;)
+mexpr = UWDModel(h, u)
+s = JSON3.write(mexpr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;{\&quot;uwd\&quot;:{\&quot;statements\&quot;:[{\&quot;variables\&quot;:[{\&quot;var\&quot;:\&quot;x\&quot;,\&quot;type\&quot;:\&quot;X\&quot;,\&quot;_type\&quot;:\&quot;Typed\&quot;},{\&quot;var\&quot;:\&quot;y\&quot;,\&quot;type\&quot;:\&quot;Y\&quot;,\&quot;_type\&quot;:\&quot;Typed\&quot;}],\&quot;_type\&quot;:\&quot;Statement\&quot;,\&quot;relation\&quot;:\&quot;R\&quot;},{\&quot;variables\&quot;:[{\&quot;var\&quot;:\&quot;y\&quot;,\&quot;type\&quot;:\&quot;Y\&quot;,\&quot;_type\&quot;:\&quot;Typed\&quot;},{\&quot;var\&quot;:\&quot;z\&quot;,\&quot;type\&quot;:\&quot;Z\&quot;,\&quot;_type\&quot;:\&quot;Typed\&quot;}],\&quot;_type\&quot;:\&quot;Statement\&quot;,\&quot;relati&quot; ⋯ 216 bytes ⋯ &quot;\&quot;},{\&quot;var\&quot;:\&quot;z\&quot;,\&quot;type\&quot;:\&quot;Z\&quot;,\&quot;_type\&quot;:\&quot;Typed\&quot;}],\&quot;_type\&quot;:\&quot;UWDExpr\&quot;},\&quot;header\&quot;:{\&quot;description\&quot;:\&quot;A demo UWD showing generic relation composition\&quot;,\&quot;name\&quot;:\&quot;rst_relation\&quot;,\&quot;_type\&quot;:\&quot;Header\&quot;,\&quot;model_version\&quot;:\&quot;v0.1\&quot;,\&quot;schema\&quot;:\&quot;modelreps.io/UWD\&quot;,\&quot;schema_name\&quot;:\&quot;UWDExpr\&quot;},\&quot;_type\&quot;:\&quot;UWDModel\&quot;}&quot;</code></pre><p>Just as check, the headers should be preserved.</p><pre><code class="language-julia hljs">@test JSON3.write(JSON3.read(s, UWDModel)) == JSON3.write(mexpr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Test Passed</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« SyntacticModels.jl</a><a class="docs-footer-nextpage" href="../decapodes_examples/">Decapodes »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Saturday 19 August 2023 15:03">Saturday 19 August 2023</span>. Using Julia version 1.9.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
