@@ -45,6 +45,7 @@ makedocs(
       "generated/uwd_examples.md",
       "generated/decapodes_examples.md",
       "generated/composite_models_examples.md",
+      "generated/ACSetLang.md",
     ],
     "Library Reference"=>"api.md",
   ]
