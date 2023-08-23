@@ -46,6 +46,7 @@ makedocs(
       "generated/decapodes_examples.md",
       "generated/composite_models_examples.md",
       "generated/ACSetLang.md",
+      "generated/peg.md",
     ],
     "Library Reference"=>"api.md",
   ]
