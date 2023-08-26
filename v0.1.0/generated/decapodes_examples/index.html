@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Decapodes · SyntacticModels.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">SyntacticModels.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">SyntacticModels.jl</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../uwd_examples/">Undirected Wiring Diagrams</a></li><li class="is-active"><a class="tocitem" href>Decapodes</a></li><li><a class="tocitem" href="../composite_models_examples/">Composing Models</a></li></ul></li><li><a class="tocitem" href="../../api/">Library Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Decapodes</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Decapodes</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/AlgebraicJulia/SyntacticModels.jl/blob/main/docs/literate/decapodes_examples.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Decapodes"><a class="docs-heading-anchor" href="#Decapodes">Decapodes</a><a id="Decapodes-1"></a><a class="docs-heading-anchor-permalink" href="#Decapodes" title="Permalink"></a></h1><p>When specifying a physical system, we use differential equations. Decapodes is a language for representing systems of equations that works with UWDs to implement multiphysics composition. This example shows you how to use the DecaExpr language for specifying physics equations. We only look at ordinary differential equations here, but you can think of these as partial differential equations on the zero dimensional manifold (the point).</p><pre><code class="language-julia hljs">using ..SyntacticModels
+using ..SyntacticModels.ASKEMDecapodes
+using ..SyntacticModels.AMR
+
+using MLStyle
+using JSON3
+using Catlab
+using ACSets
+using ACSets.JSONACSets
+using Decapodes
+using Test</code></pre><p>Build the heder object describing the model.</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;harmonic_oscillator&quot;,
+  &quot;modelreps.io/DecaExpr&quot;,
+  &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
+  &quot;DecaExpr&quot;,
+  &quot;v1.0&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;)</code></pre><p>The easiest way to write down a DecaExpr is in our DSL and calling the parser.</p><pre><code class="language-julia hljs">dexpr = Decapodes.parse_decapode(quote
+  X::Form0{Point}
+  V::Form0{Point}
+
+  k::Constant{Point}
+
+  ∂ₜ(X) == V
+  ∂ₜ(V) == -1*k*(X)
+end
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:k), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:X)), Decapodes.Var(:V)), Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:V)), Decapodes.Mult(Decapodes.Term[Decapodes.Lit(Symbol(&quot;-1&quot;)), Decapodes.Var(:k), Decapodes.Var(:X)]))])</code></pre><p>Bundle the DecaExpr with the header metadata.</p><pre><code class="language-julia hljs">mexpr = ASKEMDecaExpr(h, dexpr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:k), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:X)), Decapodes.Var(:V)), Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:V)), Decapodes.Mult(Decapodes.Term[Decapodes.Lit(Symbol(&quot;-1&quot;)), Decapodes.Var(:k), Decapodes.Var(:X)]))]))</code></pre><p>Convert a the DecaExpr to a SummationDecapode which is the combinatorial representation. The converter lives in Decapodes/src/language.jl.</p><pre><code class="language-julia hljs">d = Decapodes.SummationDecapode(mexpr.model)</code></pre><div class="c-set">
+<span class="c-set-summary">Decapodes.SummationDecapode{Any, Any, Symbol} {Var:6, TVar:2, Op1:2, Op2:2, Σ:0, Summand:0, Type:0, Operator:0, Name:0}</span>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Var</th>
+      <th style = "text-align: right;">type</th>
+      <th style = "text-align: right;">name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">X</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">V</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">Constant</td>
+      <td style = "text-align: right;">k</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">4</td>
+      <td style = "text-align: right;">infer</td>
+      <td style = "text-align: right;">mult_1</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">5</td>
+      <td style = "text-align: right;">infer</td>
+      <td style = "text-align: right;">V̇</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">6</td>
+      <td style = "text-align: right;">Literal</td>
+      <td style = "text-align: right;">-1</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">TVar</th>
+      <th style = "text-align: right;">incl</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">5</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Op1</th>
+      <th style = "text-align: right;">src</th>
+      <th style = "text-align: right;">tgt</th>
+      <th style = "text-align: right;">op1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">∂ₜ</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">5</td>
+      <td style = "text-align: right;">∂ₜ</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Op2</th>
+      <th style = "text-align: right;">proj1</th>
+      <th style = "text-align: right;">proj2</th>
+      <th style = "text-align: right;">res</th>
+      <th style = "text-align: right;">op2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">6</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">*</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">5</td>
+      <td style = "text-align: right;">*</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>To visualize the Decapode as a compute graph, you can use Graphviz</p><pre><code class="language-julia hljs">to_graphviz(d)</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="180pt" height="394pt"
+ viewBox="0.00 0.00 180.50 393.85" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 389.85)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-389.85 176.5,-389.85 176.5,4 -4,4"/>
+<!-- n1 -->
+<g id="node1" class="node">
+<title>n1</title>
+<ellipse fill="none" stroke="black" cx="21.92" cy="-196.03" rx="21.84" ry="10.71"/>
+<text text-anchor="middle" x="21.92" y="-192.33" font-family="Times,serif" font-size="14.00">X:Ω₀</text>
+</g>
+<!-- n2 -->
+<g id="node2" class="node">
+<title>n2</title>
+<ellipse fill="none" stroke="black" cx="21.92" cy="-123.82" rx="21.84" ry="10.71"/>
+<text text-anchor="middle" x="21.92" y="-120.12" font-family="Times,serif" font-size="14.00">V:Ω₀</text>
+</g>
+<!-- n1&%2345;&gt;n2 -->
+<g id="edge5" class="edge">
+<title>n1&%2345;&gt;n2</title>
+<path fill="none" stroke="black" d="M21.92,-185.27C21.92,-173.43 21.92,-153.35 21.92,-139.6"/>
+<polygon fill="black" stroke="black" points="23.67,-139.5 21.92,-134.5 20.17,-139.5 23.67,-139.5"/>
+<text text-anchor="middle" x="27.92" y="-156.23" font-family="Times,serif" font-size="14.00">∂ₜ</text>
+</g>
+<!-- n10 -->
+<g id="node10" class="node">
+<title>n10</title>
+<polygon fill="none" stroke="black" points="112.42,-131.32 63.42,-131.32 63.42,-116.32 112.42,-116.32 112.42,-131.32"/>
+<text text-anchor="middle" x="87.92" y="-120.12" font-family="Times,serif" font-size="14.00">Ω•×Ω₀</text>
+</g>
+<!-- n1&%2345;&gt;n10 -->
+<g id="edge11" class="edge">
+<title>n1&%2345;&gt;n10</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M30.28,-186.14C42.48,-173.17 65.11,-149.09 78.09,-135.28"/>
+<polygon fill="black" stroke="black" points="79.63,-136.19 81.78,-131.35 77.08,-133.79 79.63,-136.19"/>
+<text text-anchor="middle" x="68.42" y="-156.23" font-family="Times,serif" font-size="14.00">π₂</text>
+</g>
+<!-- n5 -->
+<g id="node5" class="node">
+<title>n5</title>
+<ellipse fill="none" stroke="black" cx="71.92" cy="-51.61" rx="24.08" ry="10.71"/>
+<text text-anchor="middle" x="71.92" y="-47.91" font-family="Times,serif" font-size="14.00">V̇:Ω•</text>
+</g>
+<!-- n2&%2345;&gt;n5 -->
+<g id="edge6" class="edge">
+<title>n2&%2345;&gt;n5</title>
+<path fill="none" stroke="black" d="M28.46,-113.64C37.09,-101.51 52.37,-80.06 62.32,-66.09"/>
+<polygon fill="black" stroke="black" points="63.75,-67.1 65.22,-62.01 60.9,-65.07 63.75,-67.1"/>
+<text text-anchor="middle" x="57.92" y="-84.01" font-family="Times,serif" font-size="14.00">∂ₜ</text>
+</g>
+<!-- n8 -->
+<g id="node8" class="node">
+<title>n8</title>
+</g>
+<!-- n2&%2345;&gt;n8 -->
+<g id="edge3" class="edge">
+<title>n2&%2345;&gt;n8</title>
+<path fill="none" stroke="black" d="M22.74,-113.01C24.72,-89.22 29.76,-28.91 31.4,-9.28"/>
+<polygon fill="black" stroke="black" points="33.15,-9.29 31.82,-4.16 29.66,-9 33.15,-9.29"/>
+</g>
+<!-- n3 -->
+<g id="node3" class="node">
+<title>n3</title>
+<ellipse fill="none" stroke="black" cx="74.92" cy="-334.25" rx="25" ry="10.71"/>
+<text text-anchor="middle" x="74.92" y="-330.55" font-family="Times,serif" font-size="14.00">k:ΩC</text>
+</g>
+<!-- n9 -->
+<g id="node9" class="node">
+<title>n9</title>
+<polygon fill="none" stroke="black" points="141.42,-272.64 86.42,-272.64 86.42,-257.64 141.42,-257.64 141.42,-272.64"/>
+<text text-anchor="middle" x="113.92" y="-261.44" font-family="Times,serif" font-size="14.00">ΩL×ΩC</text>
+</g>
+<!-- n3&%2345;&gt;n9 -->
+<g id="edge8" class="edge">
+<title>n3&%2345;&gt;n9</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M80.51,-323.63C87.64,-311.37 99.94,-290.2 107.46,-277.25"/>
+<polygon fill="black" stroke="black" points="109,-278.09 110,-272.89 105.97,-276.33 109,-278.09"/>
+<text text-anchor="middle" x="107.42" y="-294.44" font-family="Times,serif" font-size="14.00">π₂</text>
+</g>
+<!-- n4 -->
+<g id="node4" class="node">
+<title>n4</title>
+<ellipse fill="none" stroke="black" cx="113.92" cy="-196.03" rx="51.74" ry="10.71"/>
+<text text-anchor="middle" x="113.92" y="-192.33" font-family="Times,serif" font-size="14.00">mult_1:Ω•</text>
+</g>
+<!-- n4&%2345;&gt;n10 -->
+<g id="edge10" class="edge">
+<title>n4&%2345;&gt;n10</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M110.31,-185.27C105.57,-172.5 97.3,-150.14 92.24,-136.49"/>
+<polygon fill="black" stroke="black" points="93.79,-135.63 90.41,-131.55 90.51,-136.85 93.79,-135.63"/>
+<text text-anchor="middle" x="111.42" y="-156.23" font-family="Times,serif" font-size="14.00">π₁</text>
+</g>
+<!-- n5&%2345;&gt;n8 -->
+<g id="edge4" class="edge">
+<title>n5&%2345;&gt;n8</title>
+<path fill="none" stroke="black" d="M64.21,-41.43C55.94,-31.59 43.11,-16.32 36.38,-8.31"/>
+<polygon fill="black" stroke="black" points="37.39,-6.79 32.83,-4.08 34.71,-9.04 37.39,-6.79"/>
+</g>
+<!-- n6 -->
+<g id="node6" class="node">
+<title>n6</title>
+<ellipse fill="none" stroke="black" cx="144.92" cy="-334.25" rx="27.65" ry="10.71"/>
+<text text-anchor="middle" x="144.92" y="-330.55" font-family="Times,serif" font-size="14.00">&%2345;1:ΩL</text>
+</g>
+<!-- n6&%2345;&gt;n9 -->
+<g id="edge7" class="edge">
+<title>n6&%2345;&gt;n9</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M140.48,-323.63C134.86,-311.47 125.2,-290.57 119.21,-277.59"/>
+<polygon fill="black" stroke="black" points="120.72,-276.69 117.04,-272.89 117.55,-278.16 120.72,-276.69"/>
+<text text-anchor="middle" x="138.42" y="-294.44" font-family="Times,serif" font-size="14.00">π₁</text>
+</g>
+<!-- n7 -->
+<g id="node7" class="node">
+<title>n7</title>
+</g>
+<!-- n7&%2345;&gt;n1 -->
+<g id="edge1" class="edge">
+<title>n7&%2345;&gt;n1</title>
+<path fill="none" stroke="black" d="M33.84,-381.67C33.01,-368.71 25.55,-253.21 22.87,-211.76"/>
+<polygon fill="black" stroke="black" points="24.61,-211.52 22.54,-206.64 21.12,-211.74 24.61,-211.52"/>
+</g>
+<!-- n7&%2345;&gt;n3 -->
+<g id="edge2" class="edge">
+<title>n7&%2345;&gt;n3</title>
+<path fill="none" stroke="black" d="M34.93,-381.68C38.83,-377.15 53.17,-360.5 63.57,-348.43"/>
+<polygon fill="black" stroke="black" points="64.98,-349.47 66.92,-344.54 62.33,-347.18 64.98,-349.47"/>
+</g>
+<!-- n9&%2345;&gt;n4 -->
+<g id="edge9" class="edge">
+<title>n9&%2345;&gt;n4</title>
+<path fill="none" stroke="black" d="M113.92,-257.46C113.92,-246.92 113.92,-226.19 113.92,-211.97"/>
+<polygon fill="black" stroke="black" points="115.67,-211.69 113.92,-206.69 112.17,-211.69 115.67,-211.69"/>
+<text text-anchor="middle" x="117.42" y="-228.44" font-family="Times,serif" font-size="14.00">*</text>
+</g>
+<!-- n10&%2345;&gt;n5 -->
+<g id="edge12" class="edge">
+<title>n10&%2345;&gt;n5</title>
+<path fill="none" stroke="black" d="M86.39,-116.09C83.85,-104.96 78.73,-82.47 75.31,-67.47"/>
+<polygon fill="black" stroke="black" points="76.95,-66.81 74.13,-62.32 73.54,-67.58 76.95,-66.81"/>
+<text text-anchor="middle" x="85.42" y="-84.01" font-family="Times,serif" font-size="14.00">*</text>
+</g>
+</g>
+</svg>
+'/><p>We want different metadata for this representation. The Summation prefix just means that this decapodes have specialized support for the handling of summation. The summation operator happens in physics so often, that you want to bake in some specialized handling to the data structure.</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;harmonic_oscillator&quot;,
+  &quot;modelreps.io/SummationDecapode&quot;,
+  &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
+  &quot;SummationDecapode&quot;,
+  &quot;v1.0&quot;)
+mpode = ASKEMDecapode(h, d)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecapode(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.SummationDecapode{Any, Any, Symbol}:
+  Var = 1:6
+  TVar = 1:2
+  Op1 = 1:2
+  Op2 = 1:2
+  Σ = 1:0
+  Summand = 1:0
+  Type = 1:0
+  Operator = 1:0
+  Name = 1:0
+  src : Op1 → Var = [1, 2]
+  tgt : Op1 → Var = [2, 5]
+  proj1 : Op2 → Var = [6, 4]
+  proj2 : Op2 → Var = [3, 1]
+  res : Op2 → Var = [4, 5]
+  incl : TVar → Var = [2, 5]
+  summand : Summand → Var = Int64[]
+  summation : Summand → Σ = Int64[]
+  sum : Σ → Var = Int64[]
+  op1 : Op1 → Operator = [:∂ₜ, :∂ₜ]
+  op2 : Op2 → Operator = [:*, :*]
+  type : Var → Type = [:Form0, :Form0, :Constant, :infer, :infer, :Literal]
+  name : Var → Name = [:X, :V, :k, :mult_1, :V̇, Symbol(&quot;-1&quot;)])</code></pre><p>The syntactic representation can be serialized as JSON. The resulting structure is like a parse tree of the syntactic representation of the DecaExpr</p><pre><code class="language-julia hljs">JSON3.pretty(mexpr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">{
+    &quot;header&quot;: {
+        &quot;description&quot;: &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
+        &quot;name&quot;: &quot;harmonic_oscillator&quot;,
+        &quot;_type&quot;: &quot;Header&quot;,
+        &quot;model_version&quot;: &quot;v1.0&quot;,
+        &quot;schema&quot;: &quot;modelreps.io/DecaExpr&quot;,
+        &quot;schema_name&quot;: &quot;DecaExpr&quot;
+    },
+    &quot;_type&quot;: &quot;ASKEMDecaExpr&quot;,
+    &quot;model&quot;: {
+        &quot;context&quot;: [
+            {
+                &quot;dim&quot;: &quot;Form0&quot;,
+                &quot;var&quot;: {
+                    &quot;name&quot;: &quot;X&quot;,
+                    &quot;_type&quot;: &quot;Var&quot;
+                },
+                &quot;space&quot;: &quot;Point&quot;,
+                &quot;_type&quot;: &quot;Judgement&quot;
+            },
+            {
+                &quot;dim&quot;: &quot;Form0&quot;,
+                &quot;var&quot;: {
+                    &quot;name&quot;: &quot;V&quot;,
+                    &quot;_type&quot;: &quot;Var&quot;
+                },
+                &quot;space&quot;: &quot;Point&quot;,
+                &quot;_type&quot;: &quot;Judgement&quot;
+            },
+            {
+                &quot;dim&quot;: &quot;Constant&quot;,
+                &quot;var&quot;: {
+                    &quot;name&quot;: &quot;k&quot;,
+                    &quot;_type&quot;: &quot;Var&quot;
+                },
+                &quot;space&quot;: &quot;Point&quot;,
+                &quot;_type&quot;: &quot;Judgement&quot;
+            }
+        ],
+        &quot;_type&quot;: &quot;DecaExpr&quot;,
+        &quot;equations&quot;: [
+            {
+                &quot;rhs&quot;: {
+                    &quot;name&quot;: &quot;V&quot;,
+                    &quot;_type&quot;: &quot;Var&quot;
+                },
+                &quot;lhs&quot;: {
+                    &quot;var&quot;: {
+                        &quot;name&quot;: &quot;X&quot;,
+                        &quot;_type&quot;: &quot;Var&quot;
+                    },
+                    &quot;_type&quot;: &quot;Tan&quot;
+                },
+                &quot;_type&quot;: &quot;Eq&quot;
+            },
+            {
+                &quot;rhs&quot;: {
+                    &quot;args&quot;: [
+                        {
+                            &quot;name&quot;: &quot;-1&quot;,
+                            &quot;_type&quot;: &quot;Lit&quot;
+                        },
+                        {
+                            &quot;name&quot;: &quot;k&quot;,
+                            &quot;_type&quot;: &quot;Var&quot;
+                        },
+                        {
+                            &quot;name&quot;: &quot;X&quot;,
+                            &quot;_type&quot;: &quot;Var&quot;
+                        }
+                    ],
+                    &quot;_type&quot;: &quot;Mult&quot;
+                },
+                &quot;lhs&quot;: {
+                    &quot;var&quot;: {
+                        &quot;name&quot;: &quot;V&quot;,
+                        &quot;_type&quot;: &quot;Var&quot;
+                    },
+                    &quot;_type&quot;: &quot;Tan&quot;
+                },
+                &quot;_type&quot;: &quot;Eq&quot;
+            }
+        ]
+    }
+}</code></pre><p>We could also use the JSON serialization built into Catlab to serialize the resulting combinatorial representation</p><pre><code class="language-julia hljs">JSON3.pretty(generate_json_acset(mpode.model))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">{
+    &quot;Var&quot;: [
+        {
+            &quot;_id&quot;: 1,
+            &quot;type&quot;: &quot;Form0&quot;,
+            &quot;name&quot;: &quot;X&quot;
+        },
+        {
+            &quot;_id&quot;: 2,
+            &quot;type&quot;: &quot;Form0&quot;,
+            &quot;name&quot;: &quot;V&quot;
+        },
+        {
+            &quot;_id&quot;: 3,
+            &quot;type&quot;: &quot;Constant&quot;,
+            &quot;name&quot;: &quot;k&quot;
+        },
+        {
+            &quot;_id&quot;: 4,
+            &quot;type&quot;: &quot;infer&quot;,
+            &quot;name&quot;: &quot;mult_1&quot;
+        },
+        {
+            &quot;_id&quot;: 5,
+            &quot;type&quot;: &quot;infer&quot;,
+            &quot;name&quot;: &quot;V̇&quot;
+        },
+        {
+            &quot;_id&quot;: 6,
+            &quot;type&quot;: &quot;Literal&quot;,
+            &quot;name&quot;: &quot;-1&quot;
+        }
+    ],
+    &quot;TVar&quot;: [
+        {
+            &quot;_id&quot;: 1,
+            &quot;incl&quot;: 2
+        },
+        {
+            &quot;_id&quot;: 2,
+            &quot;incl&quot;: 5
+        }
+    ],
+    &quot;Op1&quot;: [
+        {
+            &quot;_id&quot;: 1,
+            &quot;src&quot;: 1,
+            &quot;tgt&quot;: 2,
+            &quot;op1&quot;: &quot;∂ₜ&quot;
+        },
+        {
+            &quot;_id&quot;: 2,
+            &quot;src&quot;: 2,
+            &quot;tgt&quot;: 5,
+            &quot;op1&quot;: &quot;∂ₜ&quot;
+        }
+    ],
+    &quot;Op2&quot;: [
+        {
+            &quot;_id&quot;: 1,
+            &quot;proj1&quot;: 6,
+            &quot;proj2&quot;: 3,
+            &quot;res&quot;: 4,
+            &quot;op2&quot;: &quot;*&quot;
+        },
+        {
+            &quot;_id&quot;: 2,
+            &quot;proj1&quot;: 4,
+            &quot;proj2&quot;: 1,
+            &quot;res&quot;: 5,
+            &quot;op2&quot;: &quot;*&quot;
+        }
+    ],
+    &quot;Σ&quot;: [
+    ],
+    &quot;Summand&quot;: [
+    ],
+    &quot;Type&quot;: [
+    ],
+    &quot;Operator&quot;: [
+    ],
+    &quot;Name&quot;: [
+    ]
+}</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../uwd_examples/">« Undirected Wiring Diagrams</a><a class="docs-footer-nextpage" href="../composite_models_examples/">Composing Models »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Saturday 26 August 2023 20:21">Saturday 26 August 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
