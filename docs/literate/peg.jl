@@ -1,61 +1,71 @@
+# # Parsing UWD expressions with PEG
+
+# Sometimes we want to be able to represent our models in a totally custom grammar that isn't tied
+# to any particular programming language syntax. In this case we want to describe undirected wiring diagrams
+# in a domain specific language based on the traditional syntax for mathematical relations, plus some
+# syntax inspired by C.
+
 using PEG
 PEG.setdebug!(false)
-
 using MLStyle
 using SyntacticModels
 using SyntacticModels.ASKEMUWDs
 using Test
 using Base.Iterators
 
+Base.:(==)(s::Statement, t::Statement) = s.relation == t.relation && s.variables == t.variables
+Base.:(==)(s::Untyped, t::Untyped) = s.var == t.var
+
 cflat = collect∘flatten
 
 build_context(parenmatch) = map(Untyped∘Symbol, filter(s->s!=",", parenmatch[2]))
 
-# Create some rules 
+# ## Create some rules 
+# These basic rules are for *lexing*, they define character classes that will help us
+# break up text into words or other syntactic constructs. They should be reused between
+# grammars as the lowest level of syntactic structure.
 
-@rule item = r"[^,]*"w |> string
-@rule commalist = (item & r"[,]"p)[*] & item |> (cflat ∘ cflat)
-@rule parens = r"\(" & commalist & r"\)" |> build_context
-
-
-# @rule schemadef = "schema: " & name & body
-@rule body = r"{"p & line[*]  & r"}"p
-
-@rule line = ws[*] & statement & ws[*] & EOL
-
-@rule elname = r"[^:{}→\n;=,]*"
-@rule obname = r"[^:{}→\n;=,]*"
-
-@rule EOL = "\n" , ";"
-@rule nonclosing = r"[^}]"p
-@rule type = nonclosing[*]
-@rule name = r"[^{]*"
-@rule int = r"\d+"
-@rule colon = r":"p
-@rule range = int & colon & int
-@rule judgement = elname & colon & obname & r"," |> Typed
-@rule finjudgement = elname & colon & obname |> Typed
 @rule ws = r"\s*"
 @rule eq = r"="p
+@rule lparen = r"\("
+@rule rparen = r"\)"
+@rule comma = r","p
+@rule EOL = "\n" , ";"
+@rule colon = r":"p
+@rule elname = r"[^:{}→\n;=,\(\)]*"
+@rule obname = r"[^:{}→\n;=,\(\)]*"
 
-@rule instance = "instance: " & name & instbody
-@rule instbody = r"{"p & (leaftable , table)[*] & r"}"p
-@rule leaftable = obname & r"="p & range
-@rule table = ws & name & r"{"p & row[*] & r"}"p
-@rule row = ws & pair[*] & finpair & EOL
-@rule pair = key & r"="h & value & r","p
-@rule finpair = key & r"="h & value
-@rule key = r"[^,=\n]*"
-@rule value = r"[^,=\n]*"
+# Now we get to the syntax structures specific to our DSL.
+# A judgement is an of the form x:X. We need to handle the items in the middle of list and the last item separately.
+# It would be nice to have a better way to do this, but basically anything that can occur in a list has two rules associated with it.
+# We use the prefix `fin` for final.
+
+@rule judgement = elname & colon & obname & r"," |> Typed
+@rule finjudgement = elname & colon & obname |> Typed
+
+# A context is a list of judgements between brackets. When a rule ends with `|> f`
+# it means to call `f` on the result of the parser inside the recursion.
+# We are using these functions to get more structured output as we pop the function call stack.
+# we don't want to end up with an `Array{Any}` that is deeply nested as the return value of our parse.
 
 @rule context = r"{"p & judgement[*] & finjudgement & r"}"p |> buildcontext
 
-@rule lparen = r"{"p
-@rule rparen = r"}"p
-@rule comma = r","p
-@rule finarg = elname
-@rule arg = elname & comma
+# Our statements  are of the form `R(a,b,c)`. A name(list of names).
 @rule statement = elname & lparen & arg[*] & finarg & rparen |> Statement
+@rule arg = elname & comma
+@rule finarg = elname
+
+# A line is statement, with some whitespace ended by a EOL character.
+# The body of our relational program is a list of lines between braces.
+
+@rule line = ws & statement & ws & EOL |> v->v[2]
+@rule body = r"{\s*"p & line[*]  & r"\n?}"p |> v->v[2]
+
+# The UWD is a body and then a context for it separated by the word "where".
+
+@rule uwd = body & ws & "where" & ws & context |> v -> UWDExpr(v[end], v[1])
+
+# Some of our rules construct higher level structures for the results. Those methods are defined here:
 
 ASKEMUWDs.Typed(j::Vector{Any}) = begin
   Typed(Symbol(j[1]), Symbol(j[3]))
@@ -72,53 +82,65 @@ ASKEMUWDs.Statement(v::Vector{Any}) = begin
   Statement(Symbol(v[1]), args)
 end
 
-@test judgement("a:A,")[1] == Typed(:a, :A)
-@test judgement("ab:AB,")[1] == Typed(:ab, :AB)
+# ## Testing our parser
 
-@test finjudgement("a:A")[1] == Typed(:a, :A)
-@test finjudgement("ab:AB")[1] == Typed(:ab, :AB)
+# Let's make sure we can parse the relational program syntax we designed!
 
-@test context("{a:A,b:B}")[1] == [Typed(:a, :A), Typed(:b, :B)]
+uwd("""{R(a,b); S(b,c);} where {a:A,b:B,c:C}""")[1]
 
-@show statement("R{a,b}")
-
-@show statement("S{u,b}")
-# body("""{R(a,b)
-# S(u,b)}""")
-
-commalist("a,b")
-
-@testset "Rules" begin
-@testset "Words" begin
-  @test item("a,b") == ("a", ",b")
-  @test item("a, b") == ("a", ", b")
-  @test item("a ,b") == ("a", ",b")
-  @test item("a , b") == ("a", ", b")
-end
-
-@testset "Commalist" begin
-  v = (["a", ",", 'b'])
-  v₂ = (["a", ",", 'b'])
-  @test commalist("a,b")[1] == v
-  @test commalist("a ,b")[1] == v₂
-  @test commalist("a, b")[1] == ["a", ",", 'b']
-  @test commalist("a , b")[1] == ["a", ",", 'b']
-  @test commalist("a, b,c")[1] == ["a", ",", "b", ",", 'c']
-  @test commalist("a, b,c, d")[1] == ["a", ",", "b", ",", "c", ",", 'd']
-end
-
-end
-
+# Now we write some unit tests. This is how I wrote this code, by writing the tests from the bottom up.
 
 @testset "Parens" begin
-  v = [Untyped(:a), Untyped(:b)]
-  @test parens("(a,b)")[1] == v
-  @test parens("(a ,b)")[1] == v
-  @test parens("(a, b)")[1] == v
+  @test lparen("(")[1] == "("
+  @test rparen(")")[1] == ")"
+  @test elname("R(a)")[1] == "R"
+end
+
+@testset "Judgements" begin
+  @test judgement("a:A,")[1] == Typed(:a, :A)
+  @test judgement("ab:AB,")[1] == Typed(:ab, :AB)
+
+  @test finjudgement("a:A")[1] == Typed(:a, :A)
+  @test finjudgement("ab:AB")[1] == Typed(:ab, :AB)
+end
+
+@testset "Contexts" begin
+  @test context("{a:A,b:B}")[1] == [Typed(:a, :A), Typed(:b, :B)]
 end
 
 
-# @test parens("(a:A, b:B)")[1] == vₜ
-# vₜ = [Untyped(Symbol("a:A")), Untyped(Symbol("b:B"))]
+@testset "Statements" begin
+  @test [Untyped(:u)] == [Untyped(:u)]
+  @test statement("R(a,b)")[1] == Statement(:R, [Untyped(:a),Untyped(:b)])
+  @test statement("S(u,b)")[1] == Statement(:S, [Untyped(:u),Untyped(:b)])
+  @test statement("S(u,b,x)")[1].relation == Statement(:S, [Untyped(:u), Untyped(:b), Untyped(:x)]).relation
+  @test statement("S(u,b,x)")[1].variables == Statement(:S, [Untyped(:u), Untyped(:b), Untyped(:x)]).variables
+  @test statement("S(u)")[1].relation == Statement(:S, [Untyped(:u)]).relation
+  @test statement("S(u)")[1].variables == Statement(:S, Var[Untyped(:u)]).variables
+end
 
-# parens("R(a,b)")
+@testset "Body" begin
+  @test body("""{
+  R(a,b);}""")[1][1] isa Statement
+
+  @test body("""{
+  R(a,b);
+  }""")[1][1] isa Statement
+
+  @test body("""{
+    R(a,b);
+  }""")[1][1] isa Statement
+
+  @test length(body("""{
+  R(a,b);
+    S(u,b);
+  }""")[1]) == 2
+end
+
+# Our final test shows that we can parse what we expect to be able to parse:
+@testset "UWD" begin
+  @test uwd("""{R(a,b); S(b,c);} where {a:A,b:B,c:C}""")[1].context == [Typed(:a, :A), Typed(:b,:B), Typed(:c,:C)]
+  @test uwd("""{R(a,b); S(b,c);}
+   where {a:A,b:B,c:C}""")[1].statements == [Statement(:R, [Untyped(:a), Untyped(:b)]),
+    Statement(:S, [Untyped(:b), Untyped(:c)])]
+end
