@@ -11,6 +11,7 @@ using StructTypes
 using Catlab
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
+import Base: show
 
 
 @data Var <: AbstractTerm begin
@@ -100,6 +101,55 @@ context(t::UWDTerm) = @match t begin
   UWDModel(h, uwd) => context(uwd)
 end
 
+"""    show(io::IO, s::UWDTerm)
+
+generates a human readable string of the `UWDTerm` (or any sub-term).
+"""
+function show(io::IO, s::UWDTerm)
+  let ! = show
+    @match s begin
+      Statement(r, v) => begin print(io, "$r("); show(io, v, wrap=false); print(io, ")") end
+      UWDExpr(c, body) => begin 
+        map(enumerate(body)) do (i,s)
+          if i == 1
+            print(io, "{ ")
+            show(io, s)
+            print(io, "\n")
+          elseif i == length(body)
+            print(io, "  ")
+            show(io, s)
+            print(io, " }")
+          else
+            print(io, "  ")
+            show(io, s)
+            print(io, "\n")
+          end
+        end
+        print(io, " where ")
+        show(io, c)
+      end
+      UWDModel(h, uwd) => begin println(io, amr_to_string(h)); println(io, "UWD:"); !(io, uwd); end
+    end
+  end
+end
+
+function show(io::IO, c::Vector{Var}; wrap=true)
+  if wrap
+    print(io, "{")
+  end
+  map(enumerate(c)) do (i,s)
+    @match s begin
+      Untyped(v) => print(io, v)
+      Typed(v, T) => print(io, "$v:$T")
+    end
+    if i != length(c)
+      print(io, ", ")
+    end
+  end
+  if wrap
+    print(io, "}")
+  end
+end
 
 """    construct(::Type{RelationDiagram}, ex::UWDExpr)
 

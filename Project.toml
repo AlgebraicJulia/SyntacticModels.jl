@@ -2,7 +2,7 @@ name = "SyntacticModels"
 uuid = "22bb929c-8bcf-4852-b455-eb3e1675e09c"
 license = "MIT"
 authors = ["James Fairbanks <fairbanksj@ufl.edu>"]
-version = "0.0.1"
+version = "0.1.0"
 
 [deps]
 ACSets = "227ef7b5-1206-438b-ac65-934d6da304b8"

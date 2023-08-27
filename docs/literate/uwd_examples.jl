@@ -60,14 +60,15 @@ uwd = ASKEMUWDs.construct(RelationDiagram, u)
 # And then use Graphviz to draw the uwd.
 draw(uwd)
 
-display(uwd)
-
 # ## Model Headers
 
 # As usual, we can add an AMR header to a UWD Model:
 
 h = AMR.Header("rst_relation", "modelreps.io/UWD", "A demo UWD showing generic relation composition", "UWDExpr", "v0.1")
 mexpr = UWDModel(h, u)
+
+# And write that model in JSON
+
 s = JSON3.write(mexpr)
 
 # Just as check, the headers should be preserved.
