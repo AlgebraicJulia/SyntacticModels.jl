@@ -6,8 +6,6 @@ export Var, Typed, Untyped, Statement, UWDExpr, UWDModel, UWDTerm, context
 using ..SyntacticModels: AbstractTerm
 using ..AMR
 
-using StructTypes
-
 using MLStyle
 using Catlab
 using Catlab.RelationalPrograms
