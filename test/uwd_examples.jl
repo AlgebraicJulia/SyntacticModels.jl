@@ -1,5 +1,5 @@
 using ..SyntacticModels
-using ..SyntacticModels.SyntacticModelsBase
+using ..SyntacticModels.SyntacticModels
 using ..SyntacticModels.AMR
 using ..SyntacticModels.ASKEMUWDs
 

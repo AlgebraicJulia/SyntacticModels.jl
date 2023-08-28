@@ -5,9 +5,8 @@ export CompositeModelExpr, OpenModel, OpenDecapode, CompositeModel, interface, o
 using MLStyle
 using Catlab
 using Decapodes
-using StructTypes
 
-using ..SyntacticModelsBase
+using ..SyntacticModels: AbstractTerm
 using ..AMR
 using ..ASKEMDecapodes
 using ..ASKEMUWDs
@@ -30,10 +29,6 @@ end
 """
 CompositeModel
 
-StructTypes.StructType(::Type{CompositeModel}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{CompositeModel}) = :_type
-StructTypes.subtypes(::Type{CompositeModel}) = (OpenModel=OpenModel, OpenDecapode=OpenDecapode, CompositeModelExpr)
-
 
 """    interface(m::CompositeModel)
 
@@ -53,9 +48,9 @@ open_decapode(d::ASKEMDecapode, interface) = Open(d.model, interface)
 
 CompositeModels can be flattened into a single level of model with the oapply function.
 
-!!! warning 
-    Because the oapply algorithm operates on the compute graph representation of the equations, it does not produce syntactic equations. 
-    Calls to oapply produce instances of OpenDecapode and not DecaExpr. 
+!!! warning
+    Because the oapply algorithm operates on the compute graph representation of the equations, it does not produce syntactic equations.
+    Calls to oapply produce instances of OpenDecapode and not DecaExpr.
     Software that expects to consume decapodes should plan to interact with both forms.
 """
 function Catlab.oapply(m::CompositeModel)
@@ -67,7 +62,7 @@ function Catlab.oapply(m::CompositeModel)
       # For a composite model, we have to recurse
       CompositeModelExpr(h, pattern, components) => begin
         uwd = ASKEMUWDs.construct(RelationDiagram, pattern)
-        Ms = map(m.components) do mᵢ; 
+        Ms = map(m.components) do mᵢ;
           !(mᵢ) # oapply all the component models recursively
         end
         # OpenDecapode(ASKEMDecapode(h, apex(!(uwd, Ms))), interface(m)) # Then we call the oapply from Decapodes.

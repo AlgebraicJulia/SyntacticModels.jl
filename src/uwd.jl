@@ -3,11 +3,12 @@ module ASKEMUWDs
 # include("amr.jl")
 export Var, Typed, Untyped, Statement, UWDExpr, UWDModel, UWDTerm, context
 
-using ..SyntacticModelsBase
+using ..SyntacticModels: AbstractTerm
 using ..AMR
 
-using MLStyle
 using StructTypes
+
+using MLStyle
 using Catlab
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
@@ -31,10 +32,6 @@ Subtypes include:
 which are used for representing typed or untyped variables.
 """
 Var
-
-StructTypes.StructType(::Type{Var}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{Var}) = :_type
-StructTypes.subtypes(::Type{Var}) = (Untyped=Untyped, Typed=Typed)
 
 @data UWDTerm <: AbstractTerm begin
   Statement(relation::Symbol, variables::Vector{Var})
@@ -81,10 +78,6 @@ u = UWDExpr(c, s)
 """
 UWDTerm
 
-StructTypes.StructType(::Type{UWDTerm}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{UWDTerm}) = :_type
-StructTypes.subtypes(::Type{UWDTerm}) = (Statement=Statement, UWDExpr=UWDExpr, UWDModel=UWDModel)
-
 varname(v::Var) = @match v begin
   Untyped(v) => v
   Typed(v, t) => v
@@ -109,7 +102,7 @@ function show(io::IO, s::UWDTerm)
   let ! = show
     @match s begin
       Statement(r, v) => begin print(io, "$r("); show(io, v, wrap=false); print(io, ")") end
-      UWDExpr(c, body) => begin 
+      UWDExpr(c, body) => begin
         map(enumerate(body)) do (i,s)
           if i == 1
             print(io, "{ ")
