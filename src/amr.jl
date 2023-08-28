@@ -12,7 +12,7 @@ using Reexport
 using ACSets.ADTs
 using ACSets.ACSetInterface
 
-using ..SyntacticModelsBase
+using ..SyntacticModels: AbstractTerm
 
 @data MathML <: AbstractTerm begin
   Math(String)
@@ -41,6 +41,8 @@ nounit = Unit("", nomath)
   Normal(mean, variance)
   PointMass(value)
 end
+
+StandardNormal(::Dict) = StandardNormal()
 
 @as_record struct Observable{T <: AbstractTerm}
   id::Symbol
@@ -73,7 +75,7 @@ end
 end
 
 @as_record struct ASKEModel <: AbstractTerm
-  header::Header 
+  header::Header
   model::ACSetSpec
   semantics::Vector{Semantic}
 end
@@ -114,7 +116,7 @@ function amr_to_string(amr)
       m::ACSetSpec                     => "Model = begin\n$(padlines(sprint(show, m),2))\nend"
       ODEList(l)                       => "ODE_Equations = begin\n" * padlines(join(map(!, l), "\n")) * "\nend"
       ODERecord(rts, init, para, time) => join(vcat(["ODE_Record = begin\n"], !rts , !init, !para, [!time, "end"]), "\n")
-      vs::Vector{Pair}                 => map(vs) do v; "$(v[1]) => $(v[2])," end |> x-> join(x, "\n") 
+      vs::Vector{Pair}                 => map(vs) do v; "$(v[1]) => $(v[2])," end |> x-> join(x, "\n")
       vs::Vector{Semantic}             => join(map(!, vs), "\n\n")
       xs::Vector                       => map(!, xs)
       Typing(system, map)              => "Typing = begin\n$(padlines(!system, 2))\nTypeMap = [\n$(padlines(!map, 2))]\nend"
@@ -125,7 +127,7 @@ end
 
 block(exprs) = begin
   q = :(begin
-    
+
   end)
   append!(q.args, exprs)
   return q
@@ -252,14 +254,14 @@ end
 
 function load(::Type{Header}, d::AbstractDict)
     @match d begin
-      Dict("name"=>n, "schema"=>s, "description"=>d, "schema_name"=>sn, "model_version"=>mv) => Header(n,s,d,sn,mv) 
+      Dict("name"=>n, "schema"=>s, "description"=>d, "schema_name"=>sn, "model_version"=>mv) => Header(n,s,d,sn,mv)
       _ => error("Information for Header was not found in $d")
     end
 end
 
 function load(::Type{Typing}, d::AbstractDict)
   @match d begin
-    Dict("type_system"=>s, "type_map"=>m) => begin @show m;  Typing(petrispec(s), [x[1]=> x[2] for x in m]) end 
+    Dict("type_system"=>s, "type_map"=>m) => begin @show m;  Typing(petrispec(s), [x[1]=> x[2] for x in m]) end
     _ => error("Typing judgement was not properly encoded in $d")
   end
 end
@@ -323,11 +325,11 @@ end
 
 function load(d::Type{Distribution}, ex::Expr)
   @matchast ex quote
-    U(0,1)        => StandardUniform   
-    U($min,$max)  => Uniform(min, max) 
-    N(0,1)        => StandardNormal    
-    N($mu,$var)   => Normal(mu, var)   
-    δ($value)     => PointMass(value)  
+    U(0,1)        => StandardUniform
+    U($min,$max)  => Uniform(min, max)
+    N(0,1)        => StandardNormal
+    N($mu,$var)   => Normal(mu, var)
+    δ($value)     => PointMass(value)
     _ => error("Failed to find distribution in $ex")
   end
 end
@@ -346,16 +348,16 @@ end
 
 function load(::Type{ODEList}, ex::Expr)
   map(ex.args[2].args) do arg
-    try 
+    try
       return load(Rate, arg)
-    catch ErrorException 
-      try 
+    catch ErrorException
+      try
         return load(Initial, arg)
-      catch ErrorException 
-        try 
+      catch ErrorException
+        try
           return load(Parameter, arg)
-        catch ErrorException 
-          try 
+        catch ErrorException
+          try
             return load(Time, arg)
           catch
             return nothing
@@ -410,7 +412,7 @@ function load(::Type{ASKEModel}, ex::Expr)
       Expr(:(=), :ODE_Record, body) => load(ODEList, arg)
       Expr(:(=), :ODE_Equations, body) => load(ODEList, arg)
       Expr(:(=), :Typing, body) => load(Typing, arg)
-      _ => arg 
+      _ => arg
       end
   end
   ASKEModel(elts[2][1], elts[2][2], [elts[4], elts[6]])
