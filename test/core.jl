@@ -9,7 +9,7 @@ using JSON3
 jsondir = joinpath(@__DIR__, "json")
 
 write_json_model(m, prefix=joinpath(@__DIR__, "json")) = open(joinpath(prefix, "$(m.header.name).json"), "w") do fp
-  JSON3.pretty(fp, Dict(m))
+  JSON3.pretty(fp, m)
 end
 
 readback(m, prefix=joinpath(@__DIR__, "json")) = open(joinpath(jsondir, "$(m.header.name).json"), "r") do fp

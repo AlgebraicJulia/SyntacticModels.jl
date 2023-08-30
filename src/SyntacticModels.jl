@@ -51,7 +51,9 @@ include("composite_models.jl")
 #-----------------------------------------------------------------------------# Constructors
 for T in concrete_subtypes(AbstractTerm)
     @eval function $(parentmodule(T)).$(T.name.name)(x::NamedTuple)
-        args = x[fieldnames($T)]
+        fields = filter(x -> x != :_type, fieldnames($T))
+        args = collect(x[fields])
+        @show args
         $(parentmodule(T)).$(T.name.name)(args...)
     end
 end
