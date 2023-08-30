@@ -1,7 +1,7 @@
 module SyntacticModels
 
 #-----------------------------------------------------------------------------# "SyntacticModelsBase"
-using InteractiveUtils: subtypes
+using InteractiveUtils
 using StructTypes
 
 """    AbstractTerm
@@ -25,13 +25,14 @@ function StructTypes.lowertype(::Type{T}) where {T <: AbstractTerm}
     NamedTuple{(:_type, fieldnames(T)...), Tuple{Symbol, fieldtypes(T)...}}
 end
 
-# Doesn't work with 1-field structs
-# (::Type{T})(x::StructTypes.lowertype(Type{T})) where {T <: AbstractTerm} = T(x[fieldnames(T)]...)
-
+function StructTypes.construct(::Type{T}, nt::NamedTuple) where T<:AbstractTerm
+    fields = filter(x -> x != :_type, fieldnames(T))
+    T(nt[fields]...)
+end
 
 function concrete_subtypes(T)
     out = Type[]
-    for S in subtypes(T)
+    for S in InteractiveUtils.subtypes(T)
         isconcretetype(S) ? push!(out, S) : append!(out, concrete_subtypes(S))
     end
     return out
@@ -48,12 +49,12 @@ include("decapodes.jl")
 include("uwd.jl")
 include("composite_models.jl")
 
-#-----------------------------------------------------------------------------# Constructors
-for T in concrete_subtypes(AbstractTerm)
-    @eval function $(parentmodule(T)).$(T.name.name)(x::NamedTuple)
-        args = x[fieldnames($T)]
-        $(parentmodule(T)).$(T.name.name)(args...)
-    end
-end
+# #-----------------------------------------------------------------------------# Constructors
+# for T in concrete_subtypes(AbstractTerm)
+#     @eval function $(parentmodule(T)).$(T.name.name)(x::NamedTuple)
+#         args = x[fieldnames($T)]
+#         $(parentmodule(T)).$(T.name.name)(args...)
+#     end
+# end
 
 end
