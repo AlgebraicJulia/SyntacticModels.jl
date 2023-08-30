@@ -57,6 +57,7 @@ h = AMR.Header("harmonic_oscillator",
   "v1.0")
 
 # The easiest way to write down a DecaExpr is in our DSL and calling the parser.
+# This formula is $$∂ₜ(∂ₜ(x)) = -kx$$.
 dexpr = Decapodes.parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
@@ -71,7 +72,11 @@ end
 # That gave us the first model
 d1 = ASKEMDecaExpr(h, dexpr)
 
-# The second model is:
+# The second model is given by:
+# 
+# $$ ∂ₜQ = κ*V + λ(Q - Q₀)$$
+# 
+#
 d2 = ASKEMDecaExpr(
   AMR.Header("fricative_heating",
    "modelreps.io/SummationDecapode",
@@ -124,7 +129,10 @@ uwdʰ = UWDExpr([v, Q], [Statement(:drag, [v, Q₊]), Statement(:cooling, [Q₋,
 # Our three primitive subsystems are each composed of one equation. Of course at this scale of complexity, you don't
 # need to do compositional specification, you can just compose them in your head and write down the composite.
 # But this is a tutorial, so we are building a very simple model as a composite of atomic models (one equation each).
-
+#
+# The formula for drag is
+# 
+# $$ Q₊ == κ*V $$
 drag = ASKEMDecaExpr(
   AMR.Header("DragHeat", "modelreps.io/SummationDecapode", "velocity makes it get hot", "SummationDecapode", "v1.0"),
   Decapodes.parse_decapode(quote
@@ -135,6 +143,9 @@ drag = ASKEMDecaExpr(
     Q₊ == κ*V 
   end)
 )
+
+# Our cooling formula is
+# $$ Q₋ == λ(Q-Q₀) $$
 
 cooling = ASKEMDecaExpr(
   AMR.Header("NetwonCooling", "modelreps.io/SummationDecapode", "heat dissipates to the enviornment", "SummationDecapode", "v1.0"),
@@ -147,6 +158,8 @@ cooling = ASKEMDecaExpr(
     Q₋ == λ(Q-Q₀)
   end)
 )
+
+# Linear Superposition is just $$T == X + Y$$
 
 superposition = ASKEMDecaExpr(
   AMR.Header("LinearSuperpositon", "modelreps.io/SummationDecapode", "variables be addin", "SummationDecapode", "v1.0"),
