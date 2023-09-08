@@ -73,8 +73,7 @@ end
 d1 = ASKEMDecaExpr(h, dexpr)
 
 # The second model is given by:
-# 
-# $$ ∂ₜQ = κ*V + λ(Q - Q₀)$$
+# $$ ∂ₜQ = κ*V + λ(Q - Q₀) $$
 # 
 #
 d2 = ASKEMDecaExpr(
@@ -131,8 +130,8 @@ uwdʰ = UWDExpr([v, Q], [Statement(:drag, [v, Q₊]), Statement(:cooling, [Q₋,
 # But this is a tutorial, so we are building a very simple model as a composite of atomic models (one equation each).
 #
 # The formula for drag is
-# 
 # $$ Q₊ == κ*V $$
+#
 drag = ASKEMDecaExpr(
   AMR.Header("DragHeat", "modelreps.io/SummationDecapode", "velocity makes it get hot", "SummationDecapode", "v1.0"),
   Decapodes.parse_decapode(quote
