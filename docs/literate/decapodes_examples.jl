@@ -67,7 +67,11 @@ mpode = ASKEMDecapode(h, d)
 # The resulting structure is like a parse tree of the syntactic
 # representation of the DecaExpr
 
-JSON3.pretty(mexpr)
+mexpr_json = JSON3.pretty(mexpr)
+
+# This JSON can be read in with the default JSON3 read function.
+
+JSON3.read(mexpr_json, ASKEMDecaExpr)
 
 # We could also use the JSON serialization built into Catlab
 # to serialize the resulting combinatorial representation
