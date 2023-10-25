@@ -73,3 +73,5 @@ JSON3.pretty(mexpr)
 # to serialize the resulting combinatorial representation
 
 JSON3.pretty(generate_json_acset(mpode.model))
+
+JSON3.pretty(generate_json_acset_schema(Decapodes.SchSummationDecapode))
