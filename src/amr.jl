@@ -64,6 +64,19 @@ end
   # Stratification
 end
 
+@data Note <: AbstractTerm begin
+  Name(str::String)
+  Description(str::String)
+  Grounding(ontology::String, identifier::String)
+  Units(expression::String)
+end
+
+@as_record struct Annotation{E,T}
+  entity::E
+  type::T
+  note::Note
+end
+
 @as_record struct Header <: AbstractTerm
   name::String
   schema::String
