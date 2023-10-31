@@ -378,38 +378,6 @@ function load(d::Type{Distribution}, ex::Expr)
   end
 end
 
-function load(::Type{Note}, ex::Expr)
-  @matchast ex quote
-    Name($n) => Name(n)
-    Description($d) => Description(d) 
-    Grounding($ont,$ident) => Grounding(ont,ident)
-    Units($e) => Units(e)
-  end
-end
-
-function load(::Type{Annotation}, ex::Expr)
- #= map(ex.args[2].args) do arg
-    try 
-      return load(Rate, arg)
-    catch ErrorException 
-      try 
-        return load(Initial, arg)
-      catch ErrorException 
-        try 
-          return load(Parameter, arg)
-        catch ErrorException 
-          try 
-            return load(Time, arg)
-          catch
-            return nothing
-          end
-        end
-      end
-    end
-  end |> x->filter(!isnothing, x) |> ODEList=#
-  Annotation(ex.entity,ex.type,ex.note)
-end
-
 function load(::Type{Parameter}, ex::Expr)
   name, desc, ex = docval(ex)
   id, u, val, dist = @matchast ex quote
