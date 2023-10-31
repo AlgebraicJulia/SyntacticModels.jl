@@ -108,10 +108,10 @@ end
 
 function note_string(n::Note)
   @match n begin
-    Name(n)           => n
-    Description(d)    => d
-    Grounding(ont, ident) => "$ont,$ident"
-    Units(e)          => e
+    Name(n)           => "Name($n)"
+    Description(d)    => "Description($d)"
+    Grounding(ont, ident) => "Grounding($ont,$ident)"
+    Units(e)          => "Units($e)"
   end
 end
 
@@ -401,6 +401,7 @@ function load(::Type{Annotation}, ex::Expr)
       end
     end
   end |> x->filter(!isnothing, x) |> ODEList=#
+  Annotation(ex.entity,ex.type,ex.note)
 end
 
 function load(::Type{Parameter}, ex::Expr)
