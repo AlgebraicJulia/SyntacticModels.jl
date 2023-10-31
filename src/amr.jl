@@ -12,6 +12,7 @@ using Reexport
 @reexport using ACSets
 using ACSets.ADTs
 using ACSets.ACSetInterface
+using StructTypes
 
 using ..SyntacticModelsBase
 
@@ -71,6 +72,11 @@ end
   Grounding(ontology::String, identifier::String)
   Units(expression::String)
 end
+
+StructTypes.StructType(::Type{Note}) = StructTypes.AbstractType()
+StructTypes.subtypekey(::Type{Note}) = :_type
+StructTypes.subtypes(::Type{Note}) =
+  (Name=Name,Description=Description,Grounding=Grounding,Units=Units,)
 
 @as_record struct Annotation{E,T} <: AbstractTerm
   entity::E
@@ -146,7 +152,7 @@ function amr_to_string(amr)
       xs::Vector                       => map(!, xs)
       Typing(system, map)              => "Typing = begin\n$(padlines(!system, 2))\nTypeMap = [\n$(padlines(!map, 2))]\nend"
       ASKEModel(h, m, s)               => "$(!h)\n$(!m)\n\n$(!s)"
-      Annotation(e,t,n)                => "Annotation = $e,$t: $(note_string(n))"
+      Annotation(e,t,n)                => "Annotation = $(String(e)),$(String(t)): $(note_string(n))"
     end
   end
 end
@@ -183,7 +189,7 @@ function amr_to_expr(amr)
       xs::Vector                       => begin ys = map(!, xs); block(ys) end
       Typing(system, map)              => :(Typing = $(!system); TypeMap = $(block(map)))
       ASKEModel(h, m, s)               => :($(!h);$(!m);$(!s))
-      Annotation(e,t,n)                => "Annotation = $e,$t: $(note_expr(n))"
+      Annotation(e,t,n)                => "Annotation = $(String(e)),$(String(t)): $(note_expr(n))"
     end
   end
 end
