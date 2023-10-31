@@ -10,8 +10,8 @@ using Decapodes
 using MLStyle
 
 @data ASKEMDeca <: AbstractTerm begin
-  ASKEMDecaExpr(header::AMR.Header, model::Decapodes.DecaExpr)
-  ASKEMDecapode(header::AMR.Header, model::Decapodes.SummationDecapode)
+  ASKEMDecaExpr(header::AMR.Header, model::Decapodes.DecaExpr, annotations::Vector{AMR.Annotation{Symbol,Symbol}})
+  ASKEMDecapode(header::AMR.Header, model::Decapodes.SummationDecapode, annotations::Vector{AMR.Annotation{Symbol,Symbol}})
 end
 
 @doc """    ASKEMDeca
@@ -25,14 +25,14 @@ ASKEMDeca
 Stores the syntactic expression of a Decapode Expression with the
 model metadata for ASKEM AMR conformance.
 """
-ASKEMDecaExpr
+ASKEMDecaExpr(header::AMR.Header, model::Decapodes.DecaExpr) = ASKEMDecaExpr(header,model,Vector{AMR.Annotation{Symbol,Symbol}}())
 
 @doc """    ASKEMDecapode
 
 Stores the combinatorial representation of a Decapode with the
 model metadata for ASKEM AMR conformance.
 """
-ASKEMDecapode
+ASKEMDecapode(header::AMR.Header, model::Decapodes.SummationDecapode) = ASKEMDecapode(header,model,Vector{AMR.Annotation{Symbol,Symbol}}())
 
 StructTypes.StructType(::Type{ASKEMDeca}) = StructTypes.AbstractType()
 StructTypes.subtypekey(::Type{ASKEMDeca}) = :_type

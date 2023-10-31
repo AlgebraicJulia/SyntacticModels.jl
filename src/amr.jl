@@ -4,7 +4,8 @@ export Math, MathML, ExpressionFormula, Unit, Distribution, Observable, Expressi
  Rate, Initial, Parameter, Time,
  StandardUniform, Uniform, StandardNormal, Normal, PointMass,
  Semantic, Header, ODERecord, ODEList, Typing, ASKEModel,
- distro_string, amr_to_string
+ distro_string, amr_to_string,
+ Annotation, Note, Name, Description, Grounding, Units
 
 using Reexport
 @reexport using MLStyle
@@ -71,7 +72,7 @@ end
   Units(expression::String)
 end
 
-@as_record struct Annotation{E,T}
+@as_record struct Annotation{E,T} <: AbstractTerm
   entity::E
   type::T
   note::Note
@@ -105,6 +106,19 @@ function distro_expr(d::Distribution)
   return Base.Meta.parse(distro_string(d))
 end
 
+function note_string(n::Note)
+  @match n begin
+    Name(n)           => n
+    Description(d)    => d
+    Grounding(ont, ident) => "$ont,$ident"
+    Units(e)          => e
+  end
+end
+
+function note_expr(n::Note)
+  return Base.Meta.parse(note_string(n))
+end
+
 padlines(ss::Vector, n) = map(ss) do s
   " "^n * s
 end
@@ -132,6 +146,7 @@ function amr_to_string(amr)
       xs::Vector                       => map(!, xs)
       Typing(system, map)              => "Typing = begin\n$(padlines(!system, 2))\nTypeMap = [\n$(padlines(!map, 2))]\nend"
       ASKEModel(h, m, s)               => "$(!h)\n$(!m)\n\n$(!s)"
+      Annotation(e,t,n)                => "Annotation = $e,$t: $(note_string(n))"
     end
   end
 end
@@ -168,6 +183,7 @@ function amr_to_expr(amr)
       xs::Vector                       => begin ys = map(!, xs); block(ys) end
       Typing(system, map)              => :(Typing = $(!system); TypeMap = $(block(map)))
       ASKEModel(h, m, s)               => :($(!h);$(!m);$(!s))
+      Annotation(e,t,n)                => "Annotation = $e,$t: $(note_expr(n))"
     end
   end
 end
@@ -238,6 +254,17 @@ end
 
 load(::Type{Distribution}, ::Nothing) = PointMass(missing)
 
+function load(::Type{Note}, d::AbstractDict)
+  @match d begin
+    Dict("type"=>"Name", "parameters"=>p) => Name(p["str"])
+    Dict("type"=>"Description", "parameters"=>p) => Description(p["str"])
+    Dict("type"=>"Grounding", "parameters"=>p) => Grounding(p["ontology"], p["identifier"])
+    Dict("type"=>"Units", "parameters"=>p) => Units(p["expression"])
+  end
+end
+function load(::Type{Annotation}, d::AbstractDict)
+  Annotation(d["entity"], d["type"], load(Note,d["note"]))
+end
 
 function load(::Type{Parameter}, d::AbstractDict)
   u = load(Unit, d)
@@ -345,6 +372,36 @@ function load(d::Type{Distribution}, ex::Expr)
   end
 end
 
+function load(::Type{Note}, ex::Expr)
+  @matchast ex quote
+    Name($n) => Name(n)
+    Description($d) => Description(d) 
+    Grounding($ont,$ident) => Grounding(ont,ident)
+    Units($e) => Units(e)
+  end
+end
+
+function load(::Type{Annotation}, ex::Expr)
+ #= map(ex.args[2].args) do arg
+    try 
+      return load(Rate, arg)
+    catch ErrorException 
+      try 
+        return load(Initial, arg)
+      catch ErrorException 
+        try 
+          return load(Parameter, arg)
+        catch ErrorException 
+          try 
+            return load(Time, arg)
+          catch
+            return nothing
+          end
+        end
+      end
+    end
+  end |> x->filter(!isnothing, x) |> ODEList=#
+end
 
 function load(::Type{Parameter}, ex::Expr)
   name, desc, ex = docval(ex)

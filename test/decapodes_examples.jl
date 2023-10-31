@@ -32,8 +32,10 @@ dexpr = Decapodes.parse_decapode(quote
 end
 )
 
+annot = [AMR.Annotation(:X,:Form0,AMR.Name("The X variable."))]
+
 # Bundle the DecaExpr with the header metadata.
-mexpr = ASKEMDecaExpr(h, dexpr)
+mexpr = ASKEMDecaExpr(h, dexpr, annot)
 
 # Convert a the DecaExpr to a SummationDecapode which is the
 # combinatorial representation. The converter lives in Decapodes/src/language.jl.
@@ -51,7 +53,7 @@ h = AMR.Header("harmonic_oscillator",
   "A Simple Harmonic Oscillator as a Diagrammatic Equation",
   "SummationDecapode",
   "v1.0")
-mpode = ASKEMDecapode(h, d)
+mpode = ASKEMDecapode(h, d, annot)
 
 
 # The syntactic representation can be serialized as JSON.
