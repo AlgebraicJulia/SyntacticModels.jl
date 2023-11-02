@@ -15,6 +15,9 @@ using ..ASKEMUWDs
 @data CompositeModel <: AbstractTerm begin
   OpenModel(model::ASKEMDecapodes.ASKEMDecaExpr, interface::Vector{Symbol})
   OpenDecapode(model::ASKEMDecapodes.ASKEMDecapode, interface::Vector{Symbol})
+  # OpenBCDecapode(model::ASKEMDecapodes.ASKEMDecapode, interface::Vector{Symbol})
+  # OpenICDecapode(model::ASKEMDecapodes.ASKEMDecapode, interface::Vector{Symbol})
+  # OpenBoundedDecapode(model::ASKEMDecapodes.ASKEMDecapode, interface::Vector{Symbol})
   CompositeModelExpr(header::Header, composition_pattern::UWDExpr, components::Vector{CompositeModel})
 end
 

@@ -1,6 +1,6 @@
 module ASKEMCollages
 
-export ASKEMCollage, ASKEMCollageIC, ASKEMCollageBC, ASKEMCollages
+export ASKEMColl, ASKEMCollageIC, ASKEMCollageBC, ASKEMCollage
 
 using ..SyntacticModelsBase
 using ..AMR
@@ -9,17 +9,17 @@ using StructTypes
 using Decapodes
 using MLStyle
 
-@data ASKEMCollage <: AbstractTerm begin
+@data ASKEMColl <: AbstractTerm begin
   ASKEMCollageIC(header::AMR.Header, model::Decapodes.ICMorphism, annotations::Vector{AMR.Annotation{Symbol,Symbol}})
   ASKEMCollageBC(header::AMR.Header, model::Decapodes.BCMorphism, annotations::Vector{AMR.Annotation{Symbol,Symbol}})
-  ASKEMCollages(header::AMR.Header, model::Decapodes.Collage, annotations::Vector{AMR.Annotation{Symbol,Symbol}})
+  ASKEMCollage(header::AMR.Header, model::Decapodes.Collage, annotations::Vector{AMR.Annotation{Symbol,Symbol}})
 end
 
 @doc """    ASKEMDeca
 
 Stores a Decapode with the model metadata for ASKEM AMR conformance.
 """
-ASKEMCollage
+ASKEMColl
 
 @doc """    ASKEMDecaExpr
 
@@ -40,17 +40,15 @@ ASKEMCollageBC(header::AMR.Header, model::Decapodes.BCMorphism) = ASKEMDecapode(
 Stores the combinatorial representation of a Decapode with the
 model metadata for ASKEM AMR conformance.
 """
-ASKEMCollages(header::AMR.Header, model::Decapodes.Collage) = ASKEMCollages(header,model,Vector{AMR.Annotation{Symbol,Symbol}}())
+ASKEMCollage(header::AMR.Header, model::Decapodes.Collage) = ASKEMCollages(header,model,Vector{AMR.Annotation{Symbol,Symbol}}())
 
-StructTypes.StructType(::Type{ASKEMCollage}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{ASKEMCollage}) = :_type
-StructTypes.subtypes(::Type{ASKEMCollage}) = (ASKEMCollageIC=ASKEMCollageIC, ASKEMCollageBC=ASKEMCollageBC, ASKEMCollages=ASKEMCollages)
-
-#=
-SyntacticModelsBase._dict(x::T) where {T<:Union{Decapodes.DecaExpr, Decapodes.Equation, Decapodes.Term}} = begin
+StructTypes.StructType(::Type{ASKEMColl}) = StructTypes.AbstractType()
+StructTypes.subtypekey(::Type{ASKEMColl}) = :_type
+StructTypes.subtypes(::Type{ASKEMColl}) = (ASKEMCollageIC=ASKEMCollageIC, ASKEMCollageBC=ASKEMCollageBC, ASKEMCollage=ASKEMCollage)
+SyntacticModelsBase._dict(x::T) where {T<:Union{Decapodes.ICMorphism, Decapodes.BCMorphism, Decapodes.Collage}} = begin
   Dict(:_type => typename_last(T), [k=>_dict(getfield(x, k)) for k in fieldnames(T)]...)
 end
-
+#=
 StructTypes.StructType(::Type{Decapodes.Equation}) = StructTypes.AbstractType()
 StructTypes.subtypekey(::Type{Decapodes.Equation}) = :_type
 StructTypes.subtypes(::Type{Decapodes.Equation}) = (Eq=Eq,)
