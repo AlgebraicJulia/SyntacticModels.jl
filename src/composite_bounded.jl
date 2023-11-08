@@ -134,7 +134,7 @@ end
 function OpenDecapode(m::CompositeModel)
   composite, bc, ic = oapply(m)
   feet = map(l->only(dom(l)[:name]), legs(composite))
-  OpenDecapode(apex(composite),feet), bc ,ic
+  Open(apex(composite),feet), bc ,ic
 end
 
 
