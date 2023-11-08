@@ -49,6 +49,7 @@ end
 include("amr_examples.jl")
 include("decapodes_examples.jl")
 include("uwd_examples.jl")
-include("composite_models_examples.jl")
+# include("composite_models_examples.jl")
 include("serialization_mwe.jl")
 include("collages_examples.jl")
+include("composite_bounded_examples.jl")

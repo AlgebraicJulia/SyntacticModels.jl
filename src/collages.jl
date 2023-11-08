@@ -26,14 +26,14 @@ ASKEMColl
 Stores the syntactic expression of a Decapode Expression with the
 model metadata for ASKEM AMR conformance.
 """
-ASKEMCollageIC(header::AMR.Header, model::Decapodes.ICMorphism) = ASKEMDecaExpr(header,model,Vector{AMR.Annotation{Symbol,Symbol}}())
+ASKEMCollageIC(header::AMR.Header, model::Decapodes.ICMorphism) = ASKEMCollageIC(header,model,Vector{AMR.Annotation{Symbol,Symbol}}())
 
 @doc """    ASKEMDecapode
 
 Stores the combinatorial representation of a Decapode with the
 model metadata for ASKEM AMR conformance.
 """
-ASKEMCollageBC(header::AMR.Header, model::Decapodes.BCMorphism) = ASKEMDecapode(header,model,Vector{AMR.Annotation{Symbol,Symbol}}())
+ASKEMCollageBC(header::AMR.Header, model::Decapodes.BCMorphism) = ASKEMCollageBC(header,model,Vector{AMR.Annotation{Symbol,Symbol}}())
 
 @doc """    ASKEMDecapode
 
