@@ -10,30 +10,30 @@
 end
 
 struct Judgement
-  var::Symbol
-  dim::Symbol
-  space::Symbol
-end
+    var::Symbol
+    dim::Symbol
+    space::Symbol
+  end
+  
+  @sum Equation begin
+    Eq(lhs::Term, rhs::Term)
+  end
+  
+  struct DecaExpr
+    context::Vector{Judgement}
+    equations::Vector{Equation}
+  end
 
-@sum Equation begin
-  Eq(lhs::Term, rhs::Term)
-end
-
-struct DecaExpr
-  context::Vector{Judgement}
-  equations::Vector{Equation}
-end
 
 struct Header
-    id::Union{String, Nothing}
-    description::String,
-    name::String,
-    model_version::String,
+    id::String
+    description::String
+    name::String
+    model_version::String
     schema::String
     schema_name::String	
 end
 
 @sum ASKEMDeca begin
-    ASKEMDecaExpr(header::Header, model::DecaExpr, annotations::Vector{Annotation{Symbol,Symbol}})
-    ASKEMDecapode(header::Header, model::SummationDecapode, annotations::Vector{Annotation{Symbol,Symbol}})
+    ASKEMDecaExpr(header::Header, model::DecaExpr, annotations::Vector{amr.Annotation})
 end

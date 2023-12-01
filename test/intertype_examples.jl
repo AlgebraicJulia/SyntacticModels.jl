@@ -1,5 +1,5 @@
 
-using SyntacticModels
+# using SyntacticModels
 
 using ACSets
 using ACSets.InterTypes
@@ -7,12 +7,12 @@ using Test
 using OrderedCollections
 import JSON
 import JSON3
-import JSONSchema
+# import JSONSchema
 
-include("src/SyntacticModels.jl")
+# include("src/SyntacticModels.jl")
 
-using .SyntacticModels
-# using .SyntacticModels.ASKEMDecapodes
+# using .SyntacticModels
+# # using .SyntacticModels.ASKEMDecapodes
 
 
 
