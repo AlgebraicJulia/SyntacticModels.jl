@@ -1,0 +1,25 @@
+@sum MathML begin
+  Math(str::String)
+  Presentation(str::String)
+end
+
+@sum Note begin
+  Name(str::String)
+  Description(str::String)
+  Grounding(ontology::String, identifier::String)
+  Units(expression::String)
+end
+
+struct Annotation
+  entity::Symbol
+  type::Symbol
+  note::Note
+end
+
+struct Header
+  name::String
+  schema::String
+  description::String
+  schema_name::String
+  model_version::String
+end

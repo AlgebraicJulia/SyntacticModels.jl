@@ -1,0 +1,39 @@
+@sum Term begin
+  Var(name::Symbol)
+  Lit(name::Symbol)
+  AppCirc1(fs::Vector{Symbol}, arg::Term)
+  App1(f::Symbol, arg::Term)
+  App2(f::Symbol, arg1::Term, arg2::Term)
+  Plus(args::Vector{Term})
+  Mult(args::Vector{Term})
+  Tan(var::Term)
+end
+
+struct Judgement
+  var::Symbol
+  dim::Symbol
+  space::Symbol
+end
+
+@sum Equation begin
+  Eq(lhs::Term, rhs::Term)
+end
+
+struct DecaExpr
+  context::Vector{Judgement}
+  equations::Vector{Equation}
+end
+
+struct Header
+    id::Union{String, Nothing}
+    description::String,
+    name::String,
+    model_version::String,
+    schema::String
+    schema_name::String	
+end
+
+@sum ASKEMDeca begin
+    ASKEMDecaExpr(header::Header, model::DecaExpr, annotations::Vector{Annotation{Symbol,Symbol}})
+    ASKEMDecapode(header::Header, model::SummationDecapode, annotations::Vector{Annotation{Symbol,Symbol}})
+end
