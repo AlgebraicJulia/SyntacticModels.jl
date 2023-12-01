@@ -19,21 +19,11 @@ struct Judgement
     Eq(lhs::Term, rhs::Term)
   end
   
-  struct DecaExpr
+struct DecaExpr
     context::Vector{Judgement}
     equations::Vector{Equation}
-  end
-
-
-struct Header
-    id::String
-    description::String
-    name::String
-    model_version::String
-    schema::String
-    schema_name::String	
 end
 
 @sum ASKEMDeca begin
-    ASKEMDecaExpr(header::Header, model::DecaExpr, annotations::Vector{amr.Annotation})
+    ASKEMDecaExpr(header::AMR.Header, model::DecaExpr, annotations::Vector{AMR.Annotation})
 end

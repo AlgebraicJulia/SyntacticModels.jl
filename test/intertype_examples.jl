@@ -13,7 +13,7 @@ import JSON3
 
 # using .SyntacticModels
 # # using .SyntacticModels.ASKEMDecapodes
-
+using Decapodes
 
 
 using Reexport
@@ -26,17 +26,42 @@ using StructTypes
 # using ..SyntacticModelsBase
 
 
-@intertypes "../src/amr.it" module amr end
+@intertypes "../src/amr.it" module AMR end
 
-using .amr
+using .AMR
 
 
 
 @intertypes "../src/decapodes.it" module decapodes
-  import ..amr
+  import ..AMR
 end
 
 using .decapodes
+
+
+
+h = AMR.Header("", "harmonic_oscillator",
+  "modelreps.io/DecaExpr",
+  "A Simple Harmonic Oscillator as a Diagrammatic Equation",
+  "DecaExpr",
+  "v1.0")
+
+# The easiest way to write down a DecaExpr is in our DSL and calling the parser.
+dexpr = Decapodes.parse_decapode(quote
+  X::Form0{Point}
+  V::Form0{Point}
+
+  k::Constant{Point}
+
+  ∂ₜ(X) == V
+  ∂ₜ(V) == -1*k*(X)
+end
+)
+
+annot = [AMR.Annotation(:X,:Form0,AMR.Name("The X variable."))]
+
+# Bundle the DecaExpr with the header metadata.
+mexpr = decapodes.ASKEMDecaExpr(h, dexpr, annot)
 
 
 
