@@ -10,20 +10,20 @@
 end
 
 struct Judgement
-    var::Symbol
-    dim::Symbol
-    space::Symbol
-  end
+  var::Symbol
+  dim::Symbol
+  space::Symbol
+end
   
-  @sum Equation begin
-    Eq(lhs::Term, rhs::Term)
-  end
+@sum Equation begin
+  Eq(lhs::Term, rhs::Term)
+end
   
 struct DecaExpr
-    context::Vector{Judgement}
-    equations::Vector{Equation}
+  context::Vector{Judgement}
+  equations::Vector{Equation}
 end
 
 @sum ASKEMDeca begin
-    ASKEMDecaExpr(header::AMR.Header, model::DecaExpr, annotations::Vector{AMR.Annotation})
+  ASKEMDecaExpr(header::AMR.Header, model::DecaExpr, annotations::Vector{AMR.Annotation})
 end

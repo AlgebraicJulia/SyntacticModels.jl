@@ -47,7 +47,7 @@ h = AMR.Header("", "harmonic_oscillator",
   "v1.0")
 
 # The easiest way to write down a DecaExpr is in our DSL and calling the parser.
-dexpr = Decapodes.parse_decapode(quote
+dexpr = my_parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
 
@@ -63,6 +63,60 @@ annot = [AMR.Annotation(:X,:Form0,AMR.Name("The X variable."))]
 # Bundle the DecaExpr with the header metadata.
 mexpr = decapodes.ASKEMDecaExpr(h, dexpr, annot)
 
+
+
+my_term(s::Symbol) = decapodes.Var(normalize_unicode(s))
+my_term(s::Number) = decapodes.Lit(Symbol(s))
+
+my_term(expr::Expr) = begin
+    @match expr begin
+        #TODO: Would we want ∂ₜ to be used with general expressions or just Vars?
+        Expr(:call, :∂ₜ, b) => decapodes.Tan(decapodes.Var(b)) 
+        Expr(:call, :dt, b) => decapodes.Tan(decapodes.Var(b)) 
+
+        Expr(:call, Expr(:call, :∘, a...), b) => decapodes.AppCirc1(a, my_term(b))
+        Expr(:call, a, b) => decapodes.App1(a, my_term(b))
+
+        Expr(:call, :+, xs...) => decapodes.Plus(my_term.(xs))
+        Expr(:call, f, x, y) => decapodes.App2(f, my_term(x), my_term(y))
+
+        # TODO: Will later be converted to Op2's or schema has to be changed to include multiplication
+        Expr(:call, :*, xs...) => decapodes.Mult(my_term.(xs))
+
+        x => error("Cannot construct term from  $x")
+    end
+end
+
+function my_parse_decapode(expr::Expr)
+    stmts = map(expr.args) do line 
+        @match line begin
+            ::LineNumberNode => missing
+            # TODO: If user doesn't provide space, this gives a temp space so we can continue to construction
+            # For now spaces don't matter so this is fine but if they do, this will need to change
+            Expr(:(::), a::Symbol, b::Symbol) => decapodes.Judgement(decapodes.Var(a).name, b, :I)
+            Expr(:(::), a::Expr, b::Symbol) => map(sym -> decapodes.Judgement(decapodes.Var(sym).name, b, :I), a.args)
+
+            Expr(:(::), a::Symbol, b) => decapodes.Judgement(decapodes.Var(a).name, b.args[1], b.args[2])
+            Expr(:(::), a::Expr, b) => map(sym -> decapodes.Judgement(decapodes.Var(sym).name, b.args[1], b.args[2]), a.args)
+
+            Expr(:call, :(==), lhs, rhs) => decapodes.Eq(my_term(lhs), my_term(rhs))
+            _ => error("The line $line is malformed")
+        end
+    end |> skipmissing |> collect
+    judges = []
+    eqns = []
+    foreach(stmts) do s
+      @match s begin
+        ::decapodes.Judgement => push!(judges, s)
+        ::Vector{decapodes.Judgement} => append!(judges, s)
+        ::decapodes.Eq => push!(eqns, s)
+        _ => error("Statement containing $s of type $(typeof(s)) was not added.")
+      end
+    end
+    decapodes.DecaExpr(judges, eqns)
+end
+
+(mexpr == jsonread(jsonwrite(mexpr), decapodes.ASKEMDeca))
 
 
 #=
