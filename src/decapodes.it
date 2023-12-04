@@ -26,4 +26,5 @@ end
 
 @sum ASKEMDeca begin
   ASKEMDecaExpr(header::AMR.Header, model::DecaExpr, annotations::Vector{AMR.Annotation})
+  # ASKEMDecapode(header::AMR.Header, model::Decapodes.SummationDecapode, annotations::Vector{AMR.Annotation})
 end
