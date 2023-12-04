@@ -55,12 +55,11 @@ s = [uwd.Statement(:R, [v1,v2]),
 u = uwd.UWDExpr(c, s)
 
 @testset "UWDExpr Readback" begin
-  s = JSON3.write(u)
-  ujson = JSON3.read(s, uwd.UWDTerm)
-  # FIXME: can't compare u and ujson, because they aren't same object
-  # but they have the same JSON string
-  @test s == JSON3.write(ujson)
+  s = jsonwrite(u)
+  ujson = jsonread(s, uwd.UWDTerm)
+  @test u == jsonwrite(ujson)
 end
+
 
 uwd′ = construct(RelationDiagram, u)
 
@@ -68,9 +67,13 @@ uwd′ = construct(RelationDiagram, u)
 h = AMR.Header("","rst_relation", "modelreps.io/UWD", "A demo UWD showing generic relation composition", "UWDExpr", "v0.1")
 
 mexpr = uwd.UWDModel(h, u)
-write_json_model(mexpr)
-mexpr′ = readback(mexpr)
 @testset "UWD Readback" begin
+  write_json_model(mexpr)
+  # NOTE: because the intertype parsing does not recognize the subtypes of a sum type, readback won't currently work
+  #       That is the reason for directly writing the UWDTerm type below. 
+  # mexpr′ = readback(mexpr)
+  mexpr′ = jsonread(joinpath(joinpath(@__DIR__, "json"), "$(mexpr.header.name).json"), uwd.UWDTerm)
+
   @test mexpr.header == mexpr′.header
   @test mexpr.uwd.context == mexpr′.uwd.context
   @test mexpr.uwd.context == mexpr′.uwd.context
@@ -80,9 +83,9 @@ mexpr′ = readback(mexpr)
   @test mexpr.uwd.statements[2].variables == mexpr′.uwd.statements[2].variables
   @test mexpr.uwd.statements[3].relation == mexpr′.uwd.statements[3].relation
   @test mexpr.uwd.statements[3].variables == mexpr′.uwd.statements[3].variables
-  # TODO: overload == for statements
-  # @test all(mexpr.uwd.statements .== mexpr′.uwd.statements)
-  # @test mexpr == mexpr′
+  
+  @test all(mexpr.uwd.statements .== mexpr′.uwd.statements)
+  @test mexpr == mexpr′
 end
 
 to_graphviz(uwd′, box_labels=:name, junction_labels=:variable)
