@@ -272,7 +272,7 @@ h = AMR.Header("","harmonic_oscillator",
   "A Simple Harmonic Oscillator as a Diagrammatic Equation",
   "SummationDecapode",
   "v1.0")
-mpode = ASKEMDecapode(h, d, annot)
+mpode = decapodes.ASKEMDecapode(h, d, annot)
 
 
 # The syntactic representation can be serialized as JSON.
