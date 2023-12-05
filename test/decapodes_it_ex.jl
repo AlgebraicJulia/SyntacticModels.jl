@@ -13,9 +13,9 @@ import JSON3
 
 # using .SyntacticModels
 # # using .SyntacticModels.ASKEMDecapodes
-using Decapodes
 
-import Decapodes: recognize_types, make_sum_mult_unique!
+# using Decapodes
+# import Decapodes: recognize_types, make_sum_mult_unique!
 
 using Reexport
 @reexport using MLStyle
@@ -39,6 +39,11 @@ end
 
 using .decapodes
 
+import Unicode
+normalize_unicode(s::String) = Unicode.normalize(s, compose=true, stable=true, chartransform=Unicode.julia_chartransform)
+normalize_unicode(s::Symbol)  = Symbol(normalize_unicode(String(s)))
+DerivOp = Symbol("∂ₜ")
+append_dot(s::Symbol) = Symbol(string(s)*'\U0307')
 
 my_term(s::Symbol) = decapodes.Var(normalize_unicode(s))
 my_term(s::Number) = decapodes.Lit(Symbol(s))
@@ -117,7 +122,7 @@ mexpr = decapodes.ASKEMDecaExpr(h, dexpr, annot)
 
 # NOTE: the var in a Judgement in decapodes.it is just a Symbol. It does not have a name field, so that was removed
 # to_decapode helper functions
-reduce_term!(t::decapodes.Term, d::AbstractDecapode, syms::Dict{Symbol, Int}) =
+reduce_term!(t::decapodes.Term, d::decapodes.AbstractDecapode, syms::Dict{Symbol, Int}) =
   let ! = reduce_term!
     @match t begin
       decapodes.Var(x) => begin 
@@ -180,7 +185,7 @@ reduce_term!(t::decapodes.Term, d::AbstractDecapode, syms::Dict{Symbol, Int}) =
     end
   end
 
-function eval_eq!(eq::decapodes.Eq, d::AbstractDecapode, syms::Dict{Symbol, Int}, deletions::Vector{Int}) 
+function eval_eq!(eq::decapodes.Eq, d::decapodes.AbstractDecapode, syms::Dict{Symbol, Int}, deletions::Vector{Int}) 
   @match eq begin
     decapodes.Eq(t1, t2) => begin
       lhs_ref = reduce_term!(t1,d,syms)
@@ -218,7 +223,7 @@ function eval_eq!(eq::decapodes.Eq, d::AbstractDecapode, syms::Dict{Symbol, Int}
       end
       # Case rhs_ref is a Plus
       # FIXME: this typeguard is a subsitute for refactoring into multiple dispatch
-      if isa(d, SummationDecapode)
+      if isa(d, decapodes.SummationDecapode)
         for rhs in incident(d, rhs_ref, :sum)
           d[rhs, :sum] = lhs_ref
           push!(deletions, rhs_ref)
@@ -232,8 +237,48 @@ function eval_eq!(eq::decapodes.Eq, d::AbstractDecapode, syms::Dict{Symbol, Int}
   return d
 end
 
+function recognize_types(d::decapodes.AbstractNamedDecapode)
+  unrecognized_types = setdiff(d[:type], [:Form0, :Form1, :Form2, :DualForm0,
+                          :DualForm1, :DualForm2, :Literal, :Parameter,
+                          :Constant, :infer])
+  isempty(unrecognized_types) ||
+    error("Types $unrecognized_types are not recognized.")
+end
+
+function fill_names!(d::decapodes.AbstractNamedDecapode)
+  bulletcount = 1
+  for i in parts(d, :Var)
+    if !isassigned(d[:,:name],i) || isnothing(d[i, :name])
+      d[i,:name] = Symbol("•$bulletcount")
+      bulletcount += 1
+    end
+  end
+  for e in incident(d, :∂ₜ, :op1)
+    s = d[e,:src]
+    t = d[e, :tgt]
+    String(d[t,:name])[1] != '•' && continue
+    d[t, :name] = append_dot(d[s,:name])
+  end
+  d
+end
+
+function make_sum_mult_unique!(d::decapodes.AbstractNamedDecapode)
+  snum = 1
+  mnum = 1
+  for (i, name) in enumerate(d[:name])
+    if(name == :sum)
+      d[i, :name] = Symbol("sum_$(snum)")
+      snum += 1
+    elseif(name == :mult)
+      d[i, :name] = Symbol("mult_$(mnum)")
+      mnum += 1
+    end
+  end
+end
+
 function SummationDecapode(e::decapodes.DecaExpr)
-  d = SummationDecapode{Any, Any, Symbol}()
+  # d = SummationDecapode{Any, Any, Symbol}()
+  d = decapodes.SummationDecapode{Symbol, Symbol, Symbol}()
   symbol_table = Dict{Symbol, Int}()
 
   for judgement in e.context
@@ -282,15 +327,11 @@ write_json_model(mexpr)
 
 # We could also use the JSON serialization built into Catlab
 # to serialize the resulting combinatorial representation
-sm_write_json_acset(mpode.model, "$(mpode.header.name)-acset")
-# end
+# sm_write_json_acset(mpode.model, "$(mpode.header.name)-acset")
 
 
  # Can we read back the models we just wrote?
 @testset "Decapodes Readback" begin
-  mexpr′ = readback(mexpr)
+  mexpr′ = readback(mexpr,decapodes.ASKEMDeca)
   @test JSON3.write(mexpr) == JSON3.write(mexpr′)
 end
-
-
-(mexpr == jsonread(jsonwrite(mexpr), decapodes.ASKEMDeca))

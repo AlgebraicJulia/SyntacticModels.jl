@@ -12,8 +12,8 @@ write_json_model(m, prefix=joinpath(@__DIR__, "json")) = open(joinpath(prefix, "
   JSON3.pretty(fp, jsonwrite(m))
 end
 
-readback(m, prefix=joinpath(@__DIR__, "json")) = jsonread(open(joinpath(jsondir, "$(m.header.name).json"), "r"),typeof(m))
-
+readback(m, T, prefix=joinpath(@__DIR__, "json")) = jsonread(joinpath(jsondir, "$(m.header.name).json"),T)
+  
 #=
 write_json_model(m::ASKEMDecapodes.ASKEMDecapode, prefix=joinpath(@__DIR__, "json")) = open(joinpath(prefix, "$(m.header.name).json"), "w") do fp
   d = Dict("header"=>m.header, "model"=>generate_json_acset(m.model), "_type"=> "ASKEMDecapode")

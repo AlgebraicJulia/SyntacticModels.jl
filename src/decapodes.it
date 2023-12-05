@@ -61,10 +61,10 @@ end
   sum::Hom(Σ, Var)
 end
 
-@acset_type SummationDecapode(SchSummationDecapode,
+@acset_type SymSummationDecapode(SchSummationDecapode, generic=SummationDecapode, 
   index=[:src, :tgt, :res, :incl, :op1, :op2, :type]) <: AbstractNamedDecapode
 
 @sum ASKEMDeca begin
   ASKEMDecaExpr(header::AMR.Header, model::DecaExpr, annotations::Vector{AMR.Annotation})
-  ASKEMDecapode(header::AMR.Header, model::SummationDecapode, annotations::Vector{AMR.Annotation})
+  ASKEMDecapode(header::AMR.Header, model::SymSummationDecapode, annotations::Vector{AMR.Annotation})
 end
