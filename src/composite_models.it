@@ -1,0 +1,6 @@
+
+@sum CompositeModel begin
+  OpenModel(model::decapodes.ASKEMDecapodes.ASKEMDecaExpr, interface::Vector{amr.Symbol})
+  OpenDecapode(model::decapodes.ASKEMDecapodes.ASKEMDecapode, interface::Vector{amr.Symbol})
+  CompositeModelExpr(header::amr.Header, composition_pattern::uwd.UWDExpr, components::Vector{CompositeModel})
+end
