@@ -65,6 +65,6 @@ end
   index=[:src, :tgt, :res, :incl, :op1, :op2, :type]) <: AbstractNamedDecapode
 
 @sum ASKEMDeca begin
-  ASKEMDecaExpr(header::AMR.Header, model::DecaExpr, annotations::Vector{AMR.Annotation})
-  ASKEMDecapode(header::AMR.Header, model::SymSummationDecapode, annotations::Vector{AMR.Annotation})
+  ASKEMDecaExpr(header::amr.Header, model::DecaExpr, annotations::Vector{amr.Annotation})
+  ASKEMDecapode(header::amr.Header, model::SymSummationDecapode, annotations::Vector{amr.Annotation})
 end
