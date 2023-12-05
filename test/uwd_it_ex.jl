@@ -19,20 +19,21 @@ using StructTypes
 
 # using ..SyntacticModelsBase
 
+#=
+@intertypes "../src/amr.it" module amr end
 
-@intertypes "../src/amr.it" module AMR end
-
-using .AMR
+using .amr
 
 
 
 @intertypes "../src/uwd.it" module uwd
-  import ..AMR
+  import ..amr
 end
 
 using .uwd
-
-
+=#
+using ..SyntacticModels.AMR
+using ..SyntacticModels.ASKEMUWDs
 
 # This example follows what in current catlab would be given as
 
@@ -44,35 +45,35 @@ using .uwd
 end
 =#
 
-v1 = uwd.Typed(:x, :X)
-v2 = uwd.Typed(:y, :Y)
-v3 = uwd.Typed(:z, :Z)
-v4 = uwd.Untyped(:u)
+v1 = ASKEMUWDs.uwd.Typed(:x, :X)
+v2 = ASKEMUWDs.uwd.Typed(:y, :Y)
+v3 = ASKEMUWDs.uwd.Typed(:z, :Z)
+v4 = ASKEMUWDs.uwd.Untyped(:u)
 c = [v1, v3]
-s = [uwd.Statement(:R, [v1,v2]),
-  uwd.Statement(:S, [v2,v3]),
-  uwd.Statement(:T, [v3,v2, v4])]
-u = uwd.UWDExpr(c, s)
+s = [ASKEMUWDs.uwd.Statement(:R, [v1,v2]),
+      ASKEMUWDs.uwd.Statement(:S, [v2,v3]),
+      ASKEMUWDs.uwd.Statement(:T, [v3,v2, v4])]
+u = ASKEMUWDs.uwd.UWDExpr(c, s)
 
 @testset "UWDExpr Readback" begin
   s = jsonwrite(u)
-  ujson = jsonread(s, uwd.UWDTerm)
-  @test u == jsonwrite(ujson)
+  ujson = jsonread(s, ASKEMUWDs.uwd.UWDTerm)
+  @test s == jsonwrite(ujson)
 end
 
 
-uwd′ = construct(RelationDiagram, u)
+uwd′ = ASKEMUWDs.construct(RelationDiagram, u)
 
 
 h = AMR.Header("","rst_relation", "modelreps.io/UWD", "A demo UWD showing generic relation composition", "UWDExpr", "v0.1")
 
-mexpr = uwd.UWDModel(h, u)
+mexpr = ASKEMUWDs.uwd.UWDModel(h, u)
 @testset "UWD Readback" begin
   write_json_model(mexpr)
   # NOTE: because the intertype parsing does not recognize the subtypes of a sum type, readback won't currently work
   #       That is the reason for directly writing the UWDTerm type below. 
-  # mexpr′ = readback(mexpr)
-  mexpr′ = jsonread(joinpath(joinpath(@__DIR__, "json"), "$(mexpr.header.name).json"), uwd.UWDTerm)
+  mexpr′ = readback(mexpr,ASKEMUWDs.uwd.UWDTerm)
+  # mexpr′ = jsonread(joinpath(joinpath(@__DIR__, "json"), "$(mexpr.header.name).json"), ASKEMUWDs.UWDTerm)
 
   @test mexpr.header == mexpr′.header
   @test mexpr.uwd.context == mexpr′.uwd.context

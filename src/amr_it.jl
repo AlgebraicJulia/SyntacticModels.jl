@@ -1,6 +1,6 @@
 module AMR
 
-export Math, MathML, ExpressionFormula, Unit, Distribution, Observable, Expression,
+export amr, Math, MathML, ExpressionFormula, Unit, Distribution, Observable, Expression,
  Rate, Initial, Parameter, Time,
  StandardUniform, Uniform, StandardNormal, Normal, PointMass,
  Semantic, Header, ODERecord, ODEList, ASKEModel, # Typing, 
@@ -14,7 +14,7 @@ using ACSets.ADTs
 using ACSets.ACSetInterface
 using StructTypes
 
-using ..SyntacticModelsBase
+# using ..SyntacticModelsBase
 
 
 @intertypes "amr.it" module amr end
@@ -68,7 +68,7 @@ function amr_to_string(amr′)
       amr.Rate(t, f)                       => "$t::Rate = $(f.expression)"
       amr.Initial(t, f)                    => "$t::Initial = $(f.expression)"
       amr.Observable(id, n, states, f)     => "# $n\n$id::Observable = $(f.expression)($states)\n"
-      amr.Header(name, s, d, sn, mv)       => "\"\"\"\nASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d\n\"\"\""
+      amr.Header(id, name, s, d, sn, mv)   => "\"\"\"\nASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d\n\"\"\""
       amr.Parameter(t, n, d, u, v, dist)   => "\n# $n-- $d\n$t::Parameter{$(!u)} = $v ~ $(!dist)\n"
       m::ACSetSpec                     => "Model = begin\n$(padlines(sprint(show, m),2))\nend"
       amr.ODEList(l)                       => "ODE_Equations = begin\n" * padlines(join(map(!, l), "\n")) * "\nend"
@@ -76,8 +76,8 @@ function amr_to_string(amr′)
       vs::Vector{amr.Pair}                 => map(vs) do v; "$(v[1]) => $(v[2])," end |> x-> join(x, "\n") 
       vs::Vector{amr.Semantic}             => join(map(!, vs), "\n\n")
       xs::Vector                       => map(!, xs)
-      amr.Typing(system, map)              => "Typing = begin\n$(padlines(!system, 2))\nTypeMap = [\n$(padlines(!map, 2))]\nend"
-      amr.ASKEModel(h, m, s)               => "$(!h)\n$(!m)\n\n$(!s)"
+      # amr.Typing(system, map)              => "Typing = begin\n$(padlines(!system, 2))\nTypeMap = [\n$(padlines(!map, 2))]\nend"
+      # amr.ASKEModel(h, m, s)               => "$(!h)\n$(!m)\n\n$(!s)"
       amr.Annotation(e,t,n)                => "Annotation = $(String(e)),$(String(t)): $(note_string(n))"
     end
   end

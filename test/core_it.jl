@@ -1,7 +1,7 @@
 include("../src/SyntacticModels.jl")
 
 using .SyntacticModels
-using .SyntacticModels.ASKEMDecapodes
+# using .SyntacticModels.ASKEMDecapodes
 
 using Test
 using JSON3
@@ -32,7 +32,7 @@ catch
 end
 
 include("amr_it_ex.jl")
-include("decapodes_it_ex.jl")
+# include("decapodes_it_ex.jl")
 include("uwd_it_ex.jl")
 # include("composite_models_it_ex.jl")
 # include("serialization_it_mwe.jl")

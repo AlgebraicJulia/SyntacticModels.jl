@@ -3,5 +3,5 @@ using Test
 using SyntacticModels
 
 @testset "Core" begin
-  include("core.jl")
+  include("core_it.jl")
 end

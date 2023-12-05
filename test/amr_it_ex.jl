@@ -16,11 +16,11 @@ using Reexport
 using StructTypes
 
 
-
+#=
 @intertypes "../src/amr.it" module AMR end
 
 using .AMR
-
+=#
 
 
 nomath = AMR.Math("")
@@ -77,7 +77,11 @@ odelist = AMR.ODEList([
 
   ])
 
+#=
 amr₁ = AMR.ASKEModel(header,
   model,
   [ode]
 )
+=#
+
+end # module

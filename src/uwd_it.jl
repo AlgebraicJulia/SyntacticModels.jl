@@ -1,9 +1,9 @@
 module ASKEMUWDs
 
 # include("amr.jl")
-export uwd.Var, uwd.Typed, uwd.Untyped, uwd.Statement, uwd.UWDExpr, uwd.UWDModel, uwd.UWDTerm, context
+export Var, Typed, Untyped, Statement, UWDExpr, UWDModel, UWDTerm, context
 
-using ..SyntacticModelsBase
+# using ..SyntacticModelsBase
 using ..AMR
 
 using MLStyle
@@ -11,7 +11,7 @@ using StructTypes
 using Catlab
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
-import Base: show
+# import Base: show
 
 using ACSets
 using ACSets.InterTypes
@@ -23,12 +23,16 @@ using ACSets.ADTs
 using ACSets.ACSetInterface
 
 
+#=
 @intertypes "amr.it" module AMR end
 
 using .AMR
+=#
+
+using ..AMR.amr
 
 @intertypes "uwd.it" module uwd
-  import ..AMR
+  import ..amr
 end
 
 using .uwd
@@ -104,6 +108,7 @@ end
 
 generates a human readable string of the `UWDTerm` (or any sub-term).
 """
+#=
 function show(io::IO, s::uwd.UWDTerm)
   let ! = show
     @match s begin
@@ -149,6 +154,7 @@ function show(io::IO, c::Vector{uwd.Var}; wrap=true)
     print(io, "}")
   end
 end
+=#
 
 """    construct(::Type{RelationDiagram}, ex::UWDExpr)
 

@@ -7,5 +7,5 @@ end
 @sum UWDTerm begin
   Statement(relation::Symbol, variables::Vector{Var})
   UWDExpr(context::Vector{Var}, statements::Vector{UWDTerm})
-  UWDModel(header::AMR.Header, uwd::UWDTerm)
+  UWDModel(header::amr.Header, uwd::UWDTerm)
 end
