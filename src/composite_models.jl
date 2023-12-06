@@ -1,52 +1,66 @@
 module Composites
 
-export CompositeModelExpr, OpenModel, OpenDecapode, CompositeModel, interface, open_decapode
+export CompositeModelExpr, OpenModel, OpenDecapode, CompositeModel, interface, open_decapode, oapply, Open
 
 using MLStyle
 using Catlab
-using Decapodes
+using Decapodes # : SummationDecapode
 using StructTypes
 
-using ..SyntacticModelsBase
 using ..AMR
 using ..ASKEMDecapodes
 using ..ASKEMUWDs
 
-@data CompositeModel <: AbstractTerm begin
-  OpenModel(model::ASKEMDecapodes.ASKEMDecaExpr, interface::Vector{Symbol})
-  OpenDecapode(model::ASKEMDecapodes.ASKEMDecapode, interface::Vector{Symbol})
-  CompositeModelExpr(header::Header, composition_pattern::UWDExpr, components::Vector{CompositeModel})
+using ACSets
+using ACSets.InterTypes
+
+using Reexport
+@reexport using MLStyle
+@reexport using ACSets
+using ACSets.ADTs
+using ACSets.ACSetInterface
+
+
+using ..AMR.amr
+using ..ASKEMDecapodes.decapodes
+using ..ASKEMUWDs.uwd
+
+@intertypes "composite_models.it" module composites
+  import ..amr
+  import ..decapodes
+  import ..uwd
 end
 
-@doc """    CompositeModel
-
-```julia
-@data CompositeModel <: AbstractTerm begin
-  OpenModel(model::ASKEMDecapodes.ASKEMDecaExpr, interface::Vector{Symbol})
-  OpenDecapode(model::ASKEMDecapodes.ASKEMDecapode, interface::Vector{Symbol})
-  CompositeModelExpr(header::Header, composition_pattern::UWDExpr, components::Vector{CompositeModel})
-end
-```
-"""
-CompositeModel
-
-StructTypes.StructType(::Type{CompositeModel}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{CompositeModel}) = :_type
-StructTypes.subtypes(::Type{CompositeModel}) = (OpenModel=OpenModel, OpenDecapode=OpenDecapode, CompositeModelExpr)
-
+using .composites
 
 """    interface(m::CompositeModel)
 
 Extract the interface of a composite model. If the model is open, then it is the feet of the cospan. If it is a Composite, then it is the context of the uwd.
 """
-interface(m::CompositeModel) = @match m begin
-  OpenModel(M, I) => I
-  CompositeModelExpr(h, uwd, components) => map(ASKEMUWDs.varname, context(uwd))
+interface(m::composites.CompositeModel) = @match m begin
+  composites.OpenModel(M, I) => I
+  composites.CompositeModelExpr(h, uwd′, components) => map(ASKEMUWDs.varname, context(uwd′))
 end
 
+OpenSummationDecapodeOb, OpenSummationDecapode = OpenACSetTypes(Decapodes.SummationDecapode, :Var)
+
+# function Decapodes.Open(d::ASKEMDecapodes.decapodes.SummationDecapode, names::Vector{Symbol})
+function Decapodes.Open(d::decapodes.SummationDecapode, names::Vector{Symbol})
+    legs = map(names) do name
+    FinFunction(incident(d, name, :name), nparts(d, :Var))
+  end
+  OpenSummationDecapode(d, legs...)
+end
+
+#=
+apex(decapode::OpenSummationDecapode) = apex(decapode.cospan)
+legs(decapode::OpenSummationDecapode) = legs(decapode.cospan)
+feet(decapode::OpenSummationDecapode) = decapode.feet
+=#
+
 # Extract an open decapode from the decapode expression and the interface
-open_decapode(d, interface) = Open(SummationDecapode(d.model), interface)
-open_decapode(d::ASKEMDecaExpr, interface) = Open(SummationDecapode(d.model), interface)
+open_decapode(d, interface) = Open(ASKEMDecapodes.SummationDecapode(d.model), interface)
+open_decapode(d::ASKEMDecaExpr, interface) = Open(ASKEMDecapodes.SummationDecapode(d.model), interface)
 open_decapode(d::ASKEMDecapode, interface) = Open(d.model, interface)
 
 """    Catlab.oapply(m::CompositeModel)
