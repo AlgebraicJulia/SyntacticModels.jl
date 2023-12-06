@@ -1,3 +1,26 @@
+
+@sum Args begin
+  Value(_1::Symbol)
+  Kwarg(_1::Symbol, _2::Args)
+end
+
+struct Statement
+  table::Symbol
+  element::Vector{Args}
+end
+
+#=
+@sum union_sym_expr begin
+  sym(s::Symbol)
+  expr(e::Expr)
+end
+=#
+
+struct ACSetSpec
+  acstype::Symbol
+  body::Vector{Statement}
+end
+
 @sum MathML begin
   Math(str::String)
   Presentation(str::String)
@@ -37,10 +60,15 @@ end
   Time(id::Symbol, units::Unit)
 end
 
+struct Pair
+  first::Symbol
+  second::Symbol
+end
+
 @sum Semantic begin
   ODEList(statements::Vector{Expression})
   ODERecord(rates::Vector{Rate}, initials::Vector{Initial}, parameters::Vector{Parameter}, time::Time)
-  # Typing(system::ACSetSpec, map::Vector{Pair})
+  Typing(system::ACSetSpec, map::Vector{Pair})
 end
 
 
@@ -69,6 +97,6 @@ end
 
 struct ASKEModel
   header::Header 
-  # model::ACSetSpec
+  model::ACSetSpec
   semantics::Vector{Semantic}
 end
