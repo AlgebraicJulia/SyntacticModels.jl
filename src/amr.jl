@@ -1,10 +1,10 @@
 module AMR
 
-export Math, MathML, ExpressionFormula, Unit, Distribution, Observable, Expression,
+export amr, Math, MathML, ExpressionFormula, Unit, Distribution, Observable, Expression,
  Rate, Initial, Parameter, Time,
  StandardUniform, Uniform, StandardNormal, Normal, PointMass,
- Semantic, Header, ODERecord, ODEList, Typing, ASKEModel,
- distro_string, amr_to_string,
+ Semantic, Header, ODERecord, ODEList, ASKEModel, # Typing, 
+ distro_string, # amr_to_string,
  Annotation, Note, Name, Description, Grounding, Units
 
 using Reexport
@@ -14,103 +14,27 @@ using ACSets.ADTs
 using ACSets.ACSetInterface
 using StructTypes
 
-using ..SyntacticModelsBase
 
-@data MathML <: AbstractTerm begin
-  Math(String)
-  Presentation(String)
-end
+@intertypes "amr.it" module amr end
 
-nomath = Math("")
-
-@as_record struct ExpressionFormula{T} <: AbstractTerm
-  expression::T
-  expression_mathml::MathML
-end
-
-@as_record struct Unit <: AbstractTerm
-  expression::String
-  expression_mathml::MathML
-end
+using .amr
 
 
-nounit = Unit("", nomath)
-
-@data Distribution <: AbstractTerm begin
-  StandardUniform
-  Uniform(min, max)
-  StandardNormal
-  Normal(mean, variance)
-  PointMass(value)
-end
-
-@as_record struct Observable{T <: AbstractTerm}
-  id::Symbol
-  name::String
-  states::Vector{Symbol}
-  f::ExpressionFormula
-end
-
-@data Expression <: AbstractTerm begin
-  Rate(target::Symbol, f::ExpressionFormula)
-  Initial(target::Symbol, f::ExpressionFormula)
-  Parameter(id::Symbol, name::String, description::String, units::Unit, value::Float64, distribution::Distribution)
-  Time(id::Symbol, units::Unit)
-end
-
-@data Semantic  <: AbstractTerm begin
-  ODEList(statements::Vector{Expression})
-  ODERecord(rates::Vector{Rate}, initials::Vector{Initial}, parameters::Vector{Parameter}, time::Time)
-  # Metadata
-  Typing(system::ACSetSpec, map::Vector{Pair})
-  # Stratification
-end
-
-@data Note <: AbstractTerm begin
-  Name(str::String)
-  Description(str::String)
-  Grounding(ontology::String, identifier::String)
-  Units(expression::String)
-end
-
-StructTypes.StructType(::Type{Note}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{Note}) = :_type
-StructTypes.subtypes(::Type{Note}) =
-  (Name=Name,Description=Description,Grounding=Grounding,Units=Units,)
-
-@as_record struct Annotation{E,T} <: AbstractTerm
-  entity::E
-  type::T
-  note::Note
-end
-
-@as_record struct Header <: AbstractTerm
-  name::String
-  schema::String
-  description::String
-  schema_name::String
-  model_version::String
-end
-
-@as_record struct ASKEModel <: AbstractTerm
-  header::Header 
-  model::ACSetSpec
-  semantics::Vector{Semantic}
-end
-
-function distro_string(d::Distribution)
+function distro_string(d::amr.Distribution)
   @match d begin
-    StandardUniform   => "U(0,1)"
-    Uniform(min, max) => "U($min,$max)"
-    StandardNormal    => "N(0,1)"
-    Normal(mu, var)   => "N($mu,$var)"
-    PointMass(value)  => "δ($value)"
+    amr.StandardUniform(s)   => "U(0,1)"
+    amr.Uniform(min, max) => "U($min,$max)"
+    amr.StandardNormal(s)    => "N(0,1)"
+    amr.Normal(mu, var)   => "N($mu,$var)"
+    amr.PointMass(value)  => "δ($value)"
   end
 end
 
-function distro_expr(d::Distribution)
+function distro_expr(d::amr.Distribution)
   return Base.Meta.parse(distro_string(d))
 end
+
+#=
 
 function note_string(n::Note)
   @match n begin
@@ -129,34 +53,34 @@ padlines(ss::Vector, n) = map(ss) do s
   " "^n * s
 end
 padlines(s::String, n=2) = join(padlines(split(s, "\n"), n), "\n")
-
-function amr_to_string(amr)
+=#
+function amr_to_string(amr′)
   let ! = amr_to_string
-    @match amr begin
-      s::String                        => s
-      Math(s)                          => !s
-      Presentation(s)                  => "<mathml> $s </mathml>"
-      u::Unit                          => !u.expression
-      d::Distribution                  => distro_string(d)
-      Time(id, u)                      => "$id::Time{$(!u)}\n"
-      Rate(t, f)                       => "$t::Rate = $(f.expression)"
-      Initial(t, f)                    => "$t::Initial = $(f.expression)"
-      Observable(id, n, states, f)     => "# $n\n$id::Observable = $(f.expression)($states)\n"
-      Header(name, s, d, sn, mv)       => "\"\"\"\nASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d\n\"\"\""
-      Parameter(t, n, d, u, v, dist)   => "\n# $n-- $d\n$t::Parameter{$(!u)} = $v ~ $(!dist)\n"
+    @match amr′ begin
+      s::String                            => s
+      amr.Math(s)                          => !s
+      amr.Presentation(s)                  => "<mathml> $s </mathml>"
+      u::amr.Unit                          => !u.expression
+      d::amr.Distribution                  => distro_string(d)
+      amr.Time(id, u)                      => "$id::Time{$(!u)}\n"
+      amr.Rate(t, f)                       => "$t::Rate = $(f.expression)"
+      amr.Initial(t, f)                    => "$t::Initial = $(f.expression)"
+      amr.Observable(id, n, states, f)     => "# $n\n$id::Observable = $(f.expression)($states)\n"
+      amr.Header(id, name, s, d, sn, mv)   => "\"\"\"\nASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d\n\"\"\""
+      amr.Parameter(t, n, d, u, v, dist)   => "\n# $n-- $d\n$t::Parameter{$(!u)} = $v ~ $(!dist)\n"
       m::ACSetSpec                     => "Model = begin\n$(padlines(sprint(show, m),2))\nend"
-      ODEList(l)                       => "ODE_Equations = begin\n" * padlines(join(map(!, l), "\n")) * "\nend"
-      ODERecord(rts, init, para, time) => join(vcat(["ODE_Record = begin\n"], !rts , !init, !para, [!time, "end"]), "\n")
-      vs::Vector{Pair}                 => map(vs) do v; "$(v[1]) => $(v[2])," end |> x-> join(x, "\n") 
-      vs::Vector{Semantic}             => join(map(!, vs), "\n\n")
+      amr.ODEList(l)                       => "ODE_Equations = begin\n" * padlines(join(map(!, l), "\n")) * "\nend"
+      amr.ODERecord(rts, init, para, time) => join(vcat(["ODE_Record = begin\n"], !rts , !init, !para, [!time, "end"]), "\n")
+      vs::Vector{amr.Pair}                 => map(vs) do v; "$(v[1]) => $(v[2])," end |> x-> join(x, "\n") 
+      vs::Vector{amr.Semantic}             => join(map(!, vs), "\n\n")
       xs::Vector                       => map(!, xs)
-      Typing(system, map)              => "Typing = begin\n$(padlines(!system, 2))\nTypeMap = [\n$(padlines(!map, 2))]\nend"
-      ASKEModel(h, m, s)               => "$(!h)\n$(!m)\n\n$(!s)"
-      Annotation(e,t,n)                => "Annotation = $(String(e)),$(String(t)): $(note_string(n))"
+      # amr.Typing(system, map)              => "Typing = begin\n$(padlines(!system, 2))\nTypeMap = [\n$(padlines(!map, 2))]\nend"
+      # amr.ASKEModel(h, m, s)               => "$(!h)\n$(!m)\n\n$(!s)"
+      amr.Annotation(e,t,n)                => "Annotation = $(String(e)),$(String(t)): $(note_string(n))"
     end
   end
 end
-
+#=
 block(exprs) = begin
   q = :(begin
     
@@ -166,6 +90,7 @@ block(exprs) = begin
 end
 
 extract_acsetspec(s::String) = join(split(s, " ")[2:end], " ") |> Meta.parse
+
 
 function amr_to_expr(amr)
   let ! = amr_to_expr
@@ -460,4 +385,5 @@ function load(::Type{ASKEModel}, ex::Expr)
   end
   ASKEModel(elts[2][1], elts[2][2], [elts[4], elts[6]])
 end
+=#
 end # module end
