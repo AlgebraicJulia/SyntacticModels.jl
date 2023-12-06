@@ -9,6 +9,17 @@ using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
 using Catlab.Graphics
 
+using ACSets
+using ACSets.InterTypes
+using OrderedCollections
+
+using Reexport
+@reexport using MLStyle
+@reexport using ACSets
+using ACSets.ADTs
+using ACSets.ACSetInterface
+using StructTypes
+
 # This example follows what in current catlab would be given as
 
 #=
@@ -19,32 +30,33 @@ using Catlab.Graphics
 end
 =#
 
-v1 = Typed(:x, :X)
-v2 = Typed(:y, :Y)
-v3 = Typed(:z, :Z)
-v4 = Untyped(:u)
+v1 = ASKEMUWDs.uwd.Typed(:x, :X)
+v2 = ASKEMUWDs.uwd.Typed(:y, :Y)
+v3 = ASKEMUWDs.uwd.Typed(:z, :Z)
+v4 = ASKEMUWDs.uwd.Untyped(:u)
 c = [v1, v3]
-s = [Statement(:R, [v1,v2]),
-  Statement(:S, [v2,v3]),
-  Statement(:T, [v3,v2, v4])]
-u = UWDExpr(c, s)
+s = [ASKEMUWDs.uwd.Statement(:R, [v1,v2]),
+      ASKEMUWDs.uwd.Statement(:S, [v2,v3]),
+      ASKEMUWDs.uwd.Statement(:T, [v3,v2, v4])]
+u = ASKEMUWDs.uwd.UWDExpr(c, s)
 
 @testset "UWDExpr Readback" begin
-  s = JSON3.write(u)
-  ujson = JSON3.read(s, UWDTerm)
-  # FIXME: can't compare u and ujson, because they aren't same object
-  # but they have the same JSON string
-  @test s == JSON3.write(ujson)
+  s = jsonwrite(u)
+  ujson = jsonread(s, ASKEMUWDs.uwd.UWDTerm)
+  @test s == jsonwrite(ujson)
 end
 
-uwd = ASKEMUWDs.construct(RelationDiagram, u)
 
-h = AMR.Header("rst_relation", "modelreps.io/UWD", "A demo UWD showing generic relation composition", "UWDExpr", "v0.1")
+uwd′ = ASKEMUWDs.construct(RelationDiagram, u)
 
-mexpr = UWDModel(h, u)
-write_json_model(mexpr)
-mexpr′ = readback(mexpr)
+
+h = AMR.Header("","rst_relation", "modelreps.io/UWD", "A demo UWD showing generic relation composition", "UWDExpr", "v0.1")
+
+mexpr = ASKEMUWDs.uwd.UWDModel(h, u)
 @testset "UWD Readback" begin
+  write_json_model(mexpr)
+  mexpr′ = readback(mexpr,ASKEMUWDs.uwd.UWDTerm)
+  
   @test mexpr.header == mexpr′.header
   @test mexpr.uwd.context == mexpr′.uwd.context
   @test mexpr.uwd.context == mexpr′.uwd.context
@@ -54,11 +66,11 @@ mexpr′ = readback(mexpr)
   @test mexpr.uwd.statements[2].variables == mexpr′.uwd.statements[2].variables
   @test mexpr.uwd.statements[3].relation == mexpr′.uwd.statements[3].relation
   @test mexpr.uwd.statements[3].variables == mexpr′.uwd.statements[3].variables
-  # TODO: overload == for statements
-  # @test all(mexpr.uwd.statements .== mexpr′.uwd.statements)
-  # @test mexpr == mexpr′
+  
+  @test all(mexpr.uwd.statements .== mexpr′.uwd.statements)
+  @test mexpr == mexpr′
 end
 
-to_graphviz(uwd, box_labels=:name, junction_labels=:variable)
+to_graphviz(uwd′, box_labels=:name, junction_labels=:variable)
 
-display(uwd)
+display(uwd′)

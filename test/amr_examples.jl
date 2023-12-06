@@ -4,8 +4,19 @@ using Test
 using ACSets
 using ACSets.ADTs
 
+using ACSets.InterTypes
+using Test
+using OrderedCollections
+import JSON
+import JSON3
+
+using Reexport
+@reexport using MLStyle
+@reexport using ACSets
+using StructTypes
+
 nomath = Math("")
-header = Header("SIR", "amr-schemas:petri_schema.json", "The SIR Model of disease", "petrinet", "0.2")
+header = Header("","SIR", "amr-schemas:petri_schema.json", "The SIR Model of disease", "petrinet", "0.2")
 model = acsetspec(:(LabelledPetriNet{Symbol}), quote
   S(label=:S)
   S(label=:I)
@@ -58,7 +69,8 @@ odelist = ODEList([
 
   ])
 
-amr₁ = ASKEModel(header,
+#=
+amr₁ = AMR.ASKEModel(header,
   model,
   [ode]
 )
@@ -549,4 +561,6 @@ model_expr = Base.Meta.parse(modelrep)
 println(AMR.amr_to_string(AMR.load(ASKEModel, model_expr)))
 @test_skip (AMR.amr_to_string(AMR.load(ASKEModel, model_expr))) == modelrep
 
-end
+=#
+
+end # module

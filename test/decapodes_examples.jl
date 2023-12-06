@@ -1,27 +1,30 @@
 # module ASKEMDecapodesExamples
 
-using ..SyntacticModels
 using ..SyntacticModels.ASKEMDecapodes
 using ..SyntacticModels.AMR
 
-using MLStyle
-using JSON
-using Catlab
 using ACSets
-using ACSets.JSONACSets
-using Decapodes
+using ACSets.InterTypes
 using Test
+using OrderedCollections
+import JSON
+import JSON3
 
-# Build the heder object describing the model.
+using Reexport
+@reexport using MLStyle
+@reexport using ACSets
+using ACSets.ADTs
+using ACSets.ACSetInterface
+using StructTypes
 
-h = AMR.Header("harmonic_oscillator",
+h = amr.Header("", "harmonic_oscillator",
   "modelreps.io/DecaExpr",
   "A Simple Harmonic Oscillator as a Diagrammatic Equation",
   "DecaExpr",
   "v1.0")
 
 # The easiest way to write down a DecaExpr is in our DSL and calling the parser.
-dexpr = Decapodes.parse_decapode(quote
+dexpr = ASKEMDecapodes.parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
 
@@ -32,15 +35,15 @@ dexpr = Decapodes.parse_decapode(quote
 end
 )
 
-annot = [AMR.Annotation(:X,:Form0,AMR.Name("The X variable."))]
+annot = [amr.Annotation(:X,:Form0,amr.Name("The X variable."))]
 
 # Bundle the DecaExpr with the header metadata.
-mexpr = ASKEMDecaExpr(h, dexpr, annot)
+mexpr = ASKEMDecapodes.decapodes.ASKEMDecaExpr(h, dexpr, annot)
 
 # Convert a the DecaExpr to a SummationDecapode which is the
 # combinatorial representation. The converter lives in Decapodes/src/language.jl.
 
-d = Decapodes.SummationDecapode(mexpr.model)
+d = ASKEMDecapodes.SummationDecapode(mexpr.model)
 
 # We want different metadata for this representation.
 # The Summation prefix just means that this decapodes have
@@ -48,12 +51,12 @@ d = Decapodes.SummationDecapode(mexpr.model)
 # The summation operator happens in physics so often,
 # that you want to bake in some specialized handling to the data structure.
 
-h = AMR.Header("harmonic_oscillator",
+h = amr.Header("","harmonic_oscillator",
   "modelreps.io/SummationDecapode",
   "A Simple Harmonic Oscillator as a Diagrammatic Equation",
   "SummationDecapode",
   "v1.0")
-mpode = ASKEMDecapode(h, d, annot)
+mpode = ASKEMDecapodes.decapodes.ASKEMDecapode(h, d, annot)
 
 
 # The syntactic representation can be serialized as JSON.
@@ -63,12 +66,11 @@ write_json_model(mexpr)
 
 # We could also use the JSON serialization built into Catlab
 # to serialize the resulting combinatorial representation
-sm_write_json_acset(mpode.model, "$(mpode.header.name)-acset")
-# end
+# sm_write_json_acset(mpode.model, "$(mpode.header.name)-acset")
 
 
  # Can we read back the models we just wrote?
 @testset "Decapodes Readback" begin
-  mexpr′ = readback(mexpr)
+  mexpr′ = readback(mexpr,ASKEMDecapodes.decapodes.ASKEMDeca)
   @test JSON3.write(mexpr) == JSON3.write(mexpr′)
 end
