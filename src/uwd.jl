@@ -3,7 +3,6 @@ module ASKEMUWDs
 # include("amr.jl")
 export Var, Typed, Untyped, Statement, UWDExpr, UWDModel, UWDTerm, context
 
-using ..SyntacticModelsBase
 using ..AMR
 
 using MLStyle
@@ -11,13 +10,25 @@ using StructTypes
 using Catlab
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
-import Base: show
+# import Base: show
 
+using ACSets
+using ACSets.InterTypes
 
-@data Var <: AbstractTerm begin
-  Untyped(var::Symbol)
-  Typed(var::Symbol, type::Symbol)
+using Reexport
+@reexport using MLStyle
+@reexport using ACSets
+using ACSets.ADTs
+using ACSets.ACSetInterface
+
+using ..AMR.amr
+
+@intertypes "uwd.it" module uwd
+  import ..amr
 end
+
+using .uwd
+
 
 @doc """    Var
 
@@ -30,17 +41,6 @@ Subtypes include:
 
 which are used for representing typed or untyped variables.
 """
-Var
-
-StructTypes.StructType(::Type{Var}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{Var}) = :_type
-StructTypes.subtypes(::Type{Var}) = (Untyped=Untyped, Typed=Typed)
-
-@data UWDTerm <: AbstractTerm begin
-  Statement(relation::Symbol, variables::Vector{Var})
-  UWDExpr(context::Vector{Var}, statements::Vector{Statement})
-  UWDModel(header::AMR.Header, uwd::UWDExpr)
-end
 
 @doc """    UWDTerm
 
@@ -79,37 +79,33 @@ s = [Statement(:R, [v1,v2]),
 u = UWDExpr(c, s)
 ```
 """
-UWDTerm
 
-StructTypes.StructType(::Type{UWDTerm}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{UWDTerm}) = :_type
-StructTypes.subtypes(::Type{UWDTerm}) = (Statement=Statement, UWDExpr=UWDExpr, UWDModel=UWDModel)
-
-varname(v::Var) = @match v begin
-  Untyped(v) => v
-  Typed(v, t) => v
+varname(v::uwd.Var) = @match v begin
+  uwd.Untyped(v) => v
+  uwd.Typed(v, t) => v
 end
 
-vartype(v::Var) = @match v begin
-  Typed(v, t) => t
-  Untyped(v) => :untyped
+vartype(v::uwd.Var) = @match v begin
+  uwd.Typed(v, t) => t
+  uwd.Untyped(v) => :untyped
 end
 
-context(t::UWDTerm) = @match t begin
-  Statement(R, xs) => xs
-  UWDExpr(context, statements) => context
-  UWDModel(h, uwd) => context(uwd)
+context(t::uwd.UWDTerm) = @match t begin
+  uwd.Statement(R, xs) => xs
+  uwd.UWDExpr(context, statements) => context
+  uwd.UWDModel(h, uwd) => context(uwd)
 end
 
 """    show(io::IO, s::UWDTerm)
 
 generates a human readable string of the `UWDTerm` (or any sub-term).
 """
-function show(io::IO, s::UWDTerm)
+#=
+function show(io::IO, s::uwd.UWDTerm)
   let ! = show
     @match s begin
-      Statement(r, v) => begin print(io, "$r("); show(io, v, wrap=false); print(io, ")") end
-      UWDExpr(c, body) => begin 
+      uwd.Statement(r, v) => begin print(io, "$r("); show(io, v, wrap=false); print(io, ")") end
+      uwd.UWDExpr(c, body) => begin 
         map(enumerate(body)) do (i,s)
           if i == 1
             print(io, "{ ")
@@ -128,19 +124,19 @@ function show(io::IO, s::UWDTerm)
         print(io, " where ")
         show(io, c)
       end
-      UWDModel(h, uwd) => begin println(io, amr_to_string(h)); println(io, "UWD:"); !(io, uwd); end
+      uwd.UWDModel(h, uwd′) => begin println(io, amr_to_string(h)); println(io, "UWD:"); !(io, uwd′); end
     end
   end
 end
 
-function show(io::IO, c::Vector{Var}; wrap=true)
+function show(io::IO, c::Vector{uwd.Var}; wrap=true)
   if wrap
     print(io, "{")
   end
   map(enumerate(c)) do (i,s)
     @match s begin
-      Untyped(v) => print(io, v)
-      Typed(v, T) => print(io, "$v:$T")
+      uwd.Untyped(v) => print(io, v)
+      uwd.Typed(v, T) => print(io, "$v:$T")
     end
     if i != length(c)
       print(io, ", ")
@@ -150,12 +146,13 @@ function show(io::IO, c::Vector{Var}; wrap=true)
     print(io, "}")
   end
 end
+=#
 
 """    construct(::Type{RelationDiagram}, ex::UWDExpr)
 
 Builds a RelationDiagram from a UWDExpr like the `@relation` macro does for Julia Exprs.
 """
-function construct(::Type{RelationDiagram}, ex::UWDExpr)
+function construct(::Type{RelationDiagram}, ex::uwd.UWDExpr)
   # If you want to understand this code, look at the schema for Relation Diagrams
   # to_graphviz(RelationalPrograms.SchRelationDiagram)
   uwd = RelationDiagram(map(varname, ex.context))
