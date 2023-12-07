@@ -3,19 +3,8 @@
 using ..SyntacticModels.ASKEMDecapodes
 using ..SyntacticModels.AMR
 
-using ACSets
-using ACSets.InterTypes
 using Test
-using OrderedCollections
-import JSON
 import JSON3
-
-using Reexport
-@reexport using MLStyle
-@reexport using ACSets
-using ACSets.ADTs
-using ACSets.ACSetInterface
-using StructTypes
 
 h = amr.Header("", "harmonic_oscillator",
   "modelreps.io/DecaExpr",

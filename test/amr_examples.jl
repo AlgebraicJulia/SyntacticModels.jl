@@ -4,17 +4,6 @@ using Test
 using ACSets
 using ACSets.ADTs
 
-using ACSets.InterTypes
-using Test
-using OrderedCollections
-import JSON
-import JSON3
-
-using Reexport
-@reexport using MLStyle
-@reexport using ACSets
-using StructTypes
-
 nomath = Math("")
 header = Header("","SIR", "amr-schemas:petri_schema.json", "The SIR Model of disease", "petrinet", "0.2")
 model = acsetspec(:(LabelledPetriNet{Symbol}), quote

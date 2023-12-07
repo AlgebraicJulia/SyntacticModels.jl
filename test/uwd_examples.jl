@@ -1,5 +1,4 @@
 using ..SyntacticModels
-using ..SyntacticModels.SyntacticModelsBase
 using ..SyntacticModels.AMR
 using ..SyntacticModels.ASKEMUWDs
 
@@ -8,17 +7,6 @@ using JSON3
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
 using Catlab.Graphics
-
-using ACSets
-using ACSets.InterTypes
-using OrderedCollections
-
-using Reexport
-@reexport using MLStyle
-@reexport using ACSets
-using ACSets.ADTs
-using ACSets.ACSetInterface
-using StructTypes
 
 # This example follows what in current catlab would be given as
 

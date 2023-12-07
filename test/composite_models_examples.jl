@@ -3,19 +3,11 @@ using ..SyntacticModels.ASKEMDecapodes
 using ..SyntacticModels.ASKEMUWDs
 using ..SyntacticModels.Composites
 
-using MLStyle
-using JSON
 # using Decapodes
 using Catlab
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
 using Test
-
-using ACSets
-using ACSets.InterTypes
-using Test
-using OrderedCollections
-import JSON
 import JSON3
 
 
