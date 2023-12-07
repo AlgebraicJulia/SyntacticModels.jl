@@ -20,21 +20,19 @@ using StructTypes
 using .amr
 
 
-function distro_string(d::amr.Distribution)
+function distro_string(d::Distribution)
   @match d begin
-    amr.StandardUniform(s)   => "U(0,1)"
-    amr.Uniform(min, max) => "U($min,$max)"
-    amr.StandardNormal(s)    => "N(0,1)"
-    amr.Normal(mu, var)   => "N($mu,$var)"
-    amr.PointMass(value)  => "δ($value)"
+    StandardUniform(s)   => "U(0,1)"
+    Uniform(min, max) => "U($min,$max)"
+    StandardNormal(s)    => "N(0,1)"
+    Normal(mu, var)   => "N($mu,$var)"
+    PointMass(value)  => "δ($value)"
   end
 end
 
-function distro_expr(d::amr.Distribution)
+function distro_expr(d::Distribution)
   return Base.Meta.parse(distro_string(d))
 end
-
-#=
 
 function note_string(n::Note)
   @match n begin
@@ -53,30 +51,30 @@ padlines(ss::Vector, n) = map(ss) do s
   " "^n * s
 end
 padlines(s::String, n=2) = join(padlines(split(s, "\n"), n), "\n")
-=#
+
 function amr_to_string(amr′)
   let ! = amr_to_string
     @match amr′ begin
       s::String                            => s
-      amr.Math(s)                          => !s
-      amr.Presentation(s)                  => "<mathml> $s </mathml>"
-      u::amr.Unit                          => !u.expression
-      d::amr.Distribution                  => distro_string(d)
-      amr.Time(id, u)                      => "$id::Time{$(!u)}\n"
-      amr.Rate(t, f)                       => "$t::Rate = $(f.expression)"
-      amr.Initial(t, f)                    => "$t::Initial = $(f.expression)"
-      amr.Observable(id, n, states, f)     => "# $n\n$id::Observable = $(f.expression)($states)\n"
-      amr.Header(id, name, s, d, sn, mv)   => "\"\"\"\nASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d\n\"\"\""
-      amr.Parameter(t, n, d, u, v, dist)   => "\n# $n-- $d\n$t::Parameter{$(!u)} = $v ~ $(!dist)\n"
-      m::ACSetSpec                     => "Model = begin\n$(padlines(sprint(show, m),2))\nend"
-      amr.ODEList(l)                       => "ODE_Equations = begin\n" * padlines(join(map(!, l), "\n")) * "\nend"
-      amr.ODERecord(rts, init, para, time) => join(vcat(["ODE_Record = begin\n"], !rts , !init, !para, [!time, "end"]), "\n")
-      vs::Vector{amr.Pair}                 => map(vs) do v; "$(v[1]) => $(v[2])," end |> x-> join(x, "\n") 
-      vs::Vector{amr.Semantic}             => join(map(!, vs), "\n\n")
+      Math(s)                          => !s
+      Presentation(s)                  => "<mathml> $s </mathml>"
+      u::Unit                          => !u.expression
+      d::Distribution                  => distro_string(d)
+      Time(id, u)                      => "$id::Time{$(!u)}\n"
+      Rate(t, f)                       => "$t::Rate = $(f.expression)"
+      Initial(t, f)                    => "$t::Initial = $(f.expression)"
+      Observable(id, n, states, f)     => "# $n\n$id::Observable = $(f.expression)($states)\n"
+      Header(id, name, s, d, sn, mv)   => "\"\"\"\nASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d\n\"\"\""
+      Parameter(t, n, d, u, v, dist)   => "\n# $n-- $d\n$t::Parameter{$(!u)} = $v ~ $(!dist)\n"
+      m::amr.ACSetSpec                     => "Model = begin\n$(padlines(sprint(show, m),2))\nend"
+      ODEList(l)                       => "ODE_Equations = begin\n" * padlines(join(map(!, l), "\n")) * "\nend"
+      ODERecord(rts, init, para, time) => join(vcat(["ODE_Record = begin\n"], !rts , !init, !para, [!time, "end"]), "\n")
+      vs::Vector{Pair}                 => map(vs) do v; "$(v[1]) => $(v[2])," end |> x-> join(x, "\n") 
+      vs::Vector{Semantic}             => join(map(!, vs), "\n\n")
       xs::Vector                       => map(!, xs)
-      # amr.Typing(system, map)              => "Typing = begin\n$(padlines(!system, 2))\nTypeMap = [\n$(padlines(!map, 2))]\nend"
-      # amr.ASKEModel(h, m, s)               => "$(!h)\n$(!m)\n\n$(!s)"
-      amr.Annotation(e,t,n)                => "Annotation = $(String(e)),$(String(t)): $(note_string(n))"
+      Typing(system, map)              => "Typing = begin\n$(padlines(!system, 2))\nTypeMap = [\n$(padlines(!map, 2))]\nend"
+      ASKEModel(h, m, s)               => "$(!h)\n$(!m)\n\n$(!s)"
+      Annotation(e,t,n)                => "Annotation = $(String(e)),$(String(t)): $(note_string(n))"
     end
   end
 end

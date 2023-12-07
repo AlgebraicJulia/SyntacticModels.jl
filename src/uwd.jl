@@ -1,12 +1,9 @@
 module ASKEMUWDs
 
-# include("amr.jl")
-export Var, Typed, Untyped, Statement, UWDExpr, UWDModel, UWDTerm, context
+export Var, Typed, Untyped, Statement, UWDExpr, UWDModel, UWDTerm, vartype, varname, context, construct
 
 using ..AMR
 
-using MLStyle
-using StructTypes
 using Catlab
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
@@ -14,12 +11,6 @@ using Catlab.WiringDiagrams
 
 using ACSets
 using ACSets.InterTypes
-
-using Reexport
-@reexport using MLStyle
-@reexport using ACSets
-using ACSets.ADTs
-using ACSets.ACSetInterface
 
 using ..AMR.amr
 
@@ -80,20 +71,20 @@ u = UWDExpr(c, s)
 ```
 """
 
-varname(v::uwd.Var) = @match v begin
-  uwd.Untyped(v) => v
-  uwd.Typed(v, t) => v
+varname(v::Var) = @match v begin
+  Untyped(v) => v
+  Typed(v, t) => v
 end
 
-vartype(v::uwd.Var) = @match v begin
-  uwd.Typed(v, t) => t
-  uwd.Untyped(v) => :untyped
+vartype(v::Var) = @match v begin
+  Typed(v, t) => t
+  Untyped(v) => :untyped
 end
 
-context(t::uwd.UWDTerm) = @match t begin
+context(t::UWDTerm) = @match t begin
   uwd.Statement(R, xs) => xs
-  uwd.UWDExpr(context, statements) => context
-  uwd.UWDModel(h, uwd) => context(uwd)
+  UWDExpr(context, statements) => context
+  UWDModel(h, uwd) => context(uwd)
 end
 
 """    show(io::IO, s::UWDTerm)
@@ -101,11 +92,11 @@ end
 generates a human readable string of the `UWDTerm` (or any sub-term).
 """
 #=
-function show(io::IO, s::uwd.UWDTerm)
+function show(io::IO, s::UWDTerm)
   let ! = show
     @match s begin
       uwd.Statement(r, v) => begin print(io, "$r("); show(io, v, wrap=false); print(io, ")") end
-      uwd.UWDExpr(c, body) => begin 
+      UWDExpr(c, body) => begin 
         map(enumerate(body)) do (i,s)
           if i == 1
             print(io, "{ ")
@@ -124,19 +115,19 @@ function show(io::IO, s::uwd.UWDTerm)
         print(io, " where ")
         show(io, c)
       end
-      uwd.UWDModel(h, uwd′) => begin println(io, amr_to_string(h)); println(io, "UWD:"); !(io, uwd′); end
+      UWDModel(h, uwd′) => begin println(io, amr_to_string(h)); println(io, "UWD:"); !(io, uwd′); end
     end
   end
 end
 
-function show(io::IO, c::Vector{uwd.Var}; wrap=true)
+function show(io::IO, c::Vector{Var}; wrap=true)
   if wrap
     print(io, "{")
   end
   map(enumerate(c)) do (i,s)
     @match s begin
-      uwd.Untyped(v) => print(io, v)
-      uwd.Typed(v, T) => print(io, "$v:$T")
+      Untyped(v) => print(io, v)
+      Typed(v, T) => print(io, "$v:$T")
     end
     if i != length(c)
       print(io, ", ")
@@ -152,7 +143,7 @@ end
 
 Builds a RelationDiagram from a UWDExpr like the `@relation` macro does for Julia Exprs.
 """
-function construct(::Type{RelationDiagram}, ex::uwd.UWDExpr)
+function construct(::Type{RelationDiagram}, ex::UWDExpr)
   # If you want to understand this code, look at the schema for Relation Diagrams
   # to_graphviz(RelationalPrograms.SchRelationDiagram)
   uwd = RelationDiagram(map(varname, ex.context))

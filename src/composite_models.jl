@@ -2,10 +2,7 @@ module Composites
 
 export CompositeModelExpr, OpenModel, OpenDecapode, CompositeModel, interface, open_decapode, oapply, Open
 
-using MLStyle
 using Catlab
-using Decapodes # : SummationDecapode
-using StructTypes
 
 using ..AMR
 using ..ASKEMDecapodes
@@ -13,13 +10,6 @@ using ..ASKEMUWDs
 
 using ACSets
 using ACSets.InterTypes
-
-using Reexport
-@reexport using MLStyle
-@reexport using ACSets
-using ACSets.ADTs
-using ACSets.ACSetInterface
-
 
 using ..AMR.amr
 using ..ASKEMDecapodes.decapodes
@@ -37,15 +27,14 @@ using .composites
 
 Extract the interface of a composite model. If the model is open, then it is the feet of the cospan. If it is a Composite, then it is the context of the uwd.
 """
-interface(m::composites.CompositeModel) = @match m begin
-  composites.OpenModel(M, I) => I
-  composites.CompositeModelExpr(h, uwd′, components) => map(ASKEMUWDs.varname, context(uwd′))
+interface(m::CompositeModel) = @match m begin
+  OpenModel(M, I) => I
+  CompositeModelExpr(h, uwd′, components) => map(ASKEMUWDs.varname, context(uwd′))
 end
 
-OpenSummationDecapodeOb, OpenSummationDecapode = OpenACSetTypes(Decapodes.SummationDecapode, :Var)
+OpenSummationDecapodeOb, OpenSummationDecapode = OpenACSetTypes(decapodes.SummationDecapode, :Var)
 
-# function Decapodes.Open(d::ASKEMDecapodes.decapodes.SummationDecapode, names::Vector{Symbol})
-function Decapodes.Open(d::decapodes.SummationDecapode, names::Vector{Symbol})
+function Open(d::decapodes.SummationDecapode, names::Vector{Symbol})
     legs = map(names) do name
     FinFunction(incident(d, name, :name), nparts(d, :Var))
   end

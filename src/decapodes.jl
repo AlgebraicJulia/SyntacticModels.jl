@@ -4,17 +4,8 @@ export ASKEMDecaExpr, ASKEMDecapode, ASKEMDeca, SummationDecapode, parse_decapod
 
 using ..AMR
 
-using StructTypes
-using MLStyle
-
 using ACSets
 using ACSets.InterTypes
-
-using Reexport
-@reexport using MLStyle
-@reexport using ACSets
-using ACSets.ADTs
-using ACSets.ACSetInterface
 
 import Unicode
 
@@ -32,23 +23,23 @@ normalize_unicode(s::Symbol)  = Symbol(normalize_unicode(String(s)))
 DerivOp = Symbol("∂ₜ")
 append_dot(s::Symbol) = Symbol(string(s)*'\U0307')
 
-term(s::Symbol) = decapodes.Var(normalize_unicode(s))
-term(s::Number) = decapodes.Lit(Symbol(s))
+term(s::Symbol) = Var(normalize_unicode(s))
+term(s::Number) = Lit(Symbol(s))
 
 term(expr::Expr) = begin
     @match expr begin
         #TODO: Would we want ∂ₜ to be used with general expressions or just Vars?
-        Expr(:call, :∂ₜ, b) => decapodes.Tan(decapodes.Var(b)) 
-        Expr(:call, :dt, b) => decapodes.Tan(decapodes.Var(b)) 
+        Expr(:call, :∂ₜ, b) => Tan(Var(b)) 
+        Expr(:call, :dt, b) => Tan(Var(b)) 
 
-        Expr(:call, Expr(:call, :∘, a...), b) => decapodes.AppCirc1(a, term(b))
-        Expr(:call, a, b) => decapodes.App1(a, term(b))
+        Expr(:call, Expr(:call, :∘, a...), b) => AppCirc1(a, term(b))
+        Expr(:call, a, b) => App1(a, term(b))
 
-        Expr(:call, :+, xs...) => decapodes.Plus(term.(xs))
-        Expr(:call, f, x, y) => decapodes.App2(f, term(x), term(y))
+        Expr(:call, :+, xs...) => Plus(term.(xs))
+        Expr(:call, f, x, y) => App2(f, term(x), term(y))
 
         # TODO: Will later be converted to Op2's or schema has to be changed to include multiplication
-        Expr(:call, :*, xs...) => decapodes.Mult(term.(xs))
+        Expr(:call, :*, xs...) => Mult(term.(xs))
 
         x => error("Cannot construct term from  $x")
     end
@@ -60,13 +51,13 @@ function parse_decapode(expr::Expr)
             ::LineNumberNode => missing
             # TODO: If user doesn't provide space, this gives a temp space so we can continue to construction
             # For now spaces don't matter so this is fine but if they do, this will need to change
-            Expr(:(::), a::Symbol, b::Symbol) => decapodes.Judgement(decapodes.Var(a).name, b, :I)
-            Expr(:(::), a::Expr, b::Symbol) => map(sym -> decapodes.Judgement(decapodes.Var(sym).name, b, :I), a.args)
+            Expr(:(::), a::Symbol, b::Symbol) => Judgement(Var(a).name, b, :I)
+            Expr(:(::), a::Expr, b::Symbol) => map(sym -> Judgement(Var(sym).name, b, :I), a.args)
 
-            Expr(:(::), a::Symbol, b) => decapodes.Judgement(decapodes.Var(a).name, b.args[1], b.args[2])
-            Expr(:(::), a::Expr, b) => map(sym -> decapodes.Judgement(decapodes.Var(sym).name, b.args[1], b.args[2]), a.args)
+            Expr(:(::), a::Symbol, b) => Judgement(Var(a).name, b.args[1], b.args[2])
+            Expr(:(::), a::Expr, b) => map(sym -> Judgement(Var(sym).name, b.args[1], b.args[2]), a.args)
 
-            Expr(:call, :(==), lhs, rhs) => decapodes.Eq(term(lhs), term(rhs))
+            Expr(:call, :(==), lhs, rhs) => Eq(term(lhs), term(rhs))
             _ => error("The line $line is malformed")
         end
     end |> skipmissing |> collect
@@ -74,23 +65,23 @@ function parse_decapode(expr::Expr)
     eqns = []
     foreach(stmts) do s
       @match s begin
-        ::decapodes.Judgement => push!(judges, s)
-        ::Vector{decapodes.Judgement} => append!(judges, s)
-        ::decapodes.Eq => push!(eqns, s)
+        ::Judgement => push!(judges, s)
+        ::Vector{Judgement} => append!(judges, s)
+        ::Eq => push!(eqns, s)
         _ => error("Statement containing $s of type $(typeof(s)) was not added.")
       end
     end
-    decapodes.DecaExpr(judges, eqns)
+    DecaExpr(judges, eqns)
 end
 
 ###
 
 # NOTE: the var in a Judgement in decapodes.it is just a Symbol. It does not have a name field, so that was removed
 # to_decapode helper functions
-reduce_term!(t::decapodes.Term, d::decapodes.AbstractDecapode, syms::Dict{Symbol, Int}) =
+reduce_term!(t::Term, d::AbstractDecapode, syms::Dict{Symbol, Int}) =
   let ! = reduce_term!
     @match t begin
-      decapodes.Var(x) => begin 
+      Var(x) => begin 
         if haskey(syms, x)
            syms[x]
         else
@@ -98,7 +89,7 @@ reduce_term!(t::decapodes.Term, d::decapodes.AbstractDecapode, syms::Dict{Symbol
           syms[x] = res_var
         end
       end
-      decapodes.Lit(x) => begin 
+      Lit(x) => begin 
         if haskey(syms, x)
            syms[x]
         else
@@ -106,17 +97,17 @@ reduce_term!(t::decapodes.Term, d::decapodes.AbstractDecapode, syms::Dict{Symbol
           syms[x] = res_var
         end
       end
-      decapodes.App1(f, t) || decapodes.AppCirc1(f, t) => begin
+      App1(f, t) || AppCirc1(f, t) => begin
         res_var = add_part!(d, :Var, type=:infer)
         add_part!(d, :Op1, src=!(t,d,syms), tgt=res_var, op1=f)
         return res_var
       end
-      decapodes.App2(f, t1, t2) => begin
+      App2(f, t1, t2) => begin
         res_var = add_part!(d, :Var, type=:infer)
         add_part!(d, :Op2, proj1=!(t1,d,syms), proj2=!(t2,d,syms), res=res_var, op2=f)
         return res_var
       end
-      decapodes.Plus(ts) => begin
+      Plus(ts) => begin
         summands = [!(t,d,syms) for t in ts]
         res_var = add_part!(d, :Var, type=:infer, name=:sum)
         n = add_part!(d, :Σ, sum=res_var)
@@ -126,7 +117,7 @@ reduce_term!(t::decapodes.Term, d::decapodes.AbstractDecapode, syms::Dict{Symbol
         return res_var
       end
       # TODO: Just for now assuming we have 2 or more terms
-      decapodes.Mult(ts) => begin
+      Mult(ts) => begin
         multiplicands  = [!(t,d,syms) for t in ts]
         res_var = add_part!(d, :Var, type=:infer, name=:mult)
         m1,m2 = multiplicands[1:2]
@@ -139,7 +130,7 @@ reduce_term!(t::decapodes.Term, d::decapodes.AbstractDecapode, syms::Dict{Symbol
         end
         return res_var
       end
-      decapodes.Tan(t) => begin 
+      Tan(t) => begin 
         # TODO: this is creating a spurious variable with the same name
         txv = add_part!(d, :Var, type=:infer)
         tx = add_part!(d, :TVar, incl=txv)
@@ -150,9 +141,9 @@ reduce_term!(t::decapodes.Term, d::decapodes.AbstractDecapode, syms::Dict{Symbol
     end
   end
 
-function eval_eq!(eq::decapodes.Eq, d::decapodes.AbstractDecapode, syms::Dict{Symbol, Int}, deletions::Vector{Int}) 
+function eval_eq!(eq::Eq, d::AbstractDecapode, syms::Dict{Symbol, Int}, deletions::Vector{Int}) 
   @match eq begin
-    decapodes.Eq(t1, t2) => begin
+    Eq(t1, t2) => begin
       lhs_ref = reduce_term!(t1,d,syms)
       rhs_ref = reduce_term!(t2,d,syms)
 
@@ -161,8 +152,8 @@ function eval_eq!(eq::decapodes.Eq, d::decapodes.AbstractDecapode, syms::Dict{Sy
       # some kind of way to check track of this equality
       ref_pair = (t1, t2)
       @match ref_pair begin
-        (decapodes.Var(a), decapodes.Var(b)) => return d
-        (t1, decapodes.Var(b)) => begin
+        (Var(a), Var(b)) => return d
+        (t1, Var(b)) => begin
           lhs_ref, rhs_ref = rhs_ref, lhs_ref
         end
         _ => nothing
@@ -202,7 +193,7 @@ function eval_eq!(eq::decapodes.Eq, d::decapodes.AbstractDecapode, syms::Dict{Sy
   return d
 end
 
-function recognize_types(d::decapodes.AbstractNamedDecapode)
+function recognize_types(d::AbstractNamedDecapode)
   unrecognized_types = setdiff(d[:type], [:Form0, :Form1, :Form2, :DualForm0,
                           :DualForm1, :DualForm2, :Literal, :Parameter,
                           :Constant, :infer])
@@ -210,7 +201,7 @@ function recognize_types(d::decapodes.AbstractNamedDecapode)
     error("Types $unrecognized_types are not recognized.")
 end
 
-function fill_names!(d::decapodes.AbstractNamedDecapode)
+function fill_names!(d::AbstractNamedDecapode)
   bulletcount = 1
   for i in parts(d, :Var)
     if !isassigned(d[:,:name],i) || isnothing(d[i, :name])
@@ -227,7 +218,7 @@ function fill_names!(d::decapodes.AbstractNamedDecapode)
   d
 end
 
-function make_sum_mult_unique!(d::decapodes.AbstractNamedDecapode)
+function make_sum_mult_unique!(d::AbstractNamedDecapode)
   snum = 1
   mnum = 1
   for (i, name) in enumerate(d[:name])
@@ -241,7 +232,7 @@ function make_sum_mult_unique!(d::decapodes.AbstractNamedDecapode)
   end
 end
 
-function SummationDecapode(e::decapodes.DecaExpr)
+function SummationDecapode(e::DecaExpr)
   # d = SummationDecapode{Any, Any, Symbol}()
   d = decapodes.SummationDecapode{Symbol, Symbol, Symbol}()
   symbol_table = Dict{Symbol, Int}()
