@@ -38,7 +38,7 @@ end
 uwd′ = construct(RelationDiagram, u)
 
 
-h = Header("","rst_relation", "modelreps.io/UWD", "A demo UWD showing generic relation composition", "UWDExpr", "v0.1")
+h = Header("rst_relation", "modelreps.io/UWD", "A demo UWD showing generic relation composition", "UWDExpr", "v0.1")
 
 mexpr = UWDModel(h, u)
 @testset "UWD Readback" begin

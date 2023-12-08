@@ -5,7 +5,7 @@ using ACSets
 using ACSets.ADTs
 
 nomath = Math("")
-header = Header("","SIR", "amr-schemas:petri_schema.json", "The SIR Model of disease", "petrinet", "0.2")
+header = Header("SIR", "amr-schemas:petri_schema.json", "The SIR Model of disease", "petrinet", "0.2")
 model = acsetspec(:(LabelledPetriNet{Symbol}), quote
   S(label=:S)
   S(label=:I)

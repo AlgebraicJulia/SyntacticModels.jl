@@ -6,7 +6,7 @@ using ..SyntacticModels.AMR
 using Test
 import JSON3
 
-h = Header("", "harmonic_oscillator",
+h = Header( "harmonic_oscillator",
   "modelreps.io/DecaExpr",
   "A Simple Harmonic Oscillator as a Diagrammatic Equation",
   "DecaExpr",
@@ -40,7 +40,7 @@ d = SummationDecapode(mexpr.model)
 # The summation operator happens in physics so often,
 # that you want to bake in some specialized handling to the data structure.
 
-h = Header("","harmonic_oscillator",
+h = Header("harmonic_oscillator",
   "modelreps.io/SummationDecapode",
   "A Simple Harmonic Oscillator as a Diagrammatic Equation",
   "SummationDecapode",

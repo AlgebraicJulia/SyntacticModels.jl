@@ -22,7 +22,7 @@ u = UWDExpr(c, s)
 
 
 
-h = Header("","harmonic_oscillator",
+h = Header("harmonic_oscillator",
   "modelreps.io/DecaExpr",
   "A Simple Harmonic Oscillator as a Diagrammatic Equation",
   "DecaExpr",
@@ -45,7 +45,7 @@ d1 = ASKEMDecaExpr(h, dexpr, [])
 
 # The second model is:
 d2 = ASKEMDecaExpr(
-  Header("","fricative_heating",
+  Header("fricative_heating",
    "modelreps.io/SummationDecapode",
    "Velocity makes it get hot, but you dissipate heat away from Q₀",
    "SummationDecapode", "v1.0"),
@@ -62,7 +62,7 @@ d2 = ASKEMDecaExpr(
 )
 
 # Now we can assemble this bad boi:
-h = Header("","composite_physics", "modelreps.io/Composite", "A composite model", "CompositeModelExpr", "v0.0")
+h = Header("composite_physics", "modelreps.io/Composite", "A composite model", "CompositeModelExpr", "v0.0")
 m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :V]), OpenModel(d2, [:V, :Q])])
 interface(m) == [:X, :Q]
 #= TODO: FIXME 
@@ -84,7 +84,7 @@ Q̇ = Untyped(:Q̇)
 uwdʰ = UWDExpr([v, Q], [ASKEMUWDs.uwd.Statement(:drag, [v, Q₊]), ASKEMUWDs.uwd.Statement(:cooling, [Q₋, Q]), ASKEMUWDs.uwd.Statement(:superposition, [Q₊, Q₋, Q̇])])
 
 drag = ASKEMDecaExpr(
-  Header("","DragHeat", "modelreps.io/SummationDecapode", "velocity makes it get hot", "SummationDecapode", "v1.0"),
+  Header("DragHeat", "modelreps.io/SummationDecapode", "velocity makes it get hot", "SummationDecapode", "v1.0"),
   parse_decapode(quote
     V::Form0{Point}
     Q₊::Form0{Point}
@@ -95,7 +95,7 @@ drag = ASKEMDecaExpr(
 )
 
 cooling = ASKEMDecaExpr(
-  Header("","NetwonCooling", "modelreps.io/SummationDecapode", "heat dissipates to the enviornment", "SummationDecapode", "v1.0"),
+  Header("NetwonCooling", "modelreps.io/SummationDecapode", "heat dissipates to the enviornment", "SummationDecapode", "v1.0"),
   parse_decapode(quote
     Q₋::Form0{Point}
     Q₀::Parameter{Point}
@@ -107,7 +107,7 @@ cooling = ASKEMDecaExpr(
 )
 
 superposition = ASKEMDecaExpr(
-  Header("","LinearSuperpositon", "modelreps.io/SummationDecapode", "variables be addin", "SummationDecapode", "v1.0"),
+  Header("LinearSuperpositon", "modelreps.io/SummationDecapode", "variables be addin", "SummationDecapode", "v1.0"),
   parse_decapode(quote
     X::Form0{Point}
     Y::Form0{Point}
@@ -117,9 +117,9 @@ superposition = ASKEMDecaExpr(
   end), []
 )
 
-h = Header("","hierarchical_composite", "modelreps.io/Composite", "A hierarchical composite model of frictional heating", "CompositeModelExpr", "v0.1")
+h = Header("hierarchical_composite", "modelreps.io/Composite", "A hierarchical composite model of frictional heating", "CompositeModelExpr", "v0.1")
 m = CompositeModelExpr(h,u, [OpenModel(d1, [:X, :V]),
-      CompositeModelExpr(Header("","heating_dynamics", "modelreps.io/Composite", "A formula for heating - cooling", "CompositeModelExpr", "v0.1"),
+      CompositeModelExpr(Header("heating_dynamics", "modelreps.io/Composite", "A formula for heating - cooling", "CompositeModelExpr", "v0.1"),
         uwdʰ, [OpenModel(drag, [:V, :Q₊]), OpenModel(cooling, [:Q₋, :Q]), OpenModel(superposition, [:X, :Y, :T])])
 ])
 #= TODO: FIXME
@@ -134,5 +134,5 @@ dh = apex(oapply(m))
 
 composite = OpenDecapode(m)
 hf = composite.model.header
-write_json_model(ASKEMDecapode(Header("","flattened_composite", hf.schema, "A flattened version of the composite_physics model.", hf.schema_name, hf.model_version), composite.model.model))
+write_json_model(ASKEMDecapode(Header("flattened_composite", hf.schema, "A flattened version of the composite_physics model.", hf.schema_name, hf.model_version), composite.model.model))
 =#

@@ -86,7 +86,6 @@ struct Annotation
 end
 
 struct Header
-  id::String
   name::String
   schema::String
   description::String
