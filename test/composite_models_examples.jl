@@ -29,7 +29,7 @@ h = Header("","harmonic_oscillator",
   "v1.0")
 
 # The easiest way to write down a DecaExpr is in our DSL and calling the parser.
-dexpr = ASKEMDecapodes.parse_decapode(quote
+dexpr = parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
 
@@ -49,7 +49,7 @@ d2 = ASKEMDecaExpr(
    "modelreps.io/SummationDecapode",
    "Velocity makes it get hot, but you dissipate heat away from Q₀",
    "SummationDecapode", "v1.0"),
-    ASKEMDecapodes.parse_decapode(quote
+    parse_decapode(quote
       V::Form0{Point}
       Q::Form0{Point}
       κ::Constant{Point}
@@ -85,7 +85,7 @@ uwdʰ = UWDExpr([v, Q], [ASKEMUWDs.uwd.Statement(:drag, [v, Q₊]), ASKEMUWDs.uw
 
 drag = ASKEMDecaExpr(
   Header("","DragHeat", "modelreps.io/SummationDecapode", "velocity makes it get hot", "SummationDecapode", "v1.0"),
-  ASKEMDecapodes.parse_decapode(quote
+  parse_decapode(quote
     V::Form0{Point}
     Q₊::Form0{Point}
     κ::Constant{Point}
@@ -96,7 +96,7 @@ drag = ASKEMDecaExpr(
 
 cooling = ASKEMDecaExpr(
   Header("","NetwonCooling", "modelreps.io/SummationDecapode", "heat dissipates to the enviornment", "SummationDecapode", "v1.0"),
-  ASKEMDecapodes.parse_decapode(quote
+  parse_decapode(quote
     Q₋::Form0{Point}
     Q₀::Parameter{Point}
     Q::Form0{Point}
@@ -108,7 +108,7 @@ cooling = ASKEMDecaExpr(
 
 superposition = ASKEMDecaExpr(
   Header("","LinearSuperpositon", "modelreps.io/SummationDecapode", "variables be addin", "SummationDecapode", "v1.0"),
-  ASKEMDecapodes.parse_decapode(quote
+  parse_decapode(quote
     X::Form0{Point}
     Y::Form0{Point}
     T::Form0{Point}

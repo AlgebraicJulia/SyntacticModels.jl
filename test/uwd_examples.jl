@@ -18,32 +18,32 @@ using Catlab.Graphics
 end
 =#
 
-v1 = ASKEMUWDs.uwd.Typed(:x, :X)
-v2 = ASKEMUWDs.uwd.Typed(:y, :Y)
-v3 = ASKEMUWDs.uwd.Typed(:z, :Z)
-v4 = ASKEMUWDs.uwd.Untyped(:u)
+v1 = Typed(:x, :X)
+v2 = Typed(:y, :Y)
+v3 = Typed(:z, :Z)
+v4 = Untyped(:u)
 c = [v1, v3]
 s = [ASKEMUWDs.uwd.Statement(:R, [v1,v2]),
       ASKEMUWDs.uwd.Statement(:S, [v2,v3]),
       ASKEMUWDs.uwd.Statement(:T, [v3,v2, v4])]
-u = ASKEMUWDs.uwd.UWDExpr(c, s)
+u = UWDExpr(c, s)
 
 @testset "UWDExpr Readback" begin
   s = jsonwrite(u)
-  ujson = jsonread(s, ASKEMUWDs.uwd.UWDTerm)
+  ujson = jsonread(s, UWDTerm)
   @test s == jsonwrite(ujson)
 end
 
 
-uwd′ = ASKEMUWDs.construct(RelationDiagram, u)
+uwd′ = construct(RelationDiagram, u)
 
 
-h = AMR.Header("","rst_relation", "modelreps.io/UWD", "A demo UWD showing generic relation composition", "UWDExpr", "v0.1")
+h = Header("","rst_relation", "modelreps.io/UWD", "A demo UWD showing generic relation composition", "UWDExpr", "v0.1")
 
-mexpr = ASKEMUWDs.uwd.UWDModel(h, u)
+mexpr = UWDModel(h, u)
 @testset "UWD Readback" begin
   write_json_model(mexpr)
-  mexpr′ = readback(mexpr,ASKEMUWDs.uwd.UWDTerm)
+  mexpr′ = readback(mexpr,UWDTerm)
   
   @test mexpr.header == mexpr′.header
   @test mexpr.uwd.context == mexpr′.uwd.context

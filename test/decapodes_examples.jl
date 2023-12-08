@@ -6,14 +6,14 @@ using ..SyntacticModels.AMR
 using Test
 import JSON3
 
-h = amr.Header("", "harmonic_oscillator",
+h = Header("", "harmonic_oscillator",
   "modelreps.io/DecaExpr",
   "A Simple Harmonic Oscillator as a Diagrammatic Equation",
   "DecaExpr",
   "v1.0")
 
 # The easiest way to write down a DecaExpr is in our DSL and calling the parser.
-dexpr = ASKEMDecapodes.parse_decapode(quote
+dexpr = parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
 
@@ -24,15 +24,15 @@ dexpr = ASKEMDecapodes.parse_decapode(quote
 end
 )
 
-annot = [amr.Annotation(:X,:Form0,amr.Name("The X variable."))]
+annot = [Annotation(:X,:Form0,Name("The X variable."))]
 
 # Bundle the DecaExpr with the header metadata.
-mexpr = ASKEMDecapodes.decapodes.ASKEMDecaExpr(h, dexpr, annot)
+mexpr = ASKEMDecaExpr(h, dexpr, annot)
 
 # Convert a the DecaExpr to a SummationDecapode which is the
 # combinatorial representation. The converter lives in Decapodes/src/language.jl.
 
-d = ASKEMDecapodes.SummationDecapode(mexpr.model)
+d = SummationDecapode(mexpr.model)
 
 # We want different metadata for this representation.
 # The Summation prefix just means that this decapodes have
@@ -40,12 +40,12 @@ d = ASKEMDecapodes.SummationDecapode(mexpr.model)
 # The summation operator happens in physics so often,
 # that you want to bake in some specialized handling to the data structure.
 
-h = amr.Header("","harmonic_oscillator",
+h = Header("","harmonic_oscillator",
   "modelreps.io/SummationDecapode",
   "A Simple Harmonic Oscillator as a Diagrammatic Equation",
   "SummationDecapode",
   "v1.0")
-mpode = ASKEMDecapodes.decapodes.ASKEMDecapode(h, d, annot)
+mpode = ASKEMDecapode(h, d, annot)
 
 
 # The syntactic representation can be serialized as JSON.
@@ -60,6 +60,6 @@ write_json_model(mexpr)
 
  # Can we read back the models we just wrote?
 @testset "Decapodes Readback" begin
-  mexpr′ = readback(mexpr,ASKEMDecapodes.decapodes.ASKEMDeca)
+  mexpr′ = readback(mexpr,ASKEMDeca)
   @test JSON3.write(mexpr) == JSON3.write(mexpr′)
 end
