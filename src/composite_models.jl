@@ -1,6 +1,6 @@
 module Composites
 
-export CompositeModelExpr, OpenModel, OpenDecapode, CompositeModel, interface, open_decapode, oapply, Open
+export CompositeModelExpr, OpenModel, OpenDecapode, CompositeModel, interface, open_decapode, oapply
 
 using Catlab
 
@@ -34,28 +34,17 @@ end
 
 using Decapodes
 
-function it_to_orig(test::decapodes.SymSummationDecapode)
+function it_to_orig(x::decapodes.SymSummationDecapode)
   d = Decapodes.SummationDecapode{Any, Any, Symbol}()
-  copy_parts!(d,test, NamedTuple(Dict(k=>parts(test,k) for k in types(decapodes.SchSummationDecapode))))
+  copy_parts!(d,x, NamedTuple(Dict(k=>parts(x,k) for k in types(decapodes.SchSummationDecapode))))
   return d
 end
 
-# OpenSummationDecapodeOb, OpenSummationDecapode = OpenACSetTypes(Decapodes.SummationDecapode, :Var)
-
-#=
-function Open(d::decapodes.SummationDecapode, names::Vector{Symbol})
-    legs = map(names) do name
-    FinFunction(incident(d, name, :name), nparts(d, :Var))
-  end
-  OpenSummationDecapode(d, legs...)
+function orig_to_it(y::Decapodes.SummationDecapode)
+  d = decapodes.SummationDecapode{Symbol, Symbol, Symbol}()
+  copy_parts!(d,y, NamedTuple(Dict(k=>parts(y,k) for k in types(Schema(Decapodes.SchSummationDecapode)))))
+  return d
 end
-=#
-
-#=
-apex(decapode::OpenSummationDecapode) = apex(decapode.cospan)
-legs(decapode::OpenSummationDecapode) = legs(decapode.cospan)
-feet(decapode::OpenSummationDecapode) = decapode.feet
-=#
 
 # Extract an open decapode from the decapode expression and the interface
 open_decapode(d, interface) = Decapodes.Open(it_to_orig(ASKEMDecapodes.SummationDecapode(d.model)), interface)
@@ -90,12 +79,12 @@ function Catlab.oapply(m::CompositeModel)
   end
 end
 
-#=
+
 function OpenDecapode(m::CompositeModel)
   composite = oapply(m)
   feet = map(l->only(dom(l)[:name]), legs(composite))
-  OpenDecapode(ASKEMDecapode(m.header,apex(composite)), feet)
+  apx = orig_to_it(apex(composite))
+  OpenDecapode(ASKEMDecapode(m.header,apx,[]), feet)
 end
-=#
 
 end

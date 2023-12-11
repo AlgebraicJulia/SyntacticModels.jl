@@ -134,8 +134,8 @@ end
 =#
 dh = apex(oapply(m))
 
-#= TODO: FIXME
 composite = OpenDecapode(m)
 hf = composite.model.header
+#= TODO: FIXME
 write_json_model(ASKEMDecapode(Header("flattened_composite", hf.schema, "A flattened version of the composite_physics model.", hf.schema_name, hf.model_version), composite.model.model))
 =#
