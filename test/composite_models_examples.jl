@@ -67,11 +67,13 @@ m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :V]), OpenModel(d2, [:V, :Q])])
 interface(m) == [:X, :Q]
 #= TODO: FIXME 
 write_json_model(m) # you can see from this little model (two coupled odes even) that the jsons will not be human editable. 
+=#
 
 # now we can interpret this big data structure to execute a composition!
 composite = oapply(m)
 display(apex(composite))
 to_graphviz(apex(composite))
+#= TODO: FIXME 
 sm_write_json_acset(apex(composite),"$(m.header.name)-acset")
 =#
 
@@ -129,9 +131,10 @@ write_json_model(m)
   m′ = readback(m)
   @test JSON3.write(m) == JSON3.write(m′)
 end
-
+=#
 dh = apex(oapply(m))
 
+#= TODO: FIXME
 composite = OpenDecapode(m)
 hf = composite.model.header
 write_json_model(ASKEMDecapode(Header("flattened_composite", hf.schema, "A flattened version of the composite_physics model.", hf.schema_name, hf.model_version), composite.model.model))

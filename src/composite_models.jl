@@ -15,7 +15,7 @@ using ..AMR.amr
 using ..ASKEMDecapodes.decapodes
 using ..ASKEMUWDs.uwd
 
-@intertypes "composite_models.it" module composites
+@intertypes "../src/composite_models.it" module composites
   import ..amr
   import ..decapodes
   import ..uwd
@@ -32,14 +32,24 @@ interface(m::CompositeModel) = @match m begin
   CompositeModelExpr(h, uwd′, components) => map(ASKEMUWDs.varname, context(uwd′))
 end
 
-OpenSummationDecapodeOb, OpenSummationDecapode = OpenACSetTypes(decapodes.SummationDecapode, :Var)
+using Decapodes
 
+function it_to_orig(test::decapodes.SymSummationDecapode)
+  d = Decapodes.SummationDecapode{Any, Any, Symbol}()
+  copy_parts!(d,test, NamedTuple(Dict(k=>parts(test,k) for k in types(decapodes.SchSummationDecapode))))
+  return d
+end
+
+# OpenSummationDecapodeOb, OpenSummationDecapode = OpenACSetTypes(Decapodes.SummationDecapode, :Var)
+
+#=
 function Open(d::decapodes.SummationDecapode, names::Vector{Symbol})
     legs = map(names) do name
     FinFunction(incident(d, name, :name), nparts(d, :Var))
   end
   OpenSummationDecapode(d, legs...)
 end
+=#
 
 #=
 apex(decapode::OpenSummationDecapode) = apex(decapode.cospan)
@@ -48,9 +58,9 @@ feet(decapode::OpenSummationDecapode) = decapode.feet
 =#
 
 # Extract an open decapode from the decapode expression and the interface
-open_decapode(d, interface) = Open(ASKEMDecapodes.SummationDecapode(d.model), interface)
-open_decapode(d::ASKEMDecaExpr, interface) = Open(ASKEMDecapodes.SummationDecapode(d.model), interface)
-open_decapode(d::ASKEMDecapode, interface) = Open(d.model, interface)
+open_decapode(d, interface) = Decapodes.Open(it_to_orig(ASKEMDecapodes.SummationDecapode(d.model)), interface)
+open_decapode(d::ASKEMDecaExpr, interface) = Decapodes.Open(it_to_orig(ASKEMDecapodes.SummationDecapode(d.model)), interface)
+open_decapode(d::ASKEMDecapode, interface) = Decapodes.Open(it_to_orig(d.model), interface)
 
 """    Catlab.oapply(m::CompositeModel)
 
@@ -74,16 +84,18 @@ function Catlab.oapply(m::CompositeModel)
           !(mᵢ) # oapply all the component models recursively
         end
         # OpenDecapode(ASKEMDecapode(h, apex(!(uwd, Ms))), interface(m)) # Then we call the oapply from Decapodes.
-        Open(apex(!(uwd, Ms)), uwd[[:outer_junction, :variable]]) # Then we call the oapply from Decapodes.
+        Decapodes.Open(apex(!(uwd, Ms)), uwd[[:outer_junction, :variable]]) # Then we call the oapply from Decapodes.
       end
     end
   end
 end
 
+#=
 function OpenDecapode(m::CompositeModel)
   composite = oapply(m)
   feet = map(l->only(dom(l)[:name]), legs(composite))
   OpenDecapode(ASKEMDecapode(m.header,apex(composite)), feet)
 end
+=#
 
 end
