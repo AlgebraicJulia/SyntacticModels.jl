@@ -1,7 +1,7 @@
 include("../src/SyntacticModels.jl")
 
 using .SyntacticModels
-# using .SyntacticModels.ASKEMDecapodes
+using .SyntacticModels.ASKEMDecapodes
 
 using Test
 using JSON3
@@ -14,7 +14,6 @@ end
 
 readback(m, T, prefix=joinpath(@__DIR__, "json")) = jsonread(joinpath(jsondir, "$(m.header.name).json"),T)
   
-#=
 write_json_model(m::ASKEMDecapodes.ASKEMDecapode, prefix=joinpath(@__DIR__, "json")) = open(joinpath(prefix, "$(m.header.name).json"), "w") do fp
   d = Dict("header"=>m.header, "model"=>generate_json_acset(m.model), "_type"=> "ASKEMDecapode")
   JSON3.pretty(fp, d)
@@ -23,7 +22,7 @@ end
 sm_write_json_acset(X, fname, prefix=joinpath(@__DIR__, "json")) = open(joinpath(prefix, "$(fname).json"), "w") do fp
   JSON3.pretty(fp, generate_json_acset(X))
 end
-=#
+
 
 try
   mkdir(joinpath(@__DIR__, "json"))

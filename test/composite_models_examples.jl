@@ -73,9 +73,7 @@ write_json_model(m) # you can see from this little model (two coupled odes even)
 composite = oapply(m)
 display(apex(composite))
 to_graphviz(apex(composite))
-#= TODO: FIXME 
 sm_write_json_acset(apex(composite),"$(m.header.name)-acset")
-=#
 
 # TESTING NESTED COMPOSITION
 
@@ -136,6 +134,4 @@ dh = apex(oapply(m))
 
 composite = OpenDecapode(m)
 hf = composite.model.header
-#= TODO: FIXME
-write_json_model(ASKEMDecapode(Header("flattened_composite", hf.schema, "A flattened version of the composite_physics model.", hf.schema_name, hf.model_version), composite.model.model))
-=#
+write_json_model(ASKEMDecapode(Header("flattened_composite", hf.schema, "A flattened version of the composite_physics model.", hf.schema_name, hf.model_version), composite.model.model, []))
