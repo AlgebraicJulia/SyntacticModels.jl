@@ -65,7 +65,7 @@ d2 = ASKEMDecaExpr(
 h = Header("composite_physics", "modelreps.io/Composite", "A composite model", "CompositeModelExpr", "v0.0")
 m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :V]), OpenModel(d2, [:V, :Q])])
 interface(m) == [:X, :Q]
-#= TODO: FIXME 
+#= TODO: write_json_model will work with the upstream fix to jsonwrite for vectors to handle empty case
 write_json_model(m) # you can see from this little model (two coupled odes even) that the jsons will not be human editable. 
 =#
 
@@ -122,11 +122,12 @@ m = CompositeModelExpr(h,u, [OpenModel(d1, [:X, :V]),
       CompositeModelExpr(Header("heating_dynamics", "modelreps.io/Composite", "A formula for heating - cooling", "CompositeModelExpr", "v0.1"),
         uwdʰ, [OpenModel(drag, [:V, :Q₊]), OpenModel(cooling, [:Q₋, :Q]), OpenModel(superposition, [:X, :Y, :T])])
 ])
-#= TODO: FIXME
+#= TODO: write_json_model will work with the upstream fix to jsonwrite for vectors to handle empty case
+   TODO: readback errors when reading in UWDExpr of CompositeModel. It requires an upstream fix to jsonread to recognize variant types and not just sum types.
 write_json_model(m)
 
 @testset "Composite Model Readback" begin
-  m′ = readback(m)
+  m′ = readback(m,CompositeModel)
   @test JSON3.write(m) == JSON3.write(m′)
 end
 =#
