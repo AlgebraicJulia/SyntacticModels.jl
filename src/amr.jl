@@ -238,7 +238,7 @@ end
 
 function load(::Type{Typing}, d::AbstractDict)
   @match d begin
-    Dict("type_system"=>s, "type_map"=>m) => begin @show m;  Typing(petrispec(s), [x[1]=> x[2] for x in m]) end 
+    Dict("type_system"=>s, "type_map"=>m) => begin @show m;  Typing(convert_acsetspec_to_it(petrispec(s)), convert_pair_to_it.([x[1]=> x[2] for x in m])) end 
     _ => error("Typing judgement was not properly encoded in $d")
   end
 end
@@ -246,7 +246,7 @@ end
 function load(::Type{ASKEModel}, d::AbstractDict)
   hdr = load(Header, d)
   hdr.schema_name == "petrinet" || error("only petrinet models are supported")
-  mdl = petrispec(d["model"])
+  mdl = convert_acsetspec_to_it(petrispec(d["model"]))
   sem = []
   if haskey(d["semantics"], "ode")
     push!(sem, load(ODERecord, d["semantics"]["ode"]))

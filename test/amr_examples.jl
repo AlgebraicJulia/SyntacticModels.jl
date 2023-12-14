@@ -99,12 +99,12 @@ amr₂ = ASKEModel(header,
   ]
 )
 
-#= TODO:
 println()
 println(amr_to_string(amr₁))
 println()
 println(amr_to_string(amr₂))
 
+#= TODO:
 AMR.amr_to_expr(amr₁) |> println
 AMR.amr_to_expr(amr₂.header) |> println
 AMR.amr_to_expr(amr₂.model) |> println
@@ -324,8 +324,8 @@ AMR.load(ODERecord, semantics_dict["ode"]) |> AMR.amr_to_string |> println
 
 sirmodel_dict = JSON.parsefile(joinpath([@__DIR__, "inputs", "sir.json"]))
 AMR.optload(sirmodel_dict, ["model", :states], nothing) |> show
-# TODO: sirmodel = AMR.load(ASKEModel, sirmodel_dict) 
-# TODO: sirmodel |> AMR.amr_to_string |> println
+sirmodel = AMR.load(ASKEModel, sirmodel_dict) 
+sirmodel |> AMR.amr_to_string |> println
 
 sirmodel_dict = JSON.parsefile(joinpath([@__DIR__, "inputs", "sir_typed.json"]))
 semtyp = sirmodel_dict["semantics"]["typing"]
