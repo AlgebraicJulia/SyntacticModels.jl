@@ -1,11 +1,11 @@
 module AMR
 
-export Math, MathML, ExpressionFormula, Unit, Distribution, Observable, Expression,
+export amr, Math, MathML, ExpressionFormula, Unit, Distribution, Observable, Expression,
  Rate, Initial, Parameter, Time,
- StandardUniform, Uniform, StandardNormal, Normal, PointMass,
- Semantic, Header, ODERecord, ODEList, Typing, ASKEModel,
+ StandardUniform, Uniform, StandardNormal, Normal, PointMass, Undefined,
+ Semantic, Header, ODERecord, ODEList, ASKEModel, Typing, 
  distro_string, amr_to_string,
- Annotation, Note, Name, Description, Grounding, Units
+ Annotation, Note, Name, Description, Grounding, Units, nomath, nounit
 
 using Reexport
 @reexport using MLStyle
@@ -14,97 +14,22 @@ using ACSets.ADTs
 using ACSets.ACSetInterface
 using StructTypes
 
-using ..SyntacticModelsBase
 
-@data MathML <: AbstractTerm begin
-  Math(String)
-  Presentation(String)
-end
+@intertypes "../src/amr.it" module amr end
+
+using .amr
 
 nomath = Math("")
-
-@as_record struct ExpressionFormula{T} <: AbstractTerm
-  expression::T
-  expression_mathml::MathML
-end
-
-@as_record struct Unit <: AbstractTerm
-  expression::String
-  expression_mathml::MathML
-end
-
-
 nounit = Unit("", nomath)
-
-@data Distribution <: AbstractTerm begin
-  StandardUniform
-  Uniform(min, max)
-  StandardNormal
-  Normal(mean, variance)
-  PointMass(value)
-end
-
-@as_record struct Observable{T <: AbstractTerm}
-  id::Symbol
-  name::String
-  states::Vector{Symbol}
-  f::ExpressionFormula
-end
-
-@data Expression <: AbstractTerm begin
-  Rate(target::Symbol, f::ExpressionFormula)
-  Initial(target::Symbol, f::ExpressionFormula)
-  Parameter(id::Symbol, name::String, description::String, units::Unit, value::Float64, distribution::Distribution)
-  Time(id::Symbol, units::Unit)
-end
-
-@data Semantic  <: AbstractTerm begin
-  ODEList(statements::Vector{Expression})
-  ODERecord(rates::Vector{Rate}, initials::Vector{Initial}, parameters::Vector{Parameter}, time::Time)
-  # Metadata
-  Typing(system::ACSetSpec, map::Vector{Pair})
-  # Stratification
-end
-
-@data Note <: AbstractTerm begin
-  Name(str::String)
-  Description(str::String)
-  Grounding(ontology::String, identifier::String)
-  Units(expression::String)
-end
-
-StructTypes.StructType(::Type{Note}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{Note}) = :_type
-StructTypes.subtypes(::Type{Note}) =
-  (Name=Name,Description=Description,Grounding=Grounding,Units=Units,)
-
-@as_record struct Annotation{E,T} <: AbstractTerm
-  entity::E
-  type::T
-  note::Note
-end
-
-@as_record struct Header <: AbstractTerm
-  name::String
-  schema::String
-  description::String
-  schema_name::String
-  model_version::String
-end
-
-@as_record struct ASKEModel <: AbstractTerm
-  header::Header 
-  model::ACSetSpec
-  semantics::Vector{Semantic}
-end
 
 function distro_string(d::Distribution)
   @match d begin
-    StandardUniform   => "U(0,1)"
+    StandardUniform(s)   => "U(0,1)"
     Uniform(min, max) => "U($min,$max)"
-    StandardNormal    => "N(0,1)"
+    StandardNormal(s)    => "N(0,1)"
     Normal(mu, var)   => "N($mu,$var)"
     PointMass(value)  => "δ($value)"
+    Undefined(s)      => "Undefined()"
   end
 end
 
@@ -130,10 +55,10 @@ padlines(ss::Vector, n) = map(ss) do s
 end
 padlines(s::String, n=2) = join(padlines(split(s, "\n"), n), "\n")
 
-function amr_to_string(amr)
+function amr_to_string(amr′)
   let ! = amr_to_string
-    @match amr begin
-      s::String                        => s
+    @match amr′ begin
+      s::String                            => s
       Math(s)                          => !s
       Presentation(s)                  => "<mathml> $s </mathml>"
       u::Unit                          => !u.expression
@@ -142,12 +67,12 @@ function amr_to_string(amr)
       Rate(t, f)                       => "$t::Rate = $(f.expression)"
       Initial(t, f)                    => "$t::Initial = $(f.expression)"
       Observable(id, n, states, f)     => "# $n\n$id::Observable = $(f.expression)($states)\n"
-      Header(name, s, d, sn, mv)       => "\"\"\"\nASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d\n\"\"\""
+      Header(name, s, d, sn, mv)   => "\"\"\"\nASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d\n\"\"\""
       Parameter(t, n, d, u, v, dist)   => "\n# $n-- $d\n$t::Parameter{$(!u)} = $v ~ $(!dist)\n"
-      m::ACSetSpec                     => "Model = begin\n$(padlines(sprint(show, m),2))\nend"
+      m::amr.ACSetSpec                     => "Model = begin\n$(padlines(sprint(show, m),2))\nend"
       ODEList(l)                       => "ODE_Equations = begin\n" * padlines(join(map(!, l), "\n")) * "\nend"
       ODERecord(rts, init, para, time) => join(vcat(["ODE_Record = begin\n"], !rts , !init, !para, [!time, "end"]), "\n")
-      vs::Vector{Pair}                 => map(vs) do v; "$(v[1]) => $(v[2])," end |> x-> join(x, "\n") 
+      vs::Vector{amr.Pair}                 => map(vs) do v; "$(v.first) => $(v.second)," end |> x-> join(x, "\n") 
       vs::Vector{Semantic}             => join(map(!, vs), "\n\n")
       xs::Vector                       => map(!, xs)
       Typing(system, map)              => "Typing = begin\n$(padlines(!system, 2))\nTypeMap = [\n$(padlines(!map, 2))]\nend"
@@ -167,9 +92,10 @@ end
 
 extract_acsetspec(s::String) = join(split(s, " ")[2:end], " ") |> Meta.parse
 
-function amr_to_expr(amr)
+
+function amr_to_expr(amr′)
   let ! = amr_to_expr
-    @match amr begin
+    @match amr′ begin
       s::String                        => s
       Math(s)                          => :(Math($(!s)))
       Presentation(s)                  => :(Presentation($(!s)))
@@ -181,10 +107,10 @@ function amr_to_expr(amr)
       Observable(id, n, states, f)     => begin "$n"; :(@doc $x $id::Observable = $(f.expression)($states)) end
       Header(name, s, d, sn, mv)       => begin x = "ASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d"; :(@doc $x) end
       Parameter(t, n, d, u, v, dist)   => begin x = "$n-- $d"; :(@doc $x  $t::Parameter{$(!u)} = $v ~ $(!dist)) end
-      m::ACSetSpec                     => :(Model = begin $(extract_acsetspec(sprint(show, m))) end)
+      m::amr.ACSetSpec                     => :(Model = begin $(extract_acsetspec(sprint(show, m))) end)
       ODEList(l)                       => :(ODE_Equations = $(block(map(!, l))))
       ODERecord(rts, init, para, time) => :(ODE_Record = (rates=$(!rts), initials=$(!init), parameters=$(!para), time=!time))
-      vs::Vector{Pair}                 => begin ys = map(vs) do v; :($(v[1]) => $(v[2])) end; block(ys) end
+      vs::Vector{amr.Pair}                 => begin ys = map(vs) do v; :($(v[1]) => $(v[2])) end; block(ys) end
       vs::Vector{Semantic}             => begin ys = map(!, vs); block(ys) end
       xs::Vector                       => begin ys = map(!, xs); block(ys) end
       Typing(system, map)              => :(Typing = $(!system); TypeMap = $(block(map)))
@@ -207,25 +133,25 @@ optload(d, path, default=nothing) = begin
 end
 
 function petrispec(dict::AbstractDict)
-  findkwarg(kwarg::Symbol, d::AbstractDict, path, default=nothing) = Kwarg(kwarg, Value(optload(d, path, default)))
+  findkwarg(kwarg::Symbol, d::AbstractDict, path, default=nothing) = ADTs.Kwarg(kwarg, ADTs.Value(optload(d, path, default)))
   loadstate(s) = begin
-    Statement(:S, [findkwarg(k, s, p, :nothing) for (k,p) in [(:id, "id"), (:name, "name"), (:units, ["units", "expression"])]])
+    ADTs.Statement(:S, [findkwarg(k, s, p, :nothing) for (k,p) in [(:id, "id"), (:name, "name"), (:units, ["units", "expression"])]])
   end
   states = [loadstate(s) for s in dict["states"]]
   transi = [
-    Statement(:T,
-    [Kwarg(:id, Value(Symbol(t["id"]))), Kwarg(:name, Value(t["properties"]["name"])), Kwarg(:desc, Value(t["properties"]["description"])) ]
+    ADTs.Statement(:T,
+    [ADTs.Kwarg(:id, ADTs.Value(Symbol(t["id"]))), ADTs.Kwarg(:name, ADTs.Value(t["properties"]["name"])), ADTs.Kwarg(:desc, ADTs.Value(t["properties"]["description"])) ]
     ) for t in dict["transitions"]]
 
   inputs = [[
-    Statement(:I,
-    [Kwarg(:is, Value(i)), Kwarg(:it, Value(t["id"]))]) for i in t["input"]] for t in dict["transitions"]
+    ADTs.Statement(:I,
+    [ADTs.Kwarg(:is, ADTs.Value(i)), ADTs.Kwarg(:it, ADTs.Value(t["id"]))]) for i in t["input"]] for t in dict["transitions"]
   ] |> Base.Flatten |> collect
   outputs = [[
-    Statement(:O,
-    [Kwarg(:os, Value(i)), Kwarg(:ot, Value(t["id"]))]) for i in t["output"]] for t in dict["transitions"]
+    ADTs.Statement(:O,
+    [ADTs.Kwarg(:os, ADTs.Value(i)), ADTs.Kwarg(:ot, ADTs.Value(t["id"]))]) for i in t["output"]] for t in dict["transitions"]
   ] |> Base.Flatten |> collect
-  ACSetSpec(:AMRPetriNet, vcat(states, transi, inputs, outputs))
+  ADTs.ACSetSpec(:AMRPetriNet, vcat(states, transi, inputs, outputs))
 end
 
 function load(::Type{Unit}, d::AbstractDict)
@@ -249,8 +175,8 @@ end
 
 function load(::Type{Distribution}, d::AbstractDict)
   @match d begin
-    Dict("type"=>"StandardUniform1")           => StandardUniform
-    Dict("type"=>"StandardNormal")             => StandardNormal
+    Dict("type"=>"StandardUniform1")           => StandardUniform("")
+    Dict("type"=>"StandardNormal")             => StandardNormal("")
     Dict("type"=>"Uniform", "parameters"=>p)   => Uniform(p["minimum"], p["maximum"])
     Dict("type"=>"Uniform1", "parameters"=>p)  => Uniform(p["minimum"], p["maximum"])
     Dict("type"=>"Normal", "parameters"=>p)    => Normal(p["mu"], p["var"])
@@ -258,7 +184,9 @@ function load(::Type{Distribution}, d::AbstractDict)
   end
 end
 
-load(::Type{Distribution}, ::Nothing) = PointMass(missing)
+# TODO: determine best way to handle non-specified distributions
+# load(::Type{Distribution}, ::Nothing) = PointMass(missing)
+load(::Type{Distribution}, ::Nothing) = Undefined("")
 
 function load(::Type{Note}, d::AbstractDict)
   @match d begin
@@ -274,13 +202,19 @@ end
 
 function load(::Type{Parameter}, d::AbstractDict)
   u = load(Unit, d)
+  # TODO: determine best way to handle non-specified distributions
+  if isnothing(get(d,"distribution", nothing)) 
+    tmp_dist = !isnothing(get(d,"value", nothing)) ? PointMass(d["value"]) : Undefined("")
+  else
+    tmp_dist = load(Distribution, d["distribution"])
+  end 
   Parameter(
     Symbol(d["id"]),
     d["name"],
     d["description"],
     u,
     d["value"],
-    load(Distribution, get(d,"distribution", nothing))
+    tmp_dist
     )
 end
 
@@ -305,7 +239,7 @@ end
 
 function load(::Type{Typing}, d::AbstractDict)
   @match d begin
-    Dict("type_system"=>s, "type_map"=>m) => begin @show m;  Typing(petrispec(s), [x[1]=> x[2] for x in m]) end 
+    Dict("type_system"=>s, "type_map"=>m) => begin @show m;  Typing(convert_acsetspec_to_it(petrispec(s)), convert_pair_to_it.([x[1]=> x[2] for x in m])) end 
     _ => error("Typing judgement was not properly encoded in $d")
   end
 end
@@ -313,7 +247,7 @@ end
 function load(::Type{ASKEModel}, d::AbstractDict)
   hdr = load(Header, d)
   hdr.schema_name == "petrinet" || error("only petrinet models are supported")
-  mdl = petrispec(d["model"])
+  mdl = convert_acsetspec_to_it(petrispec(d["model"]))
   sem = []
   if haskey(d["semantics"], "ode")
     push!(sem, load(ODERecord, d["semantics"]["ode"]))
@@ -368,12 +302,14 @@ function docval(exp::Expr)
 end
 
 function load(d::Type{Distribution}, ex::Expr)
+  # println(ex)
   @matchast ex quote
-    U(0,1)        => StandardUniform   
+    U(0,1)        => StandardUniform("")   
     U($min,$max)  => Uniform(min, max) 
-    N(0,1)        => StandardNormal    
+    N(0,1)        => StandardNormal("")
     N($mu,$var)   => Normal(mu, var)   
     δ($value)     => PointMass(value)  
+    Undefined()     => Undefined("")  
     _ => error("Failed to find distribution in $ex")
   end
 end
@@ -383,8 +319,9 @@ function load(::Type{Parameter}, ex::Expr)
   id, u, val, dist = @matchast ex quote
     ($id::Parameter{} = ($val ~ $d))    => (id, nounit, val, load(Distribution, d))
     ($id::Parameter{$u} = ($val ~ $d))  => (id, load(Unit, u), val, load(Distribution, d))
-    ($id::Parameter{} = $val)           => (id, nounit, val, PointMass(missing))
-    ($id::Parameter{$u} = $val)         => (id, load(Unit, u), val, PointMass(missing))
+    # TODO: determine best way to handle non-specified distributions
+    ($id::Parameter{} = $val)           => (id, nounit, val, Undefined("")) # PointMass(missing), PointMass(NaN)
+    ($id::Parameter{$u} = $val)         => (id, load(Unit, u), val, Undefined(""))
   end
   Parameter(id, name, desc, u, val, dist)
 end
@@ -419,8 +356,8 @@ function load(::Type{Header}, ex::String)
   Header(strip(name), strip(schema), strip(desc), strip(schema_name), strip(version))
 end
 
-function load(::Type{ACSetSpec}, ex::Expr)
-  let ! = x->load(ACSetSpec, x)
+function load(::Type{ADTs.ACSetSpec}, ex::Expr)
+  let ! = x->load(ADTs.ACSetSpec, x)
     @match ex begin
       Expr(:(=), name, body) => @match body.args[2] begin
         Expr(:(=), type, body) => acsetspec(type, body)
@@ -431,15 +368,54 @@ function load(::Type{ACSetSpec}, ex::Expr)
   end
 end
 
+function convert_val_to_it(v)
+  if typeof(v)==QuoteNode v=v.value end
+  if typeof(v)==Symbol
+    it = amr.ValSymbol(v)
+  elseif typeof(v)==String
+    it = amr.ValString(v) 
+  else
+    error("Value type not found: $v") 
+  end
+  it
+end
+
+convert_pair_to_it(p) = amr.Pair(p[1],p[2])
+
+function convert_acsetspec_to_it(x::ADTs.ACSetSpec)
+  y = amr.ACSetSpec(Symbol(x.acstype),[])
+  for (ii, stmt) in enumerate(x.body)
+    # println(ii," ",stmt)
+    push!(y.body,amr.Statement(stmt.table,[]))
+    for (jj, arg) in enumerate(stmt.element)
+      # println(jj," ",arg)
+      if length(propertynames(arg))==2
+        # println(amr.Kwarg(arg._1,amr.Value(arg._2._1)))
+        push!(y.body[ii].element,amr.Kwarg(arg._1,convert_val_to_it(arg._2._1)))
+      elseif length(propertynames(arg))==1
+        # println(amr.Value(arg._1))
+        push!(y.body[ii].element,convert_val_to_it(arg._1))
+      else
+        error("Bad Arg in ACSetSpec, stmt $ii, arg $jj: $arg")
+      end
+    end
+  end
+  y
+end
+
+function load(::Type{amr.ACSetSpec}, ex::Expr)
+  convert_acsetspec_to_it(load(ADTs.ACSetSpec, ex))
+end
+
 function load(::Type{Typing}, ex::Expr)
   let !(x) = load(Typing, x)
     @match ex begin
-      Expr(:(=), :Model, body) => load(ACSetSpec, ex)
+      Expr(:(=), :Model, body) => load(amr.ACSetSpec, ex)
       Expr(:(=), :TypeMap, list) => !list
       Expr(:(=), :Typing, body) => Typing(!(body.args[2]), !(body.args[4]))
       Expr(:vect, args...) => map(args) do arg
         @match arg begin
-          Expr(:call, :(=>), a, b) => Pair(a,b)
+          Expr(:call, :(=>), a, b) => amr.Pair(a,b)
           _ => error("The type map is expected to be pairs defined with a => fa. Got $arg")
         end
       end
@@ -451,7 +427,7 @@ end
 function load(::Type{ASKEModel}, ex::Expr)
   elts = map(ex.args) do arg
     @match arg begin
-      Expr(:macrocall, var"@doc", _, s, ex) => (load(Header, s), load(ACSetSpec, ex))
+      Expr(:macrocall, var"@doc", _, s, ex) => (load(Header, s), load(amr.ACSetSpec, ex))
       Expr(:(=), :ODE_Record, body) => load(ODEList, arg)
       Expr(:(=), :ODE_Equations, body) => load(ODEList, arg)
       Expr(:(=), :Typing, body) => load(Typing, arg)
@@ -460,4 +436,5 @@ function load(::Type{ASKEModel}, ex::Expr)
   end
   ASKEModel(elts[2][1], elts[2][2], [elts[4], elts[6]])
 end
+
 end # module end

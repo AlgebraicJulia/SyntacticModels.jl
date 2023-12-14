@@ -1,23 +1,25 @@
 module ASKEMUWDs
 
-# include("amr.jl")
-export Var, Typed, Untyped, Statement, UWDExpr, UWDModel, UWDTerm, context
+export Var, Typed, Untyped, Statement, UWDExpr, UWDModel, UWDTerm, vartype, varname, context, construct
 
-using ..SyntacticModelsBase
 using ..AMR
 
-using MLStyle
-using StructTypes
 using Catlab
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
-import Base: show
+# import Base: show
 
+using ACSets
+using ACSets.InterTypes
 
-@data Var <: AbstractTerm begin
-  Untyped(var::Symbol)
-  Typed(var::Symbol, type::Symbol)
+using ..AMR.amr
+
+@intertypes "uwd.it" module uwd
+  import ..amr
 end
+
+using .uwd
+
 
 @doc """    Var
 
@@ -30,17 +32,6 @@ Subtypes include:
 
 which are used for representing typed or untyped variables.
 """
-Var
-
-StructTypes.StructType(::Type{Var}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{Var}) = :_type
-StructTypes.subtypes(::Type{Var}) = (Untyped=Untyped, Typed=Typed)
-
-@data UWDTerm <: AbstractTerm begin
-  Statement(relation::Symbol, variables::Vector{Var})
-  UWDExpr(context::Vector{Var}, statements::Vector{Statement})
-  UWDModel(header::AMR.Header, uwd::UWDExpr)
-end
 
 @doc """    UWDTerm
 
@@ -79,11 +70,6 @@ s = [Statement(:R, [v1,v2]),
 u = UWDExpr(c, s)
 ```
 """
-UWDTerm
-
-StructTypes.StructType(::Type{UWDTerm}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{UWDTerm}) = :_type
-StructTypes.subtypes(::Type{UWDTerm}) = (Statement=Statement, UWDExpr=UWDExpr, UWDModel=UWDModel)
 
 varname(v::Var) = @match v begin
   Untyped(v) => v
@@ -96,7 +82,7 @@ vartype(v::Var) = @match v begin
 end
 
 context(t::UWDTerm) = @match t begin
-  Statement(R, xs) => xs
+  uwd.Statement(R, xs) => xs
   UWDExpr(context, statements) => context
   UWDModel(h, uwd) => context(uwd)
 end
@@ -105,10 +91,11 @@ end
 
 generates a human readable string of the `UWDTerm` (or any sub-term).
 """
+#=
 function show(io::IO, s::UWDTerm)
   let ! = show
     @match s begin
-      Statement(r, v) => begin print(io, "$r("); show(io, v, wrap=false); print(io, ")") end
+      uwd.Statement(r, v) => begin print(io, "$r("); show(io, v, wrap=false); print(io, ")") end
       UWDExpr(c, body) => begin 
         map(enumerate(body)) do (i,s)
           if i == 1
@@ -128,7 +115,7 @@ function show(io::IO, s::UWDTerm)
         print(io, " where ")
         show(io, c)
       end
-      UWDModel(h, uwd) => begin println(io, amr_to_string(h)); println(io, "UWD:"); !(io, uwd); end
+      UWDModel(h, uwd′) => begin println(io, amr_to_string(h)); println(io, "UWD:"); !(io, uwd′); end
     end
   end
 end
@@ -150,6 +137,7 @@ function show(io::IO, c::Vector{Var}; wrap=true)
     print(io, "}")
   end
 end
+=#
 
 """    construct(::Type{RelationDiagram}, ex::UWDExpr)
 

@@ -1,0 +1,70 @@
+@sum Term begin
+  Var(name::Symbol)
+  Lit(name::Symbol)
+  AppCirc1(fs::Vector{Symbol}, arg::Term)
+  App1(f::Symbol, arg::Term)
+  App2(f::Symbol, arg1::Term, arg2::Term)
+  Plus(args::Vector{Term})
+  Mult(args::Vector{Term})
+  Tan(var::Term)
+end
+
+struct Judgement
+  var::Symbol
+  dim::Symbol
+  space::Symbol
+end
+  
+@sum Equation begin
+  Eq(lhs::Term, rhs::Term)
+end
+  
+struct DecaExpr
+  context::Vector{Judgement}
+  equations::Vector{Equation}
+end
+
+@schema SchDecapode begin
+    (Var, TVar, Op1, Op2)::Ob
+    (Type, Operator)::AttrType(Symbol)
+    src::Hom(Op1, Var)
+    tgt::Hom(Op1, Var)
+    proj1::Hom(Op2, Var)
+    proj2::Hom(Op2, Var)
+    res::Hom(Op2, Var)
+    incl::Hom(TVar, Var)
+    
+    op1::Attr(Op1, Operator)
+    op2::Attr(Op2, Operator)
+    type::Attr(Var, Type)
+end
+
+@schema SchNamedDecapode <: SchDecapode begin
+    Name::AttrType(Symbol)
+    name::Attr(Var, Name)
+end
+
+
+@abstract_acset_type AbstractDecapode
+@abstract_acset_type AbstractNamedDecapode <: AbstractDecapode
+
+@acset_type Decapode(SchDecapode,
+  index=[:src, :tgt, :res, :incl, :op1, :op2, :type]) <: AbstractDecapode
+
+@acset_type NamedDecapode(SchNamedDecapode,
+  index=[:src, :tgt, :res, :incl, :op1, :op2, :type, :name]) <: AbstractNamedDecapode
+
+@schema SchSummationDecapode <: SchNamedDecapode begin
+  (Σ, Summand)::Ob
+  summand::Hom(Summand, Var)
+  summation::Hom(Summand, Σ)
+  sum::Hom(Σ, Var)
+end
+
+@acset_type SymSummationDecapode(SchSummationDecapode, generic=SummationDecapode, 
+  index=[:src, :tgt, :res, :incl, :op1, :op2, :type]) <: AbstractNamedDecapode
+
+@sum ASKEMDeca begin
+  ASKEMDecaExpr(header::amr.Header, model::DecaExpr, annotations::Vector{amr.Annotation})
+  ASKEMDecapode(header::amr.Header, model::SymSummationDecapode, annotations::Vector{amr.Annotation})
+end

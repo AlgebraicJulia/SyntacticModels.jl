@@ -8,6 +8,7 @@ We only look at ordinary differential equations here, but you can think of these
 
 using ..SyntacticModels
 using ..SyntacticModels.ASKEMDecapodes
+using ..SyntacticModels.ASKEMDecapodes: parse_decapode, SummationDecapode
 using ..SyntacticModels.AMR
 
 using MLStyle
@@ -15,7 +16,7 @@ using JSON3
 using Catlab
 using ACSets
 using ACSets.JSONACSets
-using Decapodes
+# using Decapodes
 using Test
 
 # Build the heder object describing the model.
@@ -27,7 +28,7 @@ h = AMR.Header("harmonic_oscillator",
   "v1.0")
 
 # The easiest way to write down a DecaExpr is in our DSL and calling the parser.
-dexpr = Decapodes.parse_decapode(quote
+dexpr = parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
 
@@ -44,7 +45,7 @@ mexpr = ASKEMDecaExpr(h, dexpr)
 # Convert a the DecaExpr to a SummationDecapode which is the
 # combinatorial representation. The converter lives in Decapodes/src/language.jl.
 
-d = Decapodes.SummationDecapode(mexpr.model)
+d = SummationDecapode(mexpr.model)
 
 # To visualize the Decapode as a compute graph, you can use Graphviz
 
