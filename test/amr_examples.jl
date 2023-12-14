@@ -104,15 +104,13 @@ println(amr_to_string(amr₁))
 println()
 println(amr_to_string(amr₂))
 
-#= TODO:
-AMR.amr_to_expr(amr₁) |> println
+# TODO: AMR.amr_to_expr(amr₁) |> println
 AMR.amr_to_expr(amr₂.header) |> println
-AMR.amr_to_expr(amr₂.model) |> println
+# TODO: AMR.amr_to_expr(amr₂.model) |> println
 map(AMR.amr_to_expr(amr₂.semantics[1]).args[2].args) do s; println(s) end
 AMR.amr_to_expr(amr₂.semantics[1]).args[2]
 AMR.amr_to_expr(amr₂.semantics[1])
-AMR.amr_to_expr(amr₂) |> println
-=#
+# TODO: AMR.amr_to_expr(amr₂) |> println
 
 h = AMR.load(Header, Dict("name" => "SIR Model",
 "schema" => "https://raw.githubusercontent.com/DARPA-ASKEM/Model-Representations/petrinet_v0.5/petrinet/petrinet_schema.json",
@@ -437,7 +435,7 @@ end
 """)
 
 ol = AMR.load(ODEList, odelist_expr)
-# TODO: AMR.amr_to_string(ol) |> println
+AMR.amr_to_string(ol) |> println
 
 
 header_expr = Meta.parse(raw"""
@@ -546,8 +544,8 @@ model_expr = Base.Meta.parse(modelrep)
 @test length(AMR.load(ASKEModel, model_expr).semantics[1].statements) == 8 # Changed δ(missing) to Undefined() in modelrep
 @test AMR.load(AMR.Typing, model_expr.args[6]).system isa AMR.amr.ACSetSpec
 @test AMR.load(AMR.Typing, model_expr.args[6]).map isa Vector{AMR.amr.Pair}
-# TODO: println(AMR.amr_to_string(AMR.load(ASKEModel, model_expr)))
-# TODO: @test_skip (AMR.amr_to_string(AMR.load(ASKEModel, model_expr))) == modelrep
+println(AMR.amr_to_string(AMR.load(ASKEModel, model_expr)))
+@test_skip (AMR.amr_to_string(AMR.load(ASKEModel, model_expr))) == modelrep
 
 
 

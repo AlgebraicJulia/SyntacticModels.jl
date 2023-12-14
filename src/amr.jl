@@ -29,6 +29,7 @@ function distro_string(d::Distribution)
     StandardNormal(s)    => "N(0,1)"
     Normal(mu, var)   => "N($mu,$var)"
     PointMass(value)  => "δ($value)"
+    Undefined(s)      => "Undefined()"
   end
 end
 
@@ -92,9 +93,9 @@ end
 extract_acsetspec(s::String) = join(split(s, " ")[2:end], " ") |> Meta.parse
 
 
-function amr_to_expr(amr)
+function amr_to_expr(amr′)
   let ! = amr_to_expr
-    @match amr begin
+    @match amr′ begin
       s::String                        => s
       Math(s)                          => :(Math($(!s)))
       Presentation(s)                  => :(Presentation($(!s)))
@@ -106,10 +107,10 @@ function amr_to_expr(amr)
       Observable(id, n, states, f)     => begin "$n"; :(@doc $x $id::Observable = $(f.expression)($states)) end
       Header(name, s, d, sn, mv)       => begin x = "ASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d"; :(@doc $x) end
       Parameter(t, n, d, u, v, dist)   => begin x = "$n-- $d"; :(@doc $x  $t::Parameter{$(!u)} = $v ~ $(!dist)) end
-      m::ACSetSpec                     => :(Model = begin $(extract_acsetspec(sprint(show, m))) end)
+      m::amr.ACSetSpec                     => :(Model = begin $(extract_acsetspec(sprint(show, m))) end)
       ODEList(l)                       => :(ODE_Equations = $(block(map(!, l))))
       ODERecord(rts, init, para, time) => :(ODE_Record = (rates=$(!rts), initials=$(!init), parameters=$(!para), time=!time))
-      vs::Vector{Pair}                 => begin ys = map(vs) do v; :($(v[1]) => $(v[2])) end; block(ys) end
+      vs::Vector{amr.Pair}                 => begin ys = map(vs) do v; :($(v[1]) => $(v[2])) end; block(ys) end
       vs::Vector{Semantic}             => begin ys = map(!, vs); block(ys) end
       xs::Vector                       => begin ys = map(!, xs); block(ys) end
       Typing(system, map)              => :(Typing = $(!system); TypeMap = $(block(map)))
