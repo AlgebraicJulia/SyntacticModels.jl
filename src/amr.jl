@@ -3,8 +3,8 @@ module AMR
 export amr, Math, MathML, ExpressionFormula, Unit, Distribution, Observable, Expression,
  Rate, Initial, Parameter, Time,
  StandardUniform, Uniform, StandardNormal, Normal, PointMass, Undefined,
- Semantic, Header, ODERecord, ODEList, ASKEModel, # Typing, 
- distro_string, # amr_to_string,
+ Semantic, Header, ODERecord, ODEList, ASKEModel, Typing, 
+ distro_string, amr_to_string,
  Annotation, Note, Name, Description, Grounding, Units, nomath, nounit
 
 using Reexport
@@ -368,6 +368,7 @@ function load(::Type{ADTs.ACSetSpec}, ex::Expr)
 end
 
 function convert_val_to_it(v)
+  if typeof(v)==QuoteNode v=v.value end
   if typeof(v)==Symbol
     it = amr.ValSymbol(v)
   elseif typeof(v)==String
@@ -378,8 +379,10 @@ function convert_val_to_it(v)
   it
 end
 
+convert_pair_to_it(p) = amr.Pair(p[1],p[2])
+
 function convert_acsetspec_to_it(x::ADTs.ACSetSpec)
-  y = amr.ACSetSpec(x.acstype,[])
+  y = amr.ACSetSpec(Symbol(x.acstype),[])
   for (ii, stmt) in enumerate(x.body)
     # println(ii," ",stmt)
     push!(y.body,amr.Statement(stmt.table,[]))

@@ -57,12 +57,10 @@ odelist = ODEList([
 
   ])
 
-#= TODO:
 amr₁ = AMR.ASKEModel(header,
-  model,
+  AMR.convert_acsetspec_to_it(model),
   [ode]
 )
-=#
 
 typesystem = acsetspec(:(LabelledPetriNet{Symbol}), quote
   S(label=:Pop)
@@ -82,26 +80,26 @@ typesystem = acsetspec(:(LabelledPetriNet{Symbol}), quote
   O(os=:Pop, it=:strata)
 end) 
 
-#= TODO:
-typing = Typing(
-  typesystem,
-  [
+typing = amr.Typing(
+  AMR.convert_acsetspec_to_it(typesystem),
+  AMR.convert_pair_to_it.([
     (:S=>:Pop),
     (:I=>:Pop),
     (:R=>:Pop),
     (:inf=>:inf),
     (:rec=>:disease)
-  ]
+  ])
 )
 
 amr₂ = ASKEModel(header,
-  model,
+  AMR.convert_acsetspec_to_it(model),
   [
     odelist,
     typing
   ]
 )
 
+#= TODO:
 println()
 println(amr_to_string(amr₁))
 println()
