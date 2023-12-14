@@ -1,7 +1,12 @@
 
+@sum Val begin
+  ValSymbol(_1::Symbol)
+  ValString(_1::String)
+end
+
 @sum Args begin
-  Value(_1::Symbol)
-  Kwarg(_1::Symbol, _2::Args)
+  Value(_1::Val)
+  Kwarg(_1::Symbol, _2::Val)
 end
 
 struct Statement
@@ -44,6 +49,7 @@ end
   StandardNormal(str::String)
   Normal(mean::Float64, variance::Float64)
   PointMass(value::Float64)
+  Undefined(str::String)
 end
 
 struct Observable
