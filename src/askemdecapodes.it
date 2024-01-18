@@ -1,0 +1,4 @@
+@sum ASKEMDeca begin
+  ASKEMDecaExpr(header::amr.Header, model::decapodes.DecaExpr, annotations::Vector{amr.Annotation})
+  ASKEMDecapode(header::amr.Header, model::decapodeacset.SymSummationDecapode, annotations::Vector{amr.Annotation})
+end

@@ -1,7 +1,5 @@
-include("../src/SyntacticModels.jl")
-
-using .SyntacticModels
-using .SyntacticModels.ASKEMDecapodes
+using SyntacticModels
+using SyntacticModels.ASKEMDecapodes
 
 using Test
 using JSON3
