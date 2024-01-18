@@ -18,6 +18,7 @@ import DiagrammaticEquations: decapodes, decapodeacset
 end
 
 using .askemdecapodes
+using .askemdecapodes: ASKEMDecaExpr, ASKEMDecapode
 
 @doc """    ASKEMDeca
 

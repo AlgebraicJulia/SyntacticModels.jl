@@ -15,12 +15,12 @@ end
 
 
 @sum Distribution begin
-  StandardUniform(str::String)
+  StandardUniform()
   Uniform(min::Float64, max::Float64)
-  StandardNormal(str::String)
+  StandardNormal()
   Normal(mean::Float64, variance::Float64)
   PointMass(value::Float64)
-  Undefined(str::String)
+  Undefined()
 end
 
 struct Observable
@@ -35,11 +35,6 @@ end
   Initial(target::Symbol, f::ExpressionFormula)
   Parameter(id::Symbol, name::String, description::String, units::Unit, value::Float64, distribution::Distribution)
   Time(id::Symbol, units::Unit)
-end
-
-struct Pair
-  first::Symbol
-  second::Symbol
 end
 
 @sum Note begin

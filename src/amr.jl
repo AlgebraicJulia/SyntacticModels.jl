@@ -19,7 +19,6 @@ using ..SyntacticModelsBase
 @intertypes "amr.it" module amr end
 
 using .amr
-import .amr: Pair
 
 nomath = Math("")
 
@@ -28,7 +27,7 @@ nounit = Unit("", nomath)
 @data Semantic <: AbstractTerm begin
   ODEList(statements::Vector{Expression})
   ODERecord(rates::Vector{Rate}, initials::Vector{Initial}, parameters::Vector{Parameter}, time::Time)
-  Typing(system::ACSetSpec, map::Vector{Pair})
+  Typing(system::ACSetSpec, map::Vector{Base.Pair})
 end
 
 
@@ -189,8 +188,8 @@ end
 
 function load(::Type{Distribution}, d::AbstractDict)
   @match d begin
-    Dict("type"=>"StandardUniform1")           => StandardUniform
-    Dict("type"=>"StandardNormal")             => StandardNormal
+    Dict("type"=>"StandardUniform1")           => StandardUniform()
+    Dict("type"=>"StandardNormal")             => StandardNormal()
     Dict("type"=>"Uniform", "parameters"=>p)   => Uniform(p["minimum"], p["maximum"])
     Dict("type"=>"Uniform1", "parameters"=>p)  => Uniform(p["minimum"], p["maximum"])
     Dict("type"=>"Normal", "parameters"=>p)    => Normal(p["mu"], p["var"])
@@ -198,7 +197,7 @@ function load(::Type{Distribution}, d::AbstractDict)
   end
 end
 
-load(::Type{Distribution}, ::Nothing) = PointMass(missing)
+load(::Type{Distribution}, ::Nothing) = Undefined()
 
 function load(::Type{Note}, d::AbstractDict)
   @match d begin
@@ -221,7 +220,7 @@ function load(::Type{Parameter}, d::AbstractDict)
     u,
     d["value"],
     load(Distribution, get(d,"distribution", nothing))
-    )
+  )
 end
 
 function load(::Type{ODERecord}, d::AbstractDict)
