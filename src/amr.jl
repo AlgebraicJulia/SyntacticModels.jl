@@ -16,81 +16,21 @@ using StructTypes
 
 using ..SyntacticModelsBase
 
-@data MathML <: AbstractTerm begin
-  Math(String)
-  Presentation(String)
-end
+@intertypes "amr.it" module amr end
+
+using .amr
+import .amr: Pair
 
 nomath = Math("")
 
-@as_record struct ExpressionFormula{T} <: AbstractTerm
-  expression::T
-  expression_mathml::MathML
-end
-
-@as_record struct Unit <: AbstractTerm
-  expression::String
-  expression_mathml::MathML
-end
-
-
 nounit = Unit("", nomath)
 
-@data Distribution <: AbstractTerm begin
-  StandardUniform
-  Uniform(min, max)
-  StandardNormal
-  Normal(mean, variance)
-  PointMass(value)
-end
-
-@as_record struct Observable{T <: AbstractTerm}
-  id::Symbol
-  name::String
-  states::Vector{Symbol}
-  f::ExpressionFormula
-end
-
-@data Expression <: AbstractTerm begin
-  Rate(target::Symbol, f::ExpressionFormula)
-  Initial(target::Symbol, f::ExpressionFormula)
-  Parameter(id::Symbol, name::String, description::String, units::Unit, value::Float64, distribution::Distribution)
-  Time(id::Symbol, units::Unit)
-end
-
-@data Semantic  <: AbstractTerm begin
+@data Semantic <: AbstractTerm begin
   ODEList(statements::Vector{Expression})
   ODERecord(rates::Vector{Rate}, initials::Vector{Initial}, parameters::Vector{Parameter}, time::Time)
-  # Metadata
   Typing(system::ACSetSpec, map::Vector{Pair})
-  # Stratification
 end
 
-@data Note <: AbstractTerm begin
-  Name(str::String)
-  Description(str::String)
-  Grounding(ontology::String, identifier::String)
-  Units(expression::String)
-end
-
-StructTypes.StructType(::Type{Note}) = StructTypes.AbstractType()
-StructTypes.subtypekey(::Type{Note}) = :_type
-StructTypes.subtypes(::Type{Note}) =
-  (Name=Name,Description=Description,Grounding=Grounding,Units=Units,)
-
-@as_record struct Annotation{E,T} <: AbstractTerm
-  entity::E
-  type::T
-  note::Note
-end
-
-@as_record struct Header <: AbstractTerm
-  name::String
-  schema::String
-  description::String
-  schema_name::String
-  model_version::String
-end
 
 @as_record struct ASKEModel <: AbstractTerm
   header::Header 
@@ -297,10 +237,10 @@ function load(::Type{ODERecord}, d::AbstractDict)
 end
 
 function load(::Type{Header}, d::AbstractDict)
-    @match d begin
-      Dict("name"=>n, "schema"=>s, "description"=>d, "schema_name"=>sn, "model_version"=>mv) => Header(n,s,d,sn,mv) 
-      _ => error("Information for Header was not found in $d")
-    end
+  @match d begin
+    Dict("name"=>n, "schema"=>s, "description"=>d, "schema_name"=>sn, "model_version"=>mv) => Header(n,s,d,sn,mv) 
+    _ => error("Information for Header was not found in $d")
+  end
 end
 
 function load(::Type{Typing}, d::AbstractDict)

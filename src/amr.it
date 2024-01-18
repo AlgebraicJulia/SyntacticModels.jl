@@ -1,0 +1,64 @@
+@sum MathML begin
+  Math(str::String)
+  Presentation(str::String)
+end
+
+struct ExpressionFormula
+  expression::String
+  expression_mathml::MathML
+end
+
+struct Unit
+  expression::String
+  expression_mathml::MathML
+end
+
+
+@sum Distribution begin
+  StandardUniform(str::String)
+  Uniform(min::Float64, max::Float64)
+  StandardNormal(str::String)
+  Normal(mean::Float64, variance::Float64)
+  PointMass(value::Float64)
+  Undefined(str::String)
+end
+
+struct Observable
+  id::Symbol
+  name::String
+  states::Vector{Symbol}
+  f::ExpressionFormula
+end
+
+@sum Expression begin
+  Rate(target::Symbol, f::ExpressionFormula)
+  Initial(target::Symbol, f::ExpressionFormula)
+  Parameter(id::Symbol, name::String, description::String, units::Unit, value::Float64, distribution::Distribution)
+  Time(id::Symbol, units::Unit)
+end
+
+struct Pair
+  first::Symbol
+  second::Symbol
+end
+
+@sum Note begin
+  Name(str::String)
+  Description(str::String)
+  Grounding(ontology::String, identifier::String)
+  Units(expression::String)
+end
+
+struct Annotation
+  entity::Symbol
+  type::Symbol
+  note::Note
+end
+
+struct Header
+  name::String
+  schema::String
+  description::String
+  schema_name::String
+  model_version::String
+end
