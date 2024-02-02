@@ -1,6 +1,7 @@
 module SyntacticModelsBase
 
 using StructTypes
+using DiagrammaticEquations
 using JSON3
 import Base: Dict
 
@@ -23,6 +24,7 @@ _dict(x::Symbol) = x
 _dict(x::String) = x
 _dict(x::Number) = x
 _dict(x::AbstractVector) = map(_dict, x)
+_dict(x::DiagrammaticEquations.decapodes.Judgement) = x
 
 """    _dict(x::T) where T <: AbstractTerm
 

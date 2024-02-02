@@ -4,7 +4,7 @@ export CompositeModelExpr, OpenModel, OpenDecapode, CompositeModel, interface, o
 
 using MLStyle
 using Catlab
-using Decapodes
+using DiagrammaticEquations
 using StructTypes
 
 using ..SyntacticModelsBase
