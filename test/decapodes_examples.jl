@@ -9,7 +9,8 @@ using JSON
 using Catlab
 using ACSets
 using ACSets.JSONACSets
-using Decapodes
+using DiagrammaticEquations
+using DiagrammaticEquations.Deca
 using Test
 
 # Build the heder object describing the model.
@@ -21,7 +22,7 @@ h = AMR.Header("harmonic_oscillator",
   "v1.0")
 
 # The easiest way to write down a DecaExpr is in our DSL and calling the parser.
-dexpr = Decapodes.parse_decapode(quote
+dexpr = DiagrammaticEquations.parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
 
@@ -38,9 +39,9 @@ annot = [AMR.Annotation(:X,:Form0,AMR.Name("The X variable."))]
 mexpr = ASKEMDecaExpr(h, dexpr, annot)
 
 # Convert a the DecaExpr to a SummationDecapode which is the
-# combinatorial representation. The converter lives in Decapodes/src/language.jl.
+# combinatorial representation. The converter lives in DiagrammaticEquations/src/language.jl.
 
-d = Decapodes.SummationDecapode(mexpr.model)
+d = DiagrammaticEquations.SummationDecapode(mexpr.model)
 
 # We want different metadata for this representation.
 # The Summation prefix just means that this decapodes have
