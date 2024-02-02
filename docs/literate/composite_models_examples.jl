@@ -14,6 +14,7 @@ import SyntacticModels.ASKEMDecapodes.Decapodes as Decapodes
 using Catlab
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
+using DiagrammaticEquations
 using Test
 using JSON3
 
@@ -57,7 +58,7 @@ h = AMR.Header("harmonic_oscillator",
   "v1.0")
 
 # The easiest way to write down a DecaExpr is in our DSL and calling the parser.
-dexpr = Decapodes.parse_decapode(quote
+dexpr = DiagrammaticEquations.parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
 
@@ -77,7 +78,7 @@ d2 = ASKEMDecaExpr(
    "modelreps.io/SummationDecapode",
    "Velocity makes it get hot, but you dissipate heat away from Q₀",
    "SummationDecapode", "v1.0"),
-    Decapodes.parse_decapode(quote
+    DiagrammaticEquations.parse_decapode(quote
       V::Form0{Point}
       Q::Form0{Point}
       κ::Constant{Point}
@@ -127,7 +128,7 @@ uwdʰ = UWDExpr([v, Q], [Statement(:drag, [v, Q₊]), Statement(:cooling, [Q₋,
 
 drag = ASKEMDecaExpr(
   AMR.Header("DragHeat", "modelreps.io/SummationDecapode", "velocity makes it get hot", "SummationDecapode", "v1.0"),
-  Decapodes.parse_decapode(quote
+  DiagrammaticEquations.parse_decapode(quote
     V::Form0{Point}
     Q₊::Form0{Point}
     κ::Constant{Point}
@@ -138,7 +139,7 @@ drag = ASKEMDecaExpr(
 
 cooling = ASKEMDecaExpr(
   AMR.Header("NetwonCooling", "modelreps.io/SummationDecapode", "heat dissipates to the enviornment", "SummationDecapode", "v1.0"),
-  Decapodes.parse_decapode(quote
+  DiagrammaticEquations.parse_decapode(quote
     Q₋::Form0{Point}
     Q₀::Parameter{Point}
     Q::Form0{Point}
@@ -150,7 +151,7 @@ cooling = ASKEMDecaExpr(
 
 superposition = ASKEMDecaExpr(
   AMR.Header("LinearSuperpositon", "modelreps.io/SummationDecapode", "variables be addin", "SummationDecapode", "v1.0"),
-  Decapodes.parse_decapode(quote
+  DiagrammaticEquations.parse_decapode(quote
     X::Form0{Point}
     Y::Form0{Point}
     T::Form0{Point}
