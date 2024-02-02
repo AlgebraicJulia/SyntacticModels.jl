@@ -59,6 +59,15 @@ mexpr′ = readback(mexpr)
   # @test mexpr == mexpr′
 end
 
+@testset "UWD show" begin
+  @test sprint(show, u) == 
+    "{ R(x:X, y:Y)\n  S(y:Y, z:Z)\n  T(z:Z, y:Y, u) } where {x:X, z:Z}"
+  @test sprint(show, ujson) == 
+    "{ R(x:X, y:Y)\n  S(y:Y, z:Z)\n  T(z:Z, y:Y, u) } where {x:X, z:Z}"
+  @test sprint(show, mexpr) ==
+    "\"\"\"\nASKE Model Representation: rst_relationv0.1 :: UWDExpr \n   modelreps.io/UWD\n\nA demo UWD showing generic relation composition\n\"\"\"\nUWD:\n{ R(x:X, y:Y)\n  S(y:Y, z:Z)\n  T(z:Z, y:Y, u) } where {x:X, z:Z}"
+end
+
 to_graphviz(uwd, box_labels=:name, junction_labels=:variable)
 
 display(uwd)
