@@ -8,12 +8,12 @@ using JSON3
 using Catlab
 using ACSets
 using ACSets.JSONACSets
-using Decapodes
+using DiagrammaticEquations
 using Test</code></pre><p>Build the heder object describing the model.</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;harmonic_oscillator&quot;,
   &quot;modelreps.io/DecaExpr&quot;,
   &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
   &quot;DecaExpr&quot;,
-  &quot;v1.0&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;)</code></pre><p>The easiest way to write down a DecaExpr is in our DSL and calling the parser.</p><pre><code class="language-julia hljs">dexpr = Decapodes.parse_decapode(quote
+  &quot;v1.0&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;)</code></pre><p>The easiest way to write down a DecaExpr is in our DSL and calling the parser.</p><pre><code class="language-julia hljs">dexpr = DiagrammaticEquations.parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
 
@@ -22,8 +22,8 @@ using Test</code></pre><p>Build the heder object describing the model.</p><pre><
   ∂ₜ(X) == V
   ∂ₜ(V) == -1*k*(X)
 end
-)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:k), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:X)), Decapodes.Var(:V)), Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:V)), Decapodes.Mult(Decapodes.Term[Decapodes.Lit(Symbol(&quot;-1&quot;)), Decapodes.Var(:k), Decapodes.Var(:X)]))])</code></pre><p>Bundle the DecaExpr with the header metadata.</p><pre><code class="language-julia hljs">mexpr = ASKEMDecaExpr(h, dexpr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:k), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:X)), Decapodes.Var(:V)), Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:V)), Decapodes.Mult(Decapodes.Term[Decapodes.Lit(Symbol(&quot;-1&quot;)), Decapodes.Var(:k), Decapodes.Var(:X)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>Convert a the DecaExpr to a SummationDecapode which is the combinatorial representation. The converter lives in Decapodes/src/language.jl.</p><pre><code class="language-julia hljs">d = Decapodes.SummationDecapode(mexpr.model)</code></pre><div class="c-set">
-<span class="c-set-summary">Decapodes.SummationDecapode{Any, Any, Symbol} {Var:6, TVar:2, Op1:2, Op2:2, Σ:0, Summand:0, Type:0, Operator:0, Name:0}</span>
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:k, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:X)), DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Mult(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Lit(Symbol(&quot;-1&quot;)), DiagrammaticEquations.decapodes.Var(:k), DiagrammaticEquations.decapodes.Var(:X)]))])</code></pre><p>Bundle the DecaExpr with the header metadata.</p><pre><code class="language-julia hljs">mexpr = ASKEMDecaExpr(h, dexpr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:k, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:X)), DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Mult(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Lit(Symbol(&quot;-1&quot;)), DiagrammaticEquations.decapodes.Var(:k), DiagrammaticEquations.decapodes.Var(:X)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>Convert a the DecaExpr to a SummationDecapode which is the combinatorial representation. The converter lives in Decapodes/src/language.jl.</p><pre><code class="language-julia hljs">d = DiagrammaticEquations.SummationDecapode(mexpr.model)</code></pre><div class="c-set">
+<span class="c-set-summary">DiagrammaticEquations.decapodeacset.SummationDecapode{Any, Any, Symbol} {Var:6, TVar:2, Op1:2, Op2:2, Σ:0, Summand:0, Type:0, Operator:0, Name:0}</span>
 <table>
   <thead>
     <tr class = "header headerLastRow">
@@ -289,7 +289,7 @@ end
   &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
   &quot;SummationDecapode&quot;,
   &quot;v1.0&quot;)
-mpode = ASKEMDecapode(h, d)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecapode(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.SummationDecapode{Any, Any, Symbol}:
+mpode = ASKEMDecapode(h, d)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecapode(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodeacset.SummationDecapode{Any, Any, Symbol}:
   Var = 1:6
   TVar = 1:2
   Op1 = 1:2
@@ -326,31 +326,19 @@ mpode = ASKEMDecapode(h, d)</code></pre><pre class="documenter-example-output"><
     &quot;model&quot;: {
         &quot;context&quot;: [
             {
+                &quot;var&quot;: &quot;X&quot;,
                 &quot;dim&quot;: &quot;Form0&quot;,
-                &quot;var&quot;: {
-                    &quot;name&quot;: &quot;X&quot;,
-                    &quot;_type&quot;: &quot;Var&quot;
-                },
-                &quot;space&quot;: &quot;Point&quot;,
-                &quot;_type&quot;: &quot;Judgement&quot;
+                &quot;space&quot;: &quot;Point&quot;
             },
             {
+                &quot;var&quot;: &quot;V&quot;,
                 &quot;dim&quot;: &quot;Form0&quot;,
-                &quot;var&quot;: {
-                    &quot;name&quot;: &quot;V&quot;,
-                    &quot;_type&quot;: &quot;Var&quot;
-                },
-                &quot;space&quot;: &quot;Point&quot;,
-                &quot;_type&quot;: &quot;Judgement&quot;
+                &quot;space&quot;: &quot;Point&quot;
             },
             {
+                &quot;var&quot;: &quot;k&quot;,
                 &quot;dim&quot;: &quot;Constant&quot;,
-                &quot;var&quot;: {
-                    &quot;name&quot;: &quot;k&quot;,
-                    &quot;_type&quot;: &quot;Var&quot;
-                },
-                &quot;space&quot;: &quot;Point&quot;,
-                &quot;_type&quot;: &quot;Judgement&quot;
+                &quot;space&quot;: &quot;Point&quot;
             }
         ],
         &quot;_type&quot;: &quot;DecaExpr&quot;,
@@ -481,4 +469,4 @@ mpode = ASKEMDecapode(h, d)</code></pre><pre class="documenter-example-output"><
     ],
     &quot;Name&quot;: [
     ]
-}</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../uwd_examples/">« Undirected Wiring Diagrams</a><a class="docs-footer-nextpage" href="../composite_models_examples/">Composing Models »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Tuesday 31 October 2023 18:52">Tuesday 31 October 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+}</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../uwd_examples/">« Undirected Wiring Diagrams</a><a class="docs-footer-nextpage" href="../composite_models_examples/">Composing Models »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Friday 2 February 2024 22:10">Friday 2 February 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

@@ -11,6 +11,7 @@ import SyntacticModels.ASKEMDecapodes.Decapodes as Decapodes
 using Catlab
 using Catlab.RelationalPrograms
 using Catlab.WiringDiagrams
+using DiagrammaticEquations
 using Test
 using JSON3
 
@@ -210,7 +211,7 @@ u = ASKEMUWDs.UWDExpr(c, s)</code></pre><pre class="documenter-example-output"><
   &quot;modelreps.io/DecaExpr&quot;,
   &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
   &quot;DecaExpr&quot;,
-  &quot;v1.0&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;)</code></pre><p>The easiest way to write down a DecaExpr is in our DSL and calling the parser.</p><pre><code class="language-julia hljs">dexpr = Decapodes.parse_decapode(quote
+  &quot;v1.0&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;)</code></pre><p>The easiest way to write down a DecaExpr is in our DSL and calling the parser.</p><pre><code class="language-julia hljs">dexpr = DiagrammaticEquations.parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
 
@@ -219,12 +220,12 @@ u = ASKEMUWDs.UWDExpr(c, s)</code></pre><pre class="documenter-example-output"><
   ∂ₜ(X) == V
   ∂ₜ(V) == -1*k*(X)
 end
-)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:k), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:X)), Decapodes.Var(:V)), Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:V)), Decapodes.Mult(Decapodes.Term[Decapodes.Lit(Symbol(&quot;-1&quot;)), Decapodes.Var(:k), Decapodes.Var(:X)]))])</code></pre><p>That gave us the first model</p><pre><code class="language-julia hljs">d1 = ASKEMDecaExpr(h, dexpr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:k), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:X)), Decapodes.Var(:V)), Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:V)), Decapodes.Mult(Decapodes.Term[Decapodes.Lit(Symbol(&quot;-1&quot;)), Decapodes.Var(:k), Decapodes.Var(:X)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>The second model is:</p><pre><code class="language-julia hljs">d2 = ASKEMDecaExpr(
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:k, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:X)), DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Mult(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Lit(Symbol(&quot;-1&quot;)), DiagrammaticEquations.decapodes.Var(:k), DiagrammaticEquations.decapodes.Var(:X)]))])</code></pre><p>That gave us the first model</p><pre><code class="language-julia hljs">d1 = ASKEMDecaExpr(h, dexpr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:k, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:X)), DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Mult(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Lit(Symbol(&quot;-1&quot;)), DiagrammaticEquations.decapodes.Var(:k), DiagrammaticEquations.decapodes.Var(:X)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>The second model is:</p><pre><code class="language-julia hljs">d2 = ASKEMDecaExpr(
   AMR.Header(&quot;fricative_heating&quot;,
    &quot;modelreps.io/SummationDecapode&quot;,
    &quot;Velocity makes it get hot, but you dissipate heat away from Q₀&quot;,
    &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
-    Decapodes.parse_decapode(quote
+    DiagrammaticEquations.parse_decapode(quote
       V::Form0{Point}
       Q::Form0{Point}
       κ::Constant{Point}
@@ -233,7 +234,7 @@ end
 
       ∂ₜ(Q) == κ*V + λ(Q - Q₀)
     end)
-)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;fricative_heating&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;Velocity makes it get hot, but you dissipate heat away from Q₀&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Q), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:κ), :Constant, :Point), Decapodes.Judgement(Decapodes.Var(:λ), :Constant, :Point), Decapodes.Judgement(Decapodes.Var(:Q₀), :Parameter, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:Q)), Decapodes.Plus(Decapodes.Term[Decapodes.App2(:*, Decapodes.Var(:κ), Decapodes.Var(:V)), Decapodes.App1(:λ, Decapodes.App2(:-, Decapodes.Var(:Q), Decapodes.Var(:Q₀)))]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>Now we can assemble this bad boi:</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;composite_physics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A composite model&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.0&quot;)
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;fricative_heating&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;Velocity makes it get hot, but you dissipate heat away from Q₀&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:Q, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:κ, :Constant, :Point), DiagrammaticEquations.decapodes.Judgement(:λ, :Constant, :Point), DiagrammaticEquations.decapodes.Judgement(:Q₀, :Parameter, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:Q)), DiagrammaticEquations.decapodes.Plus(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.App2(:*, DiagrammaticEquations.decapodes.Var(:κ), DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.App1(:λ, DiagrammaticEquations.decapodes.App2(:-, DiagrammaticEquations.decapodes.Var(:Q), DiagrammaticEquations.decapodes.Var(:Q₀)))]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>Now we can assemble this bad boi:</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;composite_physics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A composite model&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.0&quot;)
 m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :V]), OpenModel(d2, [:V, :Q])])
 @test interface(m) == [:X, :Q]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr32"><span class="sgr1">Test Passed</span></span></code></pre><p>The <code>CompositeModelExpr</code> is a tree that stores the composition pattern and the models that are to be composed. You can see from this little model (just two coupled odes) that the json output will not be human writeable. This is why we need a library for Syntactic Model representations.</p><pre><code class="language-julia hljs">JSON3.pretty(m, JSON3.AlignmentContext(indent=2))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">{
   &quot;components&quot;: [
@@ -258,31 +259,19 @@ m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :V]), OpenModel(d2, [:V, :Q])])
         &quot;model&quot;: {
           &quot;context&quot;: [
             {
+              &quot;var&quot;: &quot;X&quot;,
               &quot;dim&quot;: &quot;Form0&quot;,
-              &quot;var&quot;: {
-                &quot;name&quot;: &quot;X&quot;,
-                &quot;_type&quot;: &quot;Var&quot;
-              },
-              &quot;space&quot;: &quot;Point&quot;,
-              &quot;_type&quot;: &quot;Judgement&quot;
+              &quot;space&quot;: &quot;Point&quot;
             },
             {
+              &quot;var&quot;: &quot;V&quot;,
               &quot;dim&quot;: &quot;Form0&quot;,
-              &quot;var&quot;: {
-                &quot;name&quot;: &quot;V&quot;,
-                &quot;_type&quot;: &quot;Var&quot;
-              },
-              &quot;space&quot;: &quot;Point&quot;,
-              &quot;_type&quot;: &quot;Judgement&quot;
+              &quot;space&quot;: &quot;Point&quot;
             },
             {
+              &quot;var&quot;: &quot;k&quot;,
               &quot;dim&quot;: &quot;Constant&quot;,
-              &quot;var&quot;: {
-                &quot;name&quot;: &quot;k&quot;,
-                &quot;_type&quot;: &quot;Var&quot;
-              },
-              &quot;space&quot;: &quot;Point&quot;,
-              &quot;_type&quot;: &quot;Judgement&quot;
+              &quot;space&quot;: &quot;Point&quot;
             }
           ],
           &quot;_type&quot;: &quot;DecaExpr&quot;,
@@ -353,49 +342,29 @@ m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :V]), OpenModel(d2, [:V, :Q])])
         &quot;model&quot;: {
           &quot;context&quot;: [
             {
+              &quot;var&quot;: &quot;V&quot;,
               &quot;dim&quot;: &quot;Form0&quot;,
-              &quot;var&quot;: {
-                &quot;name&quot;: &quot;V&quot;,
-                &quot;_type&quot;: &quot;Var&quot;
-              },
-              &quot;space&quot;: &quot;Point&quot;,
-              &quot;_type&quot;: &quot;Judgement&quot;
+              &quot;space&quot;: &quot;Point&quot;
             },
             {
+              &quot;var&quot;: &quot;Q&quot;,
               &quot;dim&quot;: &quot;Form0&quot;,
-              &quot;var&quot;: {
-                &quot;name&quot;: &quot;Q&quot;,
-                &quot;_type&quot;: &quot;Var&quot;
-              },
-              &quot;space&quot;: &quot;Point&quot;,
-              &quot;_type&quot;: &quot;Judgement&quot;
+              &quot;space&quot;: &quot;Point&quot;
             },
             {
+              &quot;var&quot;: &quot;κ&quot;,
               &quot;dim&quot;: &quot;Constant&quot;,
-              &quot;var&quot;: {
-                &quot;name&quot;: &quot;κ&quot;,
-                &quot;_type&quot;: &quot;Var&quot;
-              },
-              &quot;space&quot;: &quot;Point&quot;,
-              &quot;_type&quot;: &quot;Judgement&quot;
+              &quot;space&quot;: &quot;Point&quot;
             },
             {
+              &quot;var&quot;: &quot;λ&quot;,
               &quot;dim&quot;: &quot;Constant&quot;,
-              &quot;var&quot;: {
-                &quot;name&quot;: &quot;λ&quot;,
-                &quot;_type&quot;: &quot;Var&quot;
-              },
-              &quot;space&quot;: &quot;Point&quot;,
-              &quot;_type&quot;: &quot;Judgement&quot;
+              &quot;space&quot;: &quot;Point&quot;
             },
             {
+              &quot;var&quot;: &quot;Q₀&quot;,
               &quot;dim&quot;: &quot;Parameter&quot;,
-              &quot;var&quot;: {
-                &quot;name&quot;: &quot;Q₀&quot;,
-                &quot;_type&quot;: &quot;Var&quot;
-              },
-              &quot;space&quot;: &quot;Point&quot;,
-              &quot;_type&quot;: &quot;Judgement&quot;
+              &quot;space&quot;: &quot;Point&quot;
             }
           ],
           &quot;_type&quot;: &quot;DecaExpr&quot;,
@@ -515,7 +484,7 @@ uwdʰ = UWDExpr([v, Q], [Statement(:drag, [v, Q₊]), Statement(:cooling, [Q₋,
   cooling(Q₋, Q:Form0)
   superposition(Q₊, Q₋, Q̇) } where {V:Form0, Q:Form0}</code></pre><p>Our new model has 3 subsystems, drag, cooling, and superposition. A key innovation of decapodes is to realize that even simple systems like drag are actually multiphysical, they have some term that represents a force, and some term that determines how that force changes the state of the system. In order to write models compositionally, you must first break them down into their atomic subsystems, which are smaller than you think.</p><p>Our three primitive subsystems are each composed of one equation. Of course at this scale of complexity, you don&#39;t need to do compositional specification, you can just compose them in your head and write down the composite. But this is a tutorial, so we are building a very simple model as a composite of atomic models (one equation each).</p><pre><code class="language-julia hljs">drag = ASKEMDecaExpr(
   AMR.Header(&quot;DragHeat&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;velocity makes it get hot&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
-  Decapodes.parse_decapode(quote
+  DiagrammaticEquations.parse_decapode(quote
     V::Form0{Point}
     Q₊::Form0{Point}
     κ::Constant{Point}
@@ -526,7 +495,7 @@ uwdʰ = UWDExpr([v, Q], [Statement(:drag, [v, Q₊]), Statement(:cooling, [Q₋,
 
 cooling = ASKEMDecaExpr(
   AMR.Header(&quot;NetwonCooling&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;heat dissipates to the enviornment&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
-  Decapodes.parse_decapode(quote
+  DiagrammaticEquations.parse_decapode(quote
     Q₋::Form0{Point}
     Q₀::Parameter{Point}
     Q::Form0{Point}
@@ -538,22 +507,22 @@ cooling = ASKEMDecaExpr(
 
 superposition = ASKEMDecaExpr(
   AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
-  Decapodes.parse_decapode(quote
+  DiagrammaticEquations.parse_decapode(quote
     X::Form0{Point}
     Y::Form0{Point}
     T::Form0{Point}
 
     T == X + Y
   end)
-)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Y), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:T), :Form0, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Var(:T), Decapodes.Plus(Decapodes.Term[Decapodes.Var(:X), Decapodes.Var(:Y)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>The <code>CompositeModelExpr</code> type can store recursive model descriptions in terms of compositions of composite models.</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;hierarchical_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A hierarchical composite model of frictional heating&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;)
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:Y, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:T, :Form0, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Var(:T), DiagrammaticEquations.decapodes.Plus(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Var(:X), DiagrammaticEquations.decapodes.Var(:Y)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>The <code>CompositeModelExpr</code> type can store recursive model descriptions in terms of compositions of composite models.</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;hierarchical_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A hierarchical composite model of frictional heating&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;)
 m = CompositeModelExpr(h,u, [OpenModel(d1, [:X, :V]),
       CompositeModelExpr(AMR.Header(&quot;heating_dynamics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A formula for heating - cooling&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;),
         uwdʰ, [OpenModel(drag, [:V, :Q₊]), OpenModel(cooling, [:Q₋, :Q]), OpenModel(superposition, [:X, :Y, :T])])
 ])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.Composites.CompositeModelExpr(SyntacticModels.AMR.Header(&quot;hierarchical_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A hierarchical composite model of frictional heating&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), { oscillator(X:Form0, V:Form0)
-  heating(V:Form0, Q:Form0) } where {X:Form0, Q:Form0}, SyntacticModels.Composites.CompositeModel[SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:k), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:X)), Decapodes.Var(:V)), Decapodes.Eq(Decapodes.Tan(Decapodes.Var(:V)), Decapodes.Mult(Decapodes.Term[Decapodes.Lit(Symbol(&quot;-1&quot;)), Decapodes.Var(:k), Decapodes.Var(:X)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:X, :V]), SyntacticModels.Composites.CompositeModelExpr(SyntacticModels.AMR.Header(&quot;heating_dynamics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A formula for heating - cooling&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), { drag(V:Form0, Q₊)
+  heating(V:Form0, Q:Form0) } where {X:Form0, Q:Form0}, SyntacticModels.Composites.CompositeModel[SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:k, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:X)), DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Mult(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Lit(Symbol(&quot;-1&quot;)), DiagrammaticEquations.decapodes.Var(:k), DiagrammaticEquations.decapodes.Var(:X)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:X, :V]), SyntacticModels.Composites.CompositeModelExpr(SyntacticModels.AMR.Header(&quot;heating_dynamics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A formula for heating - cooling&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), { drag(V:Form0, Q₊)
   cooling(Q₋, Q:Form0)
-  superposition(Q₊, Q₋, Q̇) } where {V:Form0, Q:Form0}, SyntacticModels.Composites.CompositeModel[SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;DragHeat&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;velocity makes it get hot&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:V), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Q₊), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:κ), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Var(:Q₊), Decapodes.App2(:*, Decapodes.Var(:κ), Decapodes.Var(:V)))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:V, :Q₊]), SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;NetwonCooling&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;heat dissipates to the enviornment&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:Q₋), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Q₀), :Parameter, :Point), Decapodes.Judgement(Decapodes.Var(:Q), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:λ), :Constant, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Var(:Q₋), Decapodes.App1(:λ, Decapodes.App2(:-, Decapodes.Var(:Q), Decapodes.Var(:Q₀))))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:Q₋, :Q]), SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), Decapodes.DecaExpr(Decapodes.Judgement[Decapodes.Judgement(Decapodes.Var(:X), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:Y), :Form0, :Point), Decapodes.Judgement(Decapodes.Var(:T), :Form0, :Point)], Decapodes.Equation[Decapodes.Eq(Decapodes.Var(:T), Decapodes.Plus(Decapodes.Term[Decapodes.Var(:X), Decapodes.Var(:Y)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:X, :Y, :T])])])</code></pre><p>The <code>oapply</code> function will recursively descend the tree to assemble a flat model with hierarchical namespacing.</p><pre><code class="language-julia hljs">dh = apex(oapply(m))</code></pre><div class="c-set">
-<span class="c-set-summary">Decapodes.SummationDecapode{Any, Any, Symbol} {Var:14, TVar:2, Op1:3, Op2:4, Σ:1, Summand:2, Type:0, Operator:0, Name:0}</span>
+  superposition(Q₊, Q₋, Q̇) } where {V:Form0, Q:Form0}, SyntacticModels.Composites.CompositeModel[SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;DragHeat&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;velocity makes it get hot&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:Q₊, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:κ, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Var(:Q₊), DiagrammaticEquations.decapodes.App2(:*, DiagrammaticEquations.decapodes.Var(:κ), DiagrammaticEquations.decapodes.Var(:V)))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:V, :Q₊]), SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;NetwonCooling&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;heat dissipates to the enviornment&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:Q₋, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:Q₀, :Parameter, :Point), DiagrammaticEquations.decapodes.Judgement(:Q, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:λ, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Var(:Q₋), DiagrammaticEquations.decapodes.App1(:λ, DiagrammaticEquations.decapodes.App2(:-, DiagrammaticEquations.decapodes.Var(:Q), DiagrammaticEquations.decapodes.Var(:Q₀))))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:Q₋, :Q]), SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:Y, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:T, :Form0, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Var(:T), DiagrammaticEquations.decapodes.Plus(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Var(:X), DiagrammaticEquations.decapodes.Var(:Y)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:X, :Y, :T])])])</code></pre><p>The <code>oapply</code> function will recursively descend the tree to assemble a flat model with hierarchical namespacing.</p><pre><code class="language-julia hljs">dh = apex(oapply(m))</code></pre><div class="c-set">
+<span class="c-set-summary">DiagrammaticEquations.decapodeacset.SummationDecapode{Any, Any, Symbol} {Var:14, TVar:2, Op1:3, Op2:4, Σ:1, Summand:2, Type:0, Operator:0, Name:0}</span>
 <table>
   <thead>
     <tr class = "header headerLastRow">
@@ -762,7 +731,7 @@ m = CompositeModelExpr(h,u, [OpenModel(d1, [:X, :V]),
 </div>
 <p>This model can also be drawn as a decapode.</p><pre><code class="language-julia hljs">to_graphviz(dh)</code></pre><img src="b5e9a487.svg" alt="Example block output"/><p>The new model description needs to be written by hand for the new model header. Some annotation in the description can&#39;t be avoided, yet.</p><pre><code class="language-julia hljs">composite = OpenDecapode(m)
 hf = composite.model.header
-ASKEMDecapode(Header(&quot;flattened_composite&quot;, hf.schema, &quot;A flattened version of the composite_physics model.&quot;, hf.schema_name, hf.model_version), composite.model.model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecapode(SyntacticModels.AMR.Header(&quot;flattened_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A flattened version of the composite_physics model.&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), Decapodes.SummationDecapode{Any, Any, Symbol}:
+ASKEMDecapode(Header(&quot;flattened_composite&quot;, hf.schema, &quot;A flattened version of the composite_physics model.&quot;, hf.schema_name, hf.model_version), composite.model.model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecapode(SyntacticModels.AMR.Header(&quot;flattened_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A flattened version of the composite_physics model.&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), DiagrammaticEquations.decapodeacset.SummationDecapode{Any, Any, Symbol}:
   Var = 1:14
   TVar = 1:2
   Op1 = 1:3
@@ -784,4 +753,4 @@ ASKEMDecapode(Header(&quot;flattened_composite&quot;, hf.schema, &quot;A flatten
   op1 : Op1 → Operator = [:∂ₜ, :∂ₜ, :λ]
   op2 : Op2 → Operator = [:*, :*, :*, :-]
   type : Var → Type = [:Form0, :Form0, :Constant, :infer, :infer, :Literal, :Form0, :Constant, :Form0, :Parameter, :Form0, :Constant, :infer, :Form0]
-  name : Var → Name = [:X, :V, :oscillator_k, :oscillator_mult_1, :oscillator_V̇, Symbol(&quot;-1&quot;), :heating_Q₊, :heating_drag_κ, :heating_Q₋, :heating_cooling_Q₀, :Q, :heating_cooling_λ, Symbol(&quot;heating_cooling_•1&quot;), :heating_Q̇], SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../decapodes_examples/">« Decapodes</a><a class="docs-footer-nextpage" href="../../api/">Library Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Tuesday 31 October 2023 18:52">Tuesday 31 October 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  name : Var → Name = [:X, :V, :oscillator_k, :oscillator_mult_1, :oscillator_V̇, Symbol(&quot;-1&quot;), :heating_Q₊, :heating_drag_κ, :heating_Q₋, :heating_cooling_Q₀, :Q, :heating_cooling_λ, Symbol(&quot;heating_cooling_•1&quot;), :heating_Q̇], SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../decapodes_examples/">« Decapodes</a><a class="docs-footer-nextpage" href="../../api/">Library Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Friday 2 February 2024 22:10">Friday 2 February 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
