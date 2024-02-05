@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Composing Models · SyntacticModels.jl</title><meta name="title" content="Composing Models · SyntacticModels.jl"/><meta property="og:title" content="Composing Models · SyntacticModels.jl"/><meta property="twitter:title" content="Composing Models · SyntacticModels.jl"/><meta name="description" content="Documentation for SyntacticModels.jl."/><meta property="og:description" content="Documentation for SyntacticModels.jl."/><meta property="twitter:description" content="Documentation for SyntacticModels.jl."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">SyntacticModels.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">SyntacticModels.jl</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../uwd_examples/">Undirected Wiring Diagrams</a></li><li><a class="tocitem" href="../decapodes_examples/">Decapodes</a></li><li class="is-active"><a class="tocitem" href>Composing Models</a><ul class="internal"><li><a class="tocitem" href="#Specifying-the-Composition-Pattern"><span>Specifying the Composition Pattern</span></a></li><li><a class="tocitem" href="#Specifying-the-Component-Systems"><span>Specifying the Component Systems</span></a></li><li><a class="tocitem" href="#Nested-Composition"><span>Nested Composition</span></a></li></ul></li></ul></li><li><a class="tocitem" href="../../api/">Library Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Composing Models</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Composing Models</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/AlgebraicJulia/SyntacticModels.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/AlgebraicJulia/SyntacticModels.jl/blob/main/docs/literate/composite_models_examples.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Composing-Models"><a class="docs-heading-anchor" href="#Composing-Models">Composing Models</a><a id="Composing-Models-1"></a><a class="docs-heading-anchor-permalink" href="#Composing-Models" title="Permalink"></a></h1><p>Now that we have learned how to specify composition patterns and primitive models, we can learn how to combine them into a composite model.</p><pre><code class="language-julia hljs">using SyntacticModels
+
+using SyntacticModels.AMR
+using SyntacticModels.ASKEMDecapodes
+using SyntacticModels.ASKEMUWDs
+using SyntacticModels.Composites
+
+using MLStyle
+import SyntacticModels.ASKEMDecapodes.Decapodes as Decapodes
+using Catlab
+using Catlab.RelationalPrograms
+using Catlab.WiringDiagrams
+using DiagrammaticEquations
+using Test
+using JSON3
+
+draw(uwd) = to_graphviz(uwd, box_labels=:name, junction_labels=:variable)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">draw (generic function with 1 method)</code></pre><h2 id="Specifying-the-Composition-Pattern"><a class="docs-heading-anchor" href="#Specifying-the-Composition-Pattern">Specifying the Composition Pattern</a><a id="Specifying-the-Composition-Pattern-1"></a><a class="docs-heading-anchor-permalink" href="#Specifying-the-Composition-Pattern" title="Permalink"></a></h2><p>We can build an Undirected Wiring Diagram to represent the pattern of composition. In this model we have 3 variables X,V,Q, which are all the same type.</p><pre><code class="language-julia hljs">x = Typed(:X, :Form0)
+v = Typed(:V, :Form0)
+Q = Typed(:Q, :Form0)
+variables = [x,v,Q]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">3-element Vector{SyntacticModels.ASKEMUWDs.Typed}:
+ SyntacticModels.ASKEMUWDs.Typed(:X, :Form0)
+ SyntacticModels.ASKEMUWDs.Typed(:V, :Form0)
+ SyntacticModels.ASKEMUWDs.Typed(:Q, :Form0)</code></pre><p>Our system will expose two variables namely x and Q to the outside world. These variables could be used as a basis for further composition, or measured by an observer. The system also hase two subsystems an oscillator that couples <code>X</code> and <code>V</code> and a heating element that couples <code>V</code> and <code>Q</code>.</p><pre><code class="language-julia hljs">c = [x, Q]
+s = [Statement(:oscillator, [x,v]),
+  Statement(:heating, [v,Q])]
+u = ASKEMUWDs.UWDExpr(c, s)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">{ oscillator(X:Form0, V:Form0)
+  heating(V:Form0, Q:Form0) } where {X:Form0, Q:Form0}</code></pre><p>This <code>UWDExpr</code> can be interpreted with Catlab as a set of tables.</p><pre><code class="language-julia hljs">u_tables = ASKEMUWDs.construct(RelationDiagram, u)</code></pre><div class="c-set">
+<span class="c-set-summary">Catlab.Programs.RelationalPrograms.TypedUnnamedRelationDiagram{Symbol, Symbol, Symbol} {Box:2, Port:4, OuterPort:2, Junction:3, Type:0, Name:0, VarName:0}</span>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Box</th>
+      <th style = "text-align: right;">name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">oscillator</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">heating</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Port</th>
+      <th style = "text-align: right;">box</th>
+      <th style = "text-align: right;">junction</th>
+      <th style = "text-align: right;">port_type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">Form0</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">Form0</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">Form0</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">4</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">Form0</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">OuterPort</th>
+      <th style = "text-align: right;">outer_junction</th>
+      <th style = "text-align: right;">outer_port_type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">X</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">Q</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Junction</th>
+      <th style = "text-align: right;">junction_type</th>
+      <th style = "text-align: right;">variable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">X</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">Q</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">V</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>And visualized with graphviz as a UWD drawing.</p><pre><code class="language-julia hljs">draw(u_tables)</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="99pt" height="224pt"
+ viewBox="0.00 0.00 99.11 223.70" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 219.7)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-219.7 95.11,-219.7 95.11,4 -4,4"/>
+<!-- n1 -->
+<g id="box1" class="node">
+<title>n1</title>
+<ellipse fill="none" stroke="black" cx="44.15" cy="-71.98" rx="44.3" ry="18"/>
+<text text-anchor="middle" x="44.15" y="-68.28" font-family="Serif" font-size="14.00">oscillator</text>
+</g>
+<!-- n5 -->
+<!-- junction -->
+<g id="junction1" class="node">
+<title>n5</title>
+<ellipse fill="black" stroke="black" cx="48.36" cy="-36.04" rx="2.5" ry="2.5"/>
+<text text-anchor="middle" x="40.86" y="-42.34" font-family="Serif" font-size="14.00">X</text>
+</g>
+<!-- n1&%2345;&%2345;n5 -->
+<g id="edge1" class="edge">
+<title>n1&%2345;&%2345;n5</title>
+<path fill="none" stroke="black" d="M46.3,-53.59C46.98,-47.79 47.66,-42.05 48.04,-38.78"/>
+</g>
+<!-- n7 -->
+<!-- junction -->
+<g id="junction3" class="node">
+<title>n7</title>
+<ellipse fill="black" stroke="black" cx="48.53" cy="-107.91" rx="2.5" ry="2.5"/>
+<text text-anchor="middle" x="41.03" y="-114.21" font-family="Serif" font-size="14.00">V</text>
+</g>
+<!-- n1&%2345;&%2345;n7 -->
+<g id="edge5" class="edge">
+<title>n1&%2345;&%2345;n7</title>
+<path fill="none" stroke="black" d="M46.39,-90.37C47.1,-96.17 47.8,-101.91 48.2,-105.17"/>
+</g>
+<!-- n2 -->
+<g id="box2" class="node">
+<title>n2</title>
+<ellipse fill="none" stroke="black" cx="54.02" cy="-143.68" rx="37.17" ry="18"/>
+<text text-anchor="middle" x="54.02" y="-139.98" font-family="Serif" font-size="14.00">heating</text>
+</g>
+<!-- n6 -->
+<!-- junction -->
+<g id="junction2" class="node">
+<title>n6</title>
+<ellipse fill="black" stroke="black" cx="51.96" cy="-179.79" rx="2.5" ry="2.5"/>
+<text text-anchor="middle" x="43.46" y="-186.09" font-family="Serif" font-size="14.00">Q</text>
+</g>
+<!-- n2&%2345;&%2345;n6 -->
+<g id="edge3" class="edge">
+<title>n2&%2345;&%2345;n6</title>
+<path fill="none" stroke="black" d="M52.99,-161.73C52.65,-167.66 52.31,-173.58 52.12,-176.95"/>
+</g>
+<!-- n2&%2345;&%2345;n7 -->
+<g id="edge6" class="edge">
+<title>n2&%2345;&%2345;n7</title>
+<path fill="none" stroke="black" d="M51.21,-125.37C50.32,-119.6 49.45,-113.88 48.95,-110.63"/>
+</g>
+<!-- n3 -->
+<!-- n3&%2345;&%2345;n5 -->
+<g id="edge2" class="edge">
+<title>n3&%2345;&%2345;n5</title>
+<path fill="none" stroke="black" d="M54.44,-1.38C53.66,-5.83 50.13,-25.93 48.84,-33.31"/>
+</g>
+<!-- n4 -->
+<!-- n4&%2345;&%2345;n6 -->
+<g id="edge4" class="edge">
+<title>n4&%2345;&%2345;n6</title>
+<path fill="none" stroke="black" d="M44.91,-214.33C45.81,-209.9 49.9,-189.86 51.4,-182.51"/>
+</g>
+</g>
+</svg>
+'/><h2 id="Specifying-the-Component-Systems"><a class="docs-heading-anchor" href="#Specifying-the-Component-Systems">Specifying the Component Systems</a><a id="Specifying-the-Component-Systems-1"></a><a class="docs-heading-anchor-permalink" href="#Specifying-the-Component-Systems" title="Permalink"></a></h2><p>A key component of using these serialized syntactic representations is that they need to be self-describing in files. This is where the Header blocks come in.</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;harmonic_oscillator&quot;,
+  &quot;modelreps.io/DecaExpr&quot;,
+  &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
+  &quot;DecaExpr&quot;,
+  &quot;v1.0&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;)</code></pre><p>The easiest way to write down a DecaExpr is in our DSL and calling the parser.</p><pre><code class="language-julia hljs">dexpr = DiagrammaticEquations.parse_decapode(quote
+  X::Form0{Point}
+  V::Form0{Point}
+
+  k::Constant{Point}
+
+  ∂ₜ(X) == V
+  ∂ₜ(V) == -1*k*(X)
+end
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:k, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:X)), DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Mult(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Lit(Symbol(&quot;-1&quot;)), DiagrammaticEquations.decapodes.Var(:k), DiagrammaticEquations.decapodes.Var(:X)]))])</code></pre><p>That gave us the first model</p><pre><code class="language-julia hljs">d1 = ASKEMDecaExpr(h, dexpr)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:k, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:X)), DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Mult(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Lit(Symbol(&quot;-1&quot;)), DiagrammaticEquations.decapodes.Var(:k), DiagrammaticEquations.decapodes.Var(:X)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>The second model is:</p><pre><code class="language-julia hljs">d2 = ASKEMDecaExpr(
+  AMR.Header(&quot;fricative_heating&quot;,
+   &quot;modelreps.io/SummationDecapode&quot;,
+   &quot;Velocity makes it get hot, but you dissipate heat away from Q₀&quot;,
+   &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
+    DiagrammaticEquations.parse_decapode(quote
+      V::Form0{Point}
+      Q::Form0{Point}
+      κ::Constant{Point}
+      λ::Constant{Point}
+      Q₀::Parameter{Point}
+
+      ∂ₜ(Q) == κ*V + λ(Q - Q₀)
+    end)
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;fricative_heating&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;Velocity makes it get hot, but you dissipate heat away from Q₀&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:Q, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:κ, :Constant, :Point), DiagrammaticEquations.decapodes.Judgement(:λ, :Constant, :Point), DiagrammaticEquations.decapodes.Judgement(:Q₀, :Parameter, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:Q)), DiagrammaticEquations.decapodes.Plus(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.App2(:*, DiagrammaticEquations.decapodes.Var(:κ), DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.App1(:λ, DiagrammaticEquations.decapodes.App2(:-, DiagrammaticEquations.decapodes.Var(:Q), DiagrammaticEquations.decapodes.Var(:Q₀)))]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>Now we can assemble this bad boi:</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;composite_physics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A composite model&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.0&quot;)
+m = CompositeModelExpr(h, u, [OpenModel(d1, [:X, :V]), OpenModel(d2, [:V, :Q])])
+@test interface(m) == [:X, :Q]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr32"><span class="sgr1">Test Passed</span></span></code></pre><p>The <code>CompositeModelExpr</code> is a tree that stores the composition pattern and the models that are to be composed. You can see from this little model (just two coupled odes) that the json output will not be human writeable. This is why we need a library for Syntactic Model representations.</p><pre><code class="language-julia hljs">JSON3.pretty(m, JSON3.AlignmentContext(indent=2))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">{
+  &quot;components&quot;: [
+    {
+      &quot;interface&quot;: [
+        &quot;X&quot;,
+        &quot;V&quot;
+      ],
+      &quot;_type&quot;: &quot;OpenModel&quot;,
+      &quot;model&quot;: {
+        &quot;annotations&quot;: [
+        ],
+        &quot;header&quot;: {
+          &quot;description&quot;: &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;,
+          &quot;name&quot;: &quot;harmonic_oscillator&quot;,
+          &quot;_type&quot;: &quot;Header&quot;,
+          &quot;model_version&quot;: &quot;v1.0&quot;,
+          &quot;schema&quot;: &quot;modelreps.io/DecaExpr&quot;,
+          &quot;schema_name&quot;: &quot;DecaExpr&quot;
+        },
+        &quot;_type&quot;: &quot;ASKEMDecaExpr&quot;,
+        &quot;model&quot;: {
+          &quot;context&quot;: [
+            {
+              &quot;var&quot;: &quot;X&quot;,
+              &quot;dim&quot;: &quot;Form0&quot;,
+              &quot;space&quot;: &quot;Point&quot;
+            },
+            {
+              &quot;var&quot;: &quot;V&quot;,
+              &quot;dim&quot;: &quot;Form0&quot;,
+              &quot;space&quot;: &quot;Point&quot;
+            },
+            {
+              &quot;var&quot;: &quot;k&quot;,
+              &quot;dim&quot;: &quot;Constant&quot;,
+              &quot;space&quot;: &quot;Point&quot;
+            }
+          ],
+          &quot;_type&quot;: &quot;DecaExpr&quot;,
+          &quot;equations&quot;: [
+            {
+              &quot;rhs&quot;: {
+                &quot;name&quot;: &quot;V&quot;,
+                &quot;_type&quot;: &quot;Var&quot;
+              },
+              &quot;lhs&quot;: {
+                &quot;var&quot;: {
+                  &quot;name&quot;: &quot;X&quot;,
+                  &quot;_type&quot;: &quot;Var&quot;
+                },
+                &quot;_type&quot;: &quot;Tan&quot;
+              },
+              &quot;_type&quot;: &quot;Eq&quot;
+            },
+            {
+              &quot;rhs&quot;: {
+                &quot;args&quot;: [
+                  {
+                    &quot;name&quot;: &quot;-1&quot;,
+                    &quot;_type&quot;: &quot;Lit&quot;
+                  },
+                  {
+                    &quot;name&quot;: &quot;k&quot;,
+                    &quot;_type&quot;: &quot;Var&quot;
+                  },
+                  {
+                    &quot;name&quot;: &quot;X&quot;,
+                    &quot;_type&quot;: &quot;Var&quot;
+                  }
+                ],
+                &quot;_type&quot;: &quot;Mult&quot;
+              },
+              &quot;lhs&quot;: {
+                &quot;var&quot;: {
+                  &quot;name&quot;: &quot;V&quot;,
+                  &quot;_type&quot;: &quot;Var&quot;
+                },
+                &quot;_type&quot;: &quot;Tan&quot;
+              },
+              &quot;_type&quot;: &quot;Eq&quot;
+            }
+          ]
+        }
+      }
+    },
+    {
+      &quot;interface&quot;: [
+        &quot;V&quot;,
+        &quot;Q&quot;
+      ],
+      &quot;_type&quot;: &quot;OpenModel&quot;,
+      &quot;model&quot;: {
+        &quot;annotations&quot;: [
+        ],
+        &quot;header&quot;: {
+          &quot;description&quot;: &quot;Velocity makes it get hot, but you dissipate heat away from Q₀&quot;,
+          &quot;name&quot;: &quot;fricative_heating&quot;,
+          &quot;_type&quot;: &quot;Header&quot;,
+          &quot;model_version&quot;: &quot;v1.0&quot;,
+          &quot;schema&quot;: &quot;modelreps.io/SummationDecapode&quot;,
+          &quot;schema_name&quot;: &quot;SummationDecapode&quot;
+        },
+        &quot;_type&quot;: &quot;ASKEMDecaExpr&quot;,
+        &quot;model&quot;: {
+          &quot;context&quot;: [
+            {
+              &quot;var&quot;: &quot;V&quot;,
+              &quot;dim&quot;: &quot;Form0&quot;,
+              &quot;space&quot;: &quot;Point&quot;
+            },
+            {
+              &quot;var&quot;: &quot;Q&quot;,
+              &quot;dim&quot;: &quot;Form0&quot;,
+              &quot;space&quot;: &quot;Point&quot;
+            },
+            {
+              &quot;var&quot;: &quot;κ&quot;,
+              &quot;dim&quot;: &quot;Constant&quot;,
+              &quot;space&quot;: &quot;Point&quot;
+            },
+            {
+              &quot;var&quot;: &quot;λ&quot;,
+              &quot;dim&quot;: &quot;Constant&quot;,
+              &quot;space&quot;: &quot;Point&quot;
+            },
+            {
+              &quot;var&quot;: &quot;Q₀&quot;,
+              &quot;dim&quot;: &quot;Parameter&quot;,
+              &quot;space&quot;: &quot;Point&quot;
+            }
+          ],
+          &quot;_type&quot;: &quot;DecaExpr&quot;,
+          &quot;equations&quot;: [
+            {
+              &quot;rhs&quot;: {
+                &quot;args&quot;: [
+                  {
+                    &quot;f&quot;: &quot;*&quot;,
+                    &quot;arg1&quot;: {
+                      &quot;name&quot;: &quot;κ&quot;,
+                      &quot;_type&quot;: &quot;Var&quot;
+                    },
+                    &quot;_type&quot;: &quot;App2&quot;,
+                    &quot;arg2&quot;: {
+                      &quot;name&quot;: &quot;V&quot;,
+                      &quot;_type&quot;: &quot;Var&quot;
+                    }
+                  },
+                  {
+                    &quot;f&quot;: &quot;λ&quot;,
+                    &quot;arg&quot;: {
+                      &quot;f&quot;: &quot;-&quot;,
+                      &quot;arg1&quot;: {
+                        &quot;name&quot;: &quot;Q&quot;,
+                        &quot;_type&quot;: &quot;Var&quot;
+                      },
+                      &quot;_type&quot;: &quot;App2&quot;,
+                      &quot;arg2&quot;: {
+                        &quot;name&quot;: &quot;Q₀&quot;,
+                        &quot;_type&quot;: &quot;Var&quot;
+                      }
+                    },
+                    &quot;_type&quot;: &quot;App1&quot;
+                  }
+                ],
+                &quot;_type&quot;: &quot;Plus&quot;
+              },
+              &quot;lhs&quot;: {
+                &quot;var&quot;: {
+                  &quot;name&quot;: &quot;Q&quot;,
+                  &quot;_type&quot;: &quot;Var&quot;
+                },
+                &quot;_type&quot;: &quot;Tan&quot;
+              },
+              &quot;_type&quot;: &quot;Eq&quot;
+            }
+          ]
+        }
+      }
+    }
+  ],
+  &quot;composition_pattern&quot;: {
+    &quot;statements&quot;: [
+      {
+        &quot;variables&quot;: [
+          {
+            &quot;var&quot;: &quot;X&quot;,
+            &quot;type&quot;: &quot;Form0&quot;,
+            &quot;_type&quot;: &quot;Typed&quot;
+          },
+          {
+            &quot;var&quot;: &quot;V&quot;,
+            &quot;type&quot;: &quot;Form0&quot;,
+            &quot;_type&quot;: &quot;Typed&quot;
+          }
+        ],
+        &quot;_type&quot;: &quot;Statement&quot;,
+        &quot;relation&quot;: &quot;oscillator&quot;
+      },
+      {
+        &quot;variables&quot;: [
+          {
+            &quot;var&quot;: &quot;V&quot;,
+            &quot;type&quot;: &quot;Form0&quot;,
+            &quot;_type&quot;: &quot;Typed&quot;
+          },
+          {
+            &quot;var&quot;: &quot;Q&quot;,
+            &quot;type&quot;: &quot;Form0&quot;,
+            &quot;_type&quot;: &quot;Typed&quot;
+          }
+        ],
+        &quot;_type&quot;: &quot;Statement&quot;,
+        &quot;relation&quot;: &quot;heating&quot;
+      }
+    ],
+    &quot;context&quot;: [
+      {
+        &quot;var&quot;: &quot;X&quot;,
+        &quot;type&quot;: &quot;Form0&quot;,
+        &quot;_type&quot;: &quot;Typed&quot;
+      },
+      {
+        &quot;var&quot;: &quot;Q&quot;,
+        &quot;type&quot;: &quot;Form0&quot;,
+        &quot;_type&quot;: &quot;Typed&quot;
+      }
+    ],
+    &quot;_type&quot;: &quot;UWDExpr&quot;
+  },
+  &quot;header&quot;: {
+    &quot;description&quot;: &quot;A composite model&quot;,
+    &quot;name&quot;: &quot;composite_physics&quot;,
+    &quot;_type&quot;: &quot;Header&quot;,
+    &quot;model_version&quot;: &quot;v0.0&quot;,
+    &quot;schema&quot;: &quot;modelreps.io/Composite&quot;,
+    &quot;schema_name&quot;: &quot;CompositeModelExpr&quot;
+  },
+  &quot;_type&quot;: &quot;CompositeModelExpr&quot;
+}</code></pre><p>We can interpret this big data structure to execute a composition! Notice how the variables in the composite model are namespaced with the subsystem they came from. The coupled variables get their names from the UWD and thus live in the top level namespace.</p><pre><code class="language-julia hljs">composite = oapply(m)
+display(apex(composite))
+to_graphviz(apex(composite))</code></pre><img src="28edd9ac.svg" alt="Example block output"/><p><em>Important: because the oapply algorithm operates on the compute graph representation of the equations, it does not produce syntactic equations. Calls to <code>oapply</code> produce instances of <code>OpenDecapode</code> and not <code>DecaExpr</code>. Software that expects to consume decapodes should plan to interact with both forms.</em></p><h2 id="Nested-Composition"><a class="docs-heading-anchor" href="#Nested-Composition">Nested Composition</a><a id="Nested-Composition-1"></a><a class="docs-heading-anchor-permalink" href="#Nested-Composition" title="Permalink"></a></h2><p>In this section we will build a model that is a composite of composites of models. This demonstrates that the Decapodes system can recursively compose multiphysics models.</p><pre><code class="language-julia hljs">Q₊ = Untyped(:Q₊)
+Q₋ = Untyped(:Q₋)
+Q̇ = Untyped(:Q̇)
+uwdʰ = UWDExpr([v, Q], [Statement(:drag, [v, Q₊]), Statement(:cooling, [Q₋, Q]), Statement(:superposition, [Q₊, Q₋, Q̇])])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">{ drag(V:Form0, Q₊)
+  cooling(Q₋, Q:Form0)
+  superposition(Q₊, Q₋, Q̇) } where {V:Form0, Q:Form0}</code></pre><p>Our new model has 3 subsystems, drag, cooling, and superposition. A key innovation of decapodes is to realize that even simple systems like drag are actually multiphysical, they have some term that represents a force, and some term that determines how that force changes the state of the system. In order to write models compositionally, you must first break them down into their atomic subsystems, which are smaller than you think.</p><p>Our three primitive subsystems are each composed of one equation. Of course at this scale of complexity, you don&#39;t need to do compositional specification, you can just compose them in your head and write down the composite. But this is a tutorial, so we are building a very simple model as a composite of atomic models (one equation each).</p><pre><code class="language-julia hljs">drag = ASKEMDecaExpr(
+  AMR.Header(&quot;DragHeat&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;velocity makes it get hot&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
+  DiagrammaticEquations.parse_decapode(quote
+    V::Form0{Point}
+    Q₊::Form0{Point}
+    κ::Constant{Point}
+
+    Q₊ == κ*V
+  end)
+)
+
+cooling = ASKEMDecaExpr(
+  AMR.Header(&quot;NetwonCooling&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;heat dissipates to the enviornment&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
+  DiagrammaticEquations.parse_decapode(quote
+    Q₋::Form0{Point}
+    Q₀::Parameter{Point}
+    Q::Form0{Point}
+    λ::Constant{Point}
+
+    Q₋ == λ(Q-Q₀)
+  end)
+)
+
+superposition = ASKEMDecaExpr(
+  AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;),
+  DiagrammaticEquations.parse_decapode(quote
+    X::Form0{Point}
+    Y::Form0{Point}
+    T::Form0{Point}
+
+    T == X + Y
+  end)
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:Y, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:T, :Form0, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Var(:T), DiagrammaticEquations.decapodes.Plus(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Var(:X), DiagrammaticEquations.decapodes.Var(:Y)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre><p>The <code>CompositeModelExpr</code> type can store recursive model descriptions in terms of compositions of composite models.</p><pre><code class="language-julia hljs">h = AMR.Header(&quot;hierarchical_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A hierarchical composite model of frictional heating&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;)
+m = CompositeModelExpr(h,u, [OpenModel(d1, [:X, :V]),
+      CompositeModelExpr(AMR.Header(&quot;heating_dynamics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A formula for heating - cooling&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;),
+        uwdʰ, [OpenModel(drag, [:V, :Q₊]), OpenModel(cooling, [:Q₋, :Q]), OpenModel(superposition, [:X, :Y, :T])])
+])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.Composites.CompositeModelExpr(SyntacticModels.AMR.Header(&quot;hierarchical_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A hierarchical composite model of frictional heating&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), { oscillator(X:Form0, V:Form0)
+  heating(V:Form0, Q:Form0) } where {X:Form0, Q:Form0}, SyntacticModels.Composites.CompositeModel[SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;harmonic_oscillator&quot;, &quot;modelreps.io/DecaExpr&quot;, &quot;A Simple Harmonic Oscillator as a Diagrammatic Equation&quot;, &quot;DecaExpr&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:k, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:X)), DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Tan(DiagrammaticEquations.decapodes.Var(:V)), DiagrammaticEquations.decapodes.Mult(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Lit(Symbol(&quot;-1&quot;)), DiagrammaticEquations.decapodes.Var(:k), DiagrammaticEquations.decapodes.Var(:X)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:X, :V]), SyntacticModels.Composites.CompositeModelExpr(SyntacticModels.AMR.Header(&quot;heating_dynamics&quot;, &quot;modelreps.io/Composite&quot;, &quot;A formula for heating - cooling&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), { drag(V:Form0, Q₊)
+  cooling(Q₋, Q:Form0)
+  superposition(Q₊, Q₋, Q̇) } where {V:Form0, Q:Form0}, SyntacticModels.Composites.CompositeModel[SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;DragHeat&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;velocity makes it get hot&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:V, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:Q₊, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:κ, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Var(:Q₊), DiagrammaticEquations.decapodes.App2(:*, DiagrammaticEquations.decapodes.Var(:κ), DiagrammaticEquations.decapodes.Var(:V)))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:V, :Q₊]), SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;NetwonCooling&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;heat dissipates to the enviornment&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:Q₋, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:Q₀, :Parameter, :Point), DiagrammaticEquations.decapodes.Judgement(:Q, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:λ, :Constant, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Var(:Q₋), DiagrammaticEquations.decapodes.App1(:λ, DiagrammaticEquations.decapodes.App2(:-, DiagrammaticEquations.decapodes.Var(:Q), DiagrammaticEquations.decapodes.Var(:Q₀))))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:Q₋, :Q]), SyntacticModels.Composites.OpenModel(SyntacticModels.ASKEMDecapodes.ASKEMDecaExpr(SyntacticModels.AMR.Header(&quot;LinearSuperpositon&quot;, &quot;modelreps.io/SummationDecapode&quot;, &quot;variables be addin&quot;, &quot;SummationDecapode&quot;, &quot;v1.0&quot;), DiagrammaticEquations.decapodes.DecaExpr(DiagrammaticEquations.decapodes.Judgement[DiagrammaticEquations.decapodes.Judgement(:X, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:Y, :Form0, :Point), DiagrammaticEquations.decapodes.Judgement(:T, :Form0, :Point)], DiagrammaticEquations.decapodes.Equation[DiagrammaticEquations.decapodes.Eq(DiagrammaticEquations.decapodes.Var(:T), DiagrammaticEquations.decapodes.Plus(DiagrammaticEquations.decapodes.Term[DiagrammaticEquations.decapodes.Var(:X), DiagrammaticEquations.decapodes.Var(:Y)]))]), SyntacticModels.AMR.Annotation{Symbol, Symbol}[]), [:X, :Y, :T])])])</code></pre><p>The <code>oapply</code> function will recursively descend the tree to assemble a flat model with hierarchical namespacing.</p><pre><code class="language-julia hljs">dh = apex(oapply(m))</code></pre><div class="c-set">
+<span class="c-set-summary">DiagrammaticEquations.decapodeacset.SummationDecapode{Any, Any, Symbol} {Var:14, TVar:2, Op1:3, Op2:4, Σ:1, Summand:2, Type:0, Operator:0, Name:0}</span>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Var</th>
+      <th style = "text-align: right;">type</th>
+      <th style = "text-align: right;">name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">X</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">V</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">Constant</td>
+      <td style = "text-align: right;">oscillator_k</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">4</td>
+      <td style = "text-align: right;">infer</td>
+      <td style = "text-align: right;">oscillator_mult_1</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">5</td>
+      <td style = "text-align: right;">infer</td>
+      <td style = "text-align: right;">oscillator_V̇</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">6</td>
+      <td style = "text-align: right;">Literal</td>
+      <td style = "text-align: right;">-1</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">7</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">heating_Q₊</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">8</td>
+      <td style = "text-align: right;">Constant</td>
+      <td style = "text-align: right;">heating_drag_κ</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">9</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">heating_Q₋</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">10</td>
+      <td style = "text-align: right;">Parameter</td>
+      <td style = "text-align: right;">heating_cooling_Q₀</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">11</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">Q</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">12</td>
+      <td style = "text-align: right;">Constant</td>
+      <td style = "text-align: right;">heating_cooling_λ</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">13</td>
+      <td style = "text-align: right;">infer</td>
+      <td style = "text-align: right;">heating_cooling_•1</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">14</td>
+      <td style = "text-align: right;">Form0</td>
+      <td style = "text-align: right;">heating_Q̇</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">TVar</th>
+      <th style = "text-align: right;">incl</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">5</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Op1</th>
+      <th style = "text-align: right;">src</th>
+      <th style = "text-align: right;">tgt</th>
+      <th style = "text-align: right;">op1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">∂ₜ</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">5</td>
+      <td style = "text-align: right;">∂ₜ</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">13</td>
+      <td style = "text-align: right;">9</td>
+      <td style = "text-align: right;">λ</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Op2</th>
+      <th style = "text-align: right;">proj1</th>
+      <th style = "text-align: right;">proj2</th>
+      <th style = "text-align: right;">res</th>
+      <th style = "text-align: right;">op2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">6</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">*</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">5</td>
+      <td style = "text-align: right;">*</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">8</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">7</td>
+      <td style = "text-align: right;">*</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">4</td>
+      <td style = "text-align: right;">11</td>
+      <td style = "text-align: right;">10</td>
+      <td style = "text-align: right;">13</td>
+      <td style = "text-align: right;">-</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Σ</th>
+      <th style = "text-align: right;">sum</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">14</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th class = "rowLabel" style = "font-weight: bold; text-align: right;">Summand</th>
+      <th style = "text-align: right;">summand</th>
+      <th style = "text-align: right;">summation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">7</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">9</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>This model can also be drawn as a decapode.</p><pre><code class="language-julia hljs">to_graphviz(dh)</code></pre><img src="b5e9a487.svg" alt="Example block output"/><p>The new model description needs to be written by hand for the new model header. Some annotation in the description can&#39;t be avoided, yet.</p><pre><code class="language-julia hljs">composite = OpenDecapode(m)
+hf = composite.model.header
+ASKEMDecapode(Header(&quot;flattened_composite&quot;, hf.schema, &quot;A flattened version of the composite_physics model.&quot;, hf.schema_name, hf.model_version), composite.model.model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SyntacticModels.ASKEMDecapodes.ASKEMDecapode(SyntacticModels.AMR.Header(&quot;flattened_composite&quot;, &quot;modelreps.io/Composite&quot;, &quot;A flattened version of the composite_physics model.&quot;, &quot;CompositeModelExpr&quot;, &quot;v0.1&quot;), DiagrammaticEquations.decapodeacset.SummationDecapode{Any, Any, Symbol}:
+  Var = 1:14
+  TVar = 1:2
+  Op1 = 1:3
+  Op2 = 1:4
+  Σ = 1:1
+  Summand = 1:2
+  Type = 1:0
+  Operator = 1:0
+  Name = 1:0
+  src : Op1 → Var = [1, 2, 13]
+  tgt : Op1 → Var = [2, 5, 9]
+  proj1 : Op2 → Var = [6, 4, 8, 11]
+  proj2 : Op2 → Var = [3, 1, 2, 10]
+  res : Op2 → Var = [4, 5, 7, 13]
+  incl : TVar → Var = [2, 5]
+  summand : Summand → Var = [7, 9]
+  summation : Summand → Σ = [1, 1]
+  sum : Σ → Var = [14]
+  op1 : Op1 → Operator = [:∂ₜ, :∂ₜ, :λ]
+  op2 : Op2 → Operator = [:*, :*, :*, :-]
+  type : Var → Type = [:Form0, :Form0, :Constant, :infer, :infer, :Literal, :Form0, :Constant, :Form0, :Parameter, :Form0, :Constant, :infer, :Form0]
+  name : Var → Name = [:X, :V, :oscillator_k, :oscillator_mult_1, :oscillator_V̇, Symbol(&quot;-1&quot;), :heating_Q₊, :heating_drag_κ, :heating_Q₋, :heating_cooling_Q₀, :Q, :heating_cooling_λ, Symbol(&quot;heating_cooling_•1&quot;), :heating_Q̇], SyntacticModels.AMR.Annotation{Symbol, Symbol}[])</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../decapodes_examples/">« Decapodes</a><a class="docs-footer-nextpage" href="../../api/">Library Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Monday 5 February 2024 20:32">Monday 5 February 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
