@@ -68,8 +68,37 @@ sm_write_json_acset(mpode.model, "$(mpode.header.name)-acset")
 # end
 
 
+# Test a case in which a variable is not related to any other
+h2 = AMR.Header("standalone_variable",
+  "modelreps.io/DecaExpr",
+  "A Test DiagrammaticEquation with a Standalone Variable",
+  "DecaExpr",
+  "v1.0")
+dexpr2 = DiagrammaticEquations.parse_decapode(quote
+  X::Form0{Point}
+  V::Form0{Point}
+  k::Constant{Point}
+  S::Form0{Point}
+  ∂ₜ(X) == V
+  ∂ₜ(V) == -1*k*(X)
+end)
+annot2 = [AMR.Annotation(:X,:Form0,AMR.Name("The X variable.")),
+         AMR.Annotation(:S,:Form0,AMR.Name("The standalone variable."))]
+mexpr2 = ASKEMDecaExpr(h2, dexpr2, annot2)
+d2 = DiagrammaticEquations.SummationDecapode(mexpr2.model)
+h2 = AMR.Header("harmonic_oscillator",
+  "modelreps.io/SummationDecapode",
+  "A Simple Harmonic Oscillator as a Diagrammatic Equation",
+  "SummationDecapode",
+  "v1.0")
+mpode2 = ASKEMDecapode(h2, d2, annot2)
+write_json_model(mexpr2)
+sm_write_json_acset(mpode2.model, "$(mpode2.header.name)-acset")
+
  # Can we read back the models we just wrote?
 @testset "Decapodes Readback" begin
   mexpr′ = readback(mexpr)
   @test JSON3.write(mexpr) == JSON3.write(mexpr′)
+  mexpr2′ = readback(mexpr2)
+  @test JSON3.write(mexpr2) == JSON3.write(mexpr2′)
 end
