@@ -1,10 +1,7 @@
-include("../src/SyntacticModels.jl")
-
-using .SyntacticModels
-using .SyntacticModels.ASKEMDecapodes
-
-using Test
 using JSON3
+using SyntacticModels
+using SyntacticModels.ASKEMDecapodes
+using Test
 
 jsondir = joinpath(@__DIR__, "json")
 
