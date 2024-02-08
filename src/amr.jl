@@ -452,7 +452,7 @@ function load(::Type{ASKEModel}, ex::Expr)
   elts = map(ex.args) do arg
     @match arg begin
       Expr(:macrocall, var"@doc", _, s, ex) => (load(Header, s), load(ACSetSpec, ex))
-      Expr(:(=), :ODE_Record, body) => load(ODEList, arg)
+      Expr(:(=), :ODE_Record, body) => load(ODERecord, arg)
       Expr(:(=), :ODE_Equations, body) => load(ODEList, arg)
       Expr(:(=), :Typing, body) => load(Typing, arg)
       _ => arg 
