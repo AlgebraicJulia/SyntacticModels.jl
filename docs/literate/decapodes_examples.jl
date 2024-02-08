@@ -18,7 +18,7 @@ using ACSets.JSONACSets
 using DiagrammaticEquations
 using Test
 
-# Build the heder object describing the model.
+# Build the header object describing the model.
 
 h = AMR.Header("harmonic_oscillator",
   "modelreps.io/DecaExpr",
@@ -27,6 +27,8 @@ h = AMR.Header("harmonic_oscillator",
   "v1.0")
 
 # The easiest way to write down a DecaExpr is in our DSL and calling the parser.
+# This example is $$x'' = -kx$$. We have manual transformed this into first order ODE
+# by introducing a velocity variable for $$x'$$.
 dexpr = DiagrammaticEquations.parse_decapode(quote
   X::Form0{Point}
   V::Form0{Point}
