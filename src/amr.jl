@@ -142,7 +142,7 @@ function amr_to_string(amr)
       Rate(t, f)                       => "$t::Rate = $(f.expression)"
       Initial(t, f)                    => "$t::Initial = $(f.expression)"
       Observable(id, n, states, f)     => "# $n\n$id::Observable = $(f.expression)($states)\n"
-      Header(name, s, d, sn, mv)       => "\"\"\"\nASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d\n\"\"\""
+      Header(name, s, d, sn, mv)       => "\"\"\"\nASKE Model Representation: $name@$mv :: $sn \n   $s\n\n$d\n\"\"\""
       Parameter(t, n, d, u, v, dist)   => "\n# $n-- $d\n$t::Parameter{$(!u)} = $v ~ $(!dist)\n"
       m::ACSetSpec                     => "Model = begin\n$(padlines(sprint(show, m),2))\nend"
       ODEList(l)                       => "ODE_Equations = begin\n" * padlines(join(map(!, l), "\n")) * "\nend"
