@@ -12,7 +12,7 @@ using Catlab.Graphics
 # This example follows what in current catlab would be given as
 
 #=
-@relation (x:X, z:Z) where y:Y begin
+@relation (x, z) where (x::X, y::Y, z::Z, u::U) begin
   R(x,y)
   S(y,z)
   T(z,y,u)
