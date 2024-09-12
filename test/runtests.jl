@@ -41,6 +41,10 @@ end
   include("uwd_examples.jl")
 end
 
+@testset "Parsers" begin
+  include("parsers.jl")
+end
+
 @testset "Composite Model Examples" begin
   include("composite_models_examples.jl")
 end
@@ -48,4 +52,3 @@ end
 @testset "Serialization Minimum Working Example" begin
   include("serialization_mwe.jl")
 end
-

@@ -81,6 +81,9 @@ u = UWDExpr(c, s)
 """
 UWDTerm
 
+Base.:(==)(s::Statement, t::Statement) = s.relation == t.relation && s.variables == t.variables
+Base.:(==)(s::Untyped, t::Untyped) = s.var == t.var
+
 StructTypes.StructType(::Type{UWDTerm}) = StructTypes.AbstractType()
 StructTypes.subtypekey(::Type{UWDTerm}) = :_type
 StructTypes.subtypes(::Type{UWDTerm}) = (Statement=Statement, UWDExpr=UWDExpr, UWDModel=UWDModel)
