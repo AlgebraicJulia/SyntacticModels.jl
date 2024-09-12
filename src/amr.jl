@@ -142,7 +142,7 @@ function amr_to_string(amr)
       Rate(t, f)                       => "$t::Rate = $(f.expression)"
       Initial(t, f)                    => "$t::Initial = $(f.expression)"
       Observable(id, n, states, f)     => "# $n\n$id::Observable = $(f.expression)($states)\n"
-      Header(name, s, d, sn, mv)       => "\"\"\"\nASKE Model Representation: $name$mv :: $sn \n   $s\n\n$d\n\"\"\""
+      Header(name, s, d, sn, mv)       => "\"\"\"\nASKE Model Representation: $name@$mv :: $sn \n   $s\n\n$d\n\"\"\""
       Parameter(t, n, d, u, v, dist)   => "\n# $n-- $d\n$t::Parameter{$(!u)} = $v ~ $(!dist)\n"
       m::ACSetSpec                     => "Model = begin\n$(padlines(sprint(show, m),2))\nend"
       ODEList(l)                       => "ODE_Equations = begin\n" * padlines(join(map(!, l), "\n")) * "\nend"
@@ -452,7 +452,7 @@ function load(::Type{ASKEModel}, ex::Expr)
   elts = map(ex.args) do arg
     @match arg begin
       Expr(:macrocall, var"@doc", _, s, ex) => (load(Header, s), load(ACSetSpec, ex))
-      Expr(:(=), :ODE_Record, body) => load(ODEList, arg)
+      Expr(:(=), :ODE_Record, body) => load(ODERecord, arg)
       Expr(:(=), :ODE_Equations, body) => load(ODEList, arg)
       Expr(:(=), :Typing, body) => load(Typing, arg)
       _ => arg 
